@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.bot.model.PushMessage;
@@ -50,7 +48,6 @@ import com.linecorp.bot.model.message.template.ConfirmTemplate;
 import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
-
 import lombok.extern.slf4j.Slf4j;
 import retrofit2.Response;
 
@@ -122,8 +119,8 @@ public class BotController {
 			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
 			PushMessage pushMessage = new PushMessage(userId, templateMessage);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage).execute();
-
 			logger.info("osaka :" + customerMessage);
+
 			break;
 
 		case "menu":
@@ -131,21 +128,24 @@ public class BotController {
 			hm.put("Osaka", "osaka");
 			hm.put("Tokyo", "tokyo");
 			hm.put("London", "london");
-
 			typeBRecursiveChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
 					" boldTitle", " normalTitle", hm, channelToken, userId);
 			logger.info("paris :" + customerMessage);
 
 			break;
+
 		case "type b":
 
 			typeBRecursiveChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
 					" boldTitle", " normalTitle", hm, channelToken, userId);
 			logger.info("see more :", customerMessage);
+
 			break;
+
 		case "b2":
+
 			hm = new LinkedHashMap<>();
 			hm.put("Osaka", "osaka");
 			hm.put("Tokyo", "tokyo");
@@ -154,16 +154,22 @@ public class BotController {
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
 					" boldTitle", " normalTitle", hm, " nextOrSeeMore", " nextOrSeeMoreAnswer", channelToken, userId);
 			logger.info("London :", customerMessage);
+
 			break;
 
 		case "date":
+
 			typeDQuestion(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
 					channelToken, userId);
+
 			break;
+
 		default:
+
 			sendAlertViaSlack(userId, timestamp, customerMessage);
 			logger.info("slack :" + customerMessage);
+			
 			break;
 		}
 
