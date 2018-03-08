@@ -12,13 +12,11 @@ public class DQuestion {
 	private String mode;
 	private int idEvent;
 
-	public DQuestion(String imageUrl, String boldTitle, String normalTitle, String label, String data, String mode,
-			int idEvent) {
+	public DQuestion(String imageUrl, String boldTitle, String normalTitle, String label, String data, String mode, int idEvent) {
 		super();
 		this.imageUrl = imageUrl;
 		this.boldTitle = boldTitle;
 		this.normalTitle = normalTitle;
-
 		this.label = label;
 		this.data = data;
 		this.mode = mode;

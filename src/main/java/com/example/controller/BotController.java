@@ -57,7 +57,7 @@ import retrofit2.Response;
 @RestController
 public class BotController {
 	Logger logger = LoggerFactory.getLogger(BotController.class);
-	public static final String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";;
+	public static final String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
 	@Autowired
 	LineMessagingClient lineMessagingClient;
 
@@ -178,7 +178,6 @@ public class BotController {
 			break;
 		}
 
-		System.out.println(json);
 		return json;
 
 	}
