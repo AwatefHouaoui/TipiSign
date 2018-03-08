@@ -65,12 +65,12 @@ public class BotController {
 		TextMessageContent message = event.getMessage();
 		handleTextContent(event.getReplyToken(), event, message);
 	}
-
+	
 	private static String createUri(String path) {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
+	@RequestMapping(value = "/webhook")
 	private @ResponseBody Map<String, Object> webhook(@RequestBody Map<String, Object> obj)
 			throws JSONException, IOException {
 
