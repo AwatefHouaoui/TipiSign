@@ -173,6 +173,7 @@ public class BotController {
 			break;
 		}
 
+		System.out.println(json);
 		return json;
 
 	}
