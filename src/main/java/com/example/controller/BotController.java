@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -56,7 +57,7 @@ import retrofit2.Response;
 @RestController
 public class BotController {
 	Logger logger = LoggerFactory.getLogger(BotController.class);
-	public static final String TOKEN = "YeGR+Tx/wXpHTEto2B3faYXy16D+9ACtLW7yiUqqDAtFeX0nW5AEgHNcUYfxDL4+5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEk6q0tNuG4GGOPg5/S/mE4HZiqkBcEJ4F5plHAxfQ0CTwdB04t89/1O/w1cDnyilFU=";;
+	public static final String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";;
 	@Autowired
 	LineMessagingClient lineMessagingClient;
 
@@ -65,15 +66,14 @@ public class BotController {
 		TextMessageContent message = event.getMessage();
 		handleTextContent(event.getReplyToken(), event, message);
 	}
-	
+
 	private static String createUri(String path) {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	@RequestMapping(value = "/webhook")
-	private @ResponseBody Map<String, Object> webhook(@RequestBody Map<String, Object> obj)
-			throws JSONException, IOException {
-
+	@ResponseBody
+	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
+	private Map<String, Object> webhook(@RequestBody Map<String, Object> obj) throws JSONException, IOException {
 		String channelToken = TOKEN;
 
 		Map<String, Object> json = new HashMap<>();
@@ -87,12 +87,17 @@ public class BotController {
 		String customerMessage = message.getString("text");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
+		String resolvedQuery = result.getString("resolvedQuery");
+		String action = result.getString("action");
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
 		JSONObject parameters = result.getJSONObject("parameters");
 		JSONObject fulfillment = result.getJSONObject("fulfillment");
 		String speech = fulfillment.getString("speech");
-
+		JSONArray messages = fulfillment.getJSONArray("messages");
+		JSONObject msg = messages.getJSONObject(0);
+		String speechMessage = msg.getString("speech");
+	
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
 		switch (intentName.toLowerCase()) {
@@ -169,7 +174,7 @@ public class BotController {
 
 			sendAlertViaSlack(userId, timestamp, customerMessage);
 			logger.info("slack :" + customerMessage);
-			
+
 			break;
 		}
 
@@ -485,6 +490,7 @@ public class BotController {
 				default:
 					break;
 				}
+
 		}
 
 	}
