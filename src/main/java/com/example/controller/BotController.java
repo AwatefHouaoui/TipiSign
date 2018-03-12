@@ -143,7 +143,7 @@ public class BotController {
 		case "language":
 
 			hm.put("English", "English");
-			hm.put("日本の", "日本の");
+			hm.put("日本語", "日本語");
 			typeBRecursiveChoices(null,null, "Please select a language:", hm, channelToken, userId);
 			logger.info("Tunis :" + customerMessage);
 
@@ -377,7 +377,7 @@ public class BotController {
 				MessageAction ma = new MessageAction(m.getKey().toString(), m.getValue().toString());
 				messageActions.add(ma);
 			}
-			messageActions.add(new MessageAction("N/A", "not available"));
+			//messageActions.add(new MessageAction("N/A", "not available"));
 			ButtonsTemplate buttonsTemplate = new ButtonsTemplate(imageURL, boldTitle, normalTitle, messageActions);
 
 			TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
