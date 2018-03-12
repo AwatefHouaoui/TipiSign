@@ -139,6 +139,15 @@ public class BotController {
 			logger.info("paris :" + customerMessage);
 
 			break;
+			
+		case "language":
+
+			hm.put("English", "English");
+			hm.put("日本の", "日本の");
+			typeBRecursiveChoices(null,null, "Please select a language:", hm, channelToken, userId);
+			logger.info("Tunis :" + customerMessage);
+
+			break;
 
 		case "type b":
 
@@ -169,6 +178,7 @@ public class BotController {
 					channelToken, userId);
 
 			break;
+			
 
 		default:
 
@@ -191,7 +201,7 @@ public class BotController {
 
 	private void handleTextContent(String replyToken, Event event, TextMessageContent content) throws Exception {
 		String text = content.getText();
-		String channelToken = "cJbAS0J+bqyvx9wKD+BB0DlAQSb6PyNJ8oEIAQK80WVYpsAwWy9KIpI6lRb5yTaUIkWVHQvtfoNVnL1kqybUxP5cs6xHFANTUVcJqAoZmQuQie2ENJ6crdW9Ho1JMlxLIILEuxEQtHsTdq2wafdRcAdB04t89/1O/w1cDnyilFU=";
+		String channelToken = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
 		logger.info("Got text message from {}: {}" + replyToken + text);
 		switch (text) {
 		case "paris": {
@@ -403,7 +413,7 @@ public class BotController {
 	}
 
 	private void checkLineFunction(@RequestBody Map<String, Object> obj) throws JSONException, IOException {
-		String channelToken = "cJbAS0J+bqyvx9wKD+BB0DlAQSb6PyNJ8oEIAQK80WVYpsAwWy9KIpI6lRb5yTaUIkWVHQvtfoNVnL1kqybUxP5cs6xHFANTUVcJqAoZmQuQie2ENJ6crdW9Ho1JMlxLIILEuxEQtHsTdq2wafdRcAdB04t89/1O/w1cDnyilFU=";
+		String channelToken = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
 
 		JSONObject jsonResult = new JSONObject(obj);
 		JSONObject rsl = jsonResult.getJSONObject("originalRequest");

@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class CommentForRequest implements Serializable {
+public class Comments implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -22,11 +22,11 @@ public class CommentForRequest implements Serializable {
 	@JoinColumn(name = "RequestId")
 	private Request request;
 
-	public CommentForRequest() {
+	public Comments() {
 		super();
 	}
 
-	public CommentForRequest(long commentId, Date createdAt) {
+	public Comments(long commentId, Date createdAt) {
 		super();
 		this.commentId = commentId;
 		this.createdAt = createdAt;
