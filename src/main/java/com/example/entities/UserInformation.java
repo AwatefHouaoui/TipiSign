@@ -29,8 +29,11 @@ public class UserInformation implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long userId;
 	
-	/** The account name. */
-	private String accountName;
+	/** The user name. */
+	private String userName;
+	
+	/** The family name. */
+	private String familyName;
 	
 	/** The status. */
 	private String status;
@@ -104,14 +107,14 @@ public class UserInformation implements Serializable {
 	 * 
 	 * Instantiates a new user information.
 	 * @param userId the user id
-	 * @param accountName the account name
+	 * @param userName the user name
 	 * @param detail the detail
 	 * @param authority the authority
 	 */
-	public UserInformation(long userId, String accountName, String detail, Authority authority) {
+	public UserInformation(long userId, String userName, String detail, Authority authority) {
 		super();
 		this.userId = userId;
-		this.accountName = accountName;
+		this.userName = userName;
 		this.detail = detail;
 		this.authority = authority;
 	}
@@ -166,8 +169,8 @@ public class UserInformation implements Serializable {
 	 * Gets the account name.
 	 * @return the account name
 	 */
-	public String getAccountName() {
-		return accountName;
+	public String getUserName() {
+		return userName;
 	}
 
 	/**
@@ -182,11 +185,50 @@ public class UserInformation implements Serializable {
 	 * Class Name: UserInformation.java
 	 * 
 	 * Sets the account name.
-	 * @param accountName the new account name
+	 * @param userName the new user name
 	 */
-	public void setAccountName(String accountName) {
-		this.accountName = accountName;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
+
+	
+	/**
+	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
+	 *
+	 * @author awatef
+	 * 
+	 * Using JRE: 1.8
+	 * 
+	 * Project Name: TipiSign
+	 * 
+	 * Class Name: UserInformation.java
+	 * 
+	 * Gets the family name.
+	 * @return the family name
+	 */
+	public String getFamilyName() {
+		return familyName;
+	}
+
+
+	/**
+	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
+	 *
+	 * @author awatef
+	 * 
+	 * Using JRE: 1.8
+	 * 
+	 * Project Name: TipiSign
+	 * 
+	 * Class Name: UserInformation.java
+	 * 
+	 * Sets the family name.
+	 * @param familyName the new family name
+	 */
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
+	}
+
 
 	/**
 	 * Copyright (c) 2018 by HRDatabank. All rights reserved.

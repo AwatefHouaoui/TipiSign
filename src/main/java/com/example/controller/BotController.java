@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import com.example.entities.UserInformation;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.bot.model.PushMessage;
@@ -42,6 +46,7 @@ import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.PostbackEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.message.TemplateMessage;
+import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.template.ButtonsTemplate;
 import com.linecorp.bot.model.message.template.CarouselColumn;
 import com.linecorp.bot.model.message.template.CarouselTemplate;
@@ -97,10 +102,75 @@ public class BotController {
 		JSONArray messages = fulfillment.getJSONArray("messages");
 		JSONObject msg = messages.getJSONObject(0);
 		String speechMessage = msg.getString("speech");
-	
+
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
+		// if (resolvedQuery==userName)
+		// {
+		// hm = new LinkedHashMap<>();
+		// hm.put("Osaka", "osaka");
+		// hm.put("Tokyo", "tokyo");
+		// hm.put("London", "london");
+		// typeBChoices(
+		// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+		// " boldTitle", " normalTitle", hm, "Next or see more", "Next or see more
+		// answer", channelToken, userId);
+		// logger.info("London :", customerMessage);
+		// }
+
 		switch (intentName.toLowerCase()) {
+
+		case "language":
+
+			hm.put("English", "English");
+			hm.put("日本語", "日本語");
+			typeBRecursiveChoices(null, null, "Please select a language:", hm, channelToken, userId);
+			logger.info("Tunis :" + customerMessage);
+
+			break;
+
+		case "selected language":
+
+			if (resolvedQuery.equals("English")) {
+				final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
+				final TextMessage textMessage = new TextMessage("Now, I am speaking English");
+				final PushMessage pushMessage = new PushMessage(userId, textMessage);
+
+				final BotApiResponse botApiResponse;
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
+				}
+				System.out.println(botApiResponse);
+			} else {
+
+				final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
+				final TextMessage textMessage = new TextMessage("じゃ、日本語で話しますね。");
+				final PushMessage pushMessage = new PushMessage(userId, textMessage);
+
+				final BotApiResponse botApiResponse;
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
+				}
+				System.out.println(botApiResponse);
+			}
+
+			break;
+
+		case "Default Fallback Intent":
+
+			hm.put("English", "English");
+			hm.put("日本語", "日本語");
+			typeBRecursiveChoices(null, null, "Please select a language:", hm, channelToken, userId);
+			logger.info("Tunis :" + customerMessage);
+
+			break;
+
 		case "carousel":
 
 			String imageUrl = createUri("/static/buttons/1040.jpg");
@@ -139,18 +209,11 @@ public class BotController {
 			logger.info("paris :" + customerMessage);
 
 			break;
-			
-		case "language":
-
-			hm.put("English", "English");
-			hm.put("日本語", "日本語");
-			typeBRecursiveChoices(null,null, "Please select a language:", hm, channelToken, userId);
-			logger.info("Tunis :" + customerMessage);
-
-			break;
 
 		case "type b":
 
+			hm.put("Osaka", "osaka");
+			hm.put("Tokyo", "tokyo");
 			typeBRecursiveChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
 					" boldTitle", " normalTitle", hm, channelToken, userId);
@@ -166,7 +229,8 @@ public class BotController {
 			hm.put("London", "london");
 			typeBChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					" boldTitle", " normalTitle", hm, " nextOrSeeMore", " nextOrSeeMoreAnswer", channelToken, userId);
+					" boldTitle", " normalTitle", hm, "Next or see more", "Next or see more answer", channelToken,
+					userId);
 			logger.info("London :", customerMessage);
 
 			break;
@@ -178,7 +242,6 @@ public class BotController {
 					channelToken, userId);
 
 			break;
-			
 
 		default:
 
@@ -366,6 +429,7 @@ public class BotController {
 		LineMessagingServiceBuilder.create(channelToken).build().replyMessage(pushMessage1);
 		logger.info("response is \n " + Arrays.toString(pushMessage1.getMessages().toArray()));
 
+		// LineMessagingClient.builder(channelToken).build().replyMessage(pushMessage1);
 	}
 
 	public void typeBRecursiveChoices(String imageURL, String boldTitle, String normalTitle, Map<String, String> hm,
@@ -377,7 +441,7 @@ public class BotController {
 				MessageAction ma = new MessageAction(m.getKey().toString(), m.getValue().toString());
 				messageActions.add(ma);
 			}
-			//messageActions.add(new MessageAction("N/A", "not available"));
+			// messageActions.add(new MessageAction("N/A", "not available"));
 			ButtonsTemplate buttonsTemplate = new ButtonsTemplate(imageURL, boldTitle, normalTitle, messageActions);
 
 			TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
