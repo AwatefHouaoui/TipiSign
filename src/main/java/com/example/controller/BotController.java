@@ -45,6 +45,7 @@ import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.PostbackEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
+import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TemplateMessage;
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.template.ButtonsTemplate;
@@ -136,14 +137,20 @@ public class BotController {
 				final TextMessage textMessage = new TextMessage("Now, I am speaking English");
 				final PushMessage pushMessage = new PushMessage(userId, textMessage);
 
-				final BotApiResponse botApiResponse;
-				try {
-					botApiResponse = client.pushMessage(pushMessage).get();
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-					return json;
-				}
-				System.out.println(botApiResponse);
+//				final BotApiResponse botApiResponse;
+//				try {
+//					botApiResponse = client.pushMessage(pushMessage).get();
+//				} catch (InterruptedException | ExecutionException e) {
+//					e.printStackTrace();
+//					return json;
+//				}
+//				System.out.println(botApiResponse);
+        		logger.info("Tunis :" + customerMessage);
+//				
+//				
+				
+				
+				
 			} else {
 
 				final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
