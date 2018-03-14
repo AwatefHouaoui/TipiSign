@@ -118,6 +118,9 @@ public class BotController {
 		// answer", channelToken, userId);
 		// logger.info("London :", customerMessage);
 		// }
+		logger.info("in intente name ****** '{}'" ,intentName);
+		logger.info("in resolved Query ****** '{}'" ,resolvedQuery);
+		logger.info("in customer Message ****** '{}'" ,customerMessage);
 
 		switch (intentName.toLowerCase()) {
 
