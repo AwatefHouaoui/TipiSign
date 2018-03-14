@@ -131,8 +131,9 @@ public class BotController {
 			break;
 
 		case "selected language":
-
-			if (resolvedQuery.equals("English")) {
+			logger.info("in selected language case ****** '{}'" ,customerMessage);
+			if (customerMessage.equals("English")) {
+				logger.info("in if equals english case ****** '{}'" ,customerMessage);
 				final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
 				final TextMessage textMessage = new TextMessage("Now, I am speaking English");
 				final PushMessage pushMessage = new PushMessage(userId, textMessage);
@@ -157,16 +158,17 @@ public class BotController {
 				final TextMessage textMessage = new TextMessage("じゃ、日本語で話しますね。");
 				final PushMessage pushMessage = new PushMessage(userId, textMessage);
 
-				final BotApiResponse botApiResponse;
-				try {
-					botApiResponse = client.pushMessage(pushMessage).get();
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-					return json;
-				}
-				System.out.println(botApiResponse);
+//				final BotApiResponse botApiResponse;
+//				try {
+//					botApiResponse = client.pushMessage(pushMessage).get();
+//				} catch (InterruptedException | ExecutionException e) {
+//					e.printStackTrace();
+//					return json;
+//				}
+//				System.out.println(botApiResponse);
+				logger.info("in else case ****** '{}'" ,customerMessage);
 			}
-
+			logger.info("in break case ****** '{}'" ,customerMessage);
 			break;
 
 		case "Default Fallback Intent":
