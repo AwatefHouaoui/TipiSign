@@ -129,14 +129,14 @@ public class BotController {
 				final TextMessage textMessage = new TextMessage("Now, I am speaking English");
 				final PushMessage pushMessage = new PushMessage(userId, textMessage);
 
-//				final BotApiResponse botApiResponse;
-//				try {
-//					botApiResponse = client.pushMessage(pushMessage).get();
-//				} catch (InterruptedException | ExecutionException e) {
-//					e.printStackTrace();
-//					return json;
-//				}
-//				System.out.println(botApiResponse);
+				final BotApiResponse botApiResponse;
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
+				}
+				System.out.println(botApiResponse);
         		logger.info("Tunis :" + customerMessage);
 //				
 //				
@@ -149,14 +149,14 @@ public class BotController {
 				final TextMessage textMessage = new TextMessage("じゃ、日本語で話しますね。");
 				final PushMessage pushMessage = new PushMessage(userId, textMessage);
 
-//				final BotApiResponse botApiResponse;
-//				try {
-//					botApiResponse = client.pushMessage(pushMessage).get();
-//				} catch (InterruptedException | ExecutionException e) {
-//					e.printStackTrace();
-//					return json;
-//				}
-//				System.out.println(botApiResponse);
+				final BotApiResponse botApiResponse;
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
+				}
+				System.out.println(botApiResponse);
 				logger.info("in else case ****** '{}'" ,customerMessage);
 			}
 			logger.info("in break case ****** '{}'" ,customerMessage);
