@@ -101,23 +101,11 @@ public class BotController {
 		JSONObject fulfillment = result.getJSONObject("fulfillment");
 		String speech = fulfillment.getString("speech");
 		JSONArray messages = fulfillment.getJSONArray("messages");
-		JSONObject msg = messages.getJSONObject(0);
-		String speechMessage = msg.getString("speech");
+//		JSONObject msg = messages.getJSONObject(0);
+//		String speechMessage = msg.getString("speech");
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
-		// if (resolvedQuery==userName)
-		// {
-		// hm = new LinkedHashMap<>();
-		// hm.put("Osaka", "osaka");
-		// hm.put("Tokyo", "tokyo");
-		// hm.put("London", "london");
-		// typeBChoices(
-		// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-		// " boldTitle", " normalTitle", hm, "Next or see more", "Next or see more
-		// answer", channelToken, userId);
-		// logger.info("London :", customerMessage);
-		// }
 		logger.info("in intente name ****** '{}'" ,intentName);
 		logger.info("in resolved Query ****** '{}'" ,resolvedQuery);
 		logger.info("in customer Message ****** '{}'" ,customerMessage);
