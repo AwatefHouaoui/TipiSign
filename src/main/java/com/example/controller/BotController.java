@@ -182,8 +182,8 @@ public class BotController {
 			List<UserInformation> user = userInformationRepository.findUserByName(resolvedQuery, null).getContent();
 			for (int i=0; i < user.size(); i++)
 			{
-				hm.put(resolvedQuery + user.get(i).getFamilyName(),resolvedQuery + user.get(i).getFamilyName());
-				System.out.println("size : " + user.get(user.size()).getFamilyName());
+				//hm.put(resolvedQuery + user.get(i).getFamilyName(),resolvedQuery + user.get(i).getFamilyName());
+				System.out.println("size ***************************: " + user.get(user.size()).getFamilyName());
 			}
 			
 			typeBRecursiveChoices(null, null, "Did you mean:", hm, channelToken, userId);
