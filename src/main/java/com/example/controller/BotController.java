@@ -158,9 +158,9 @@ public class BotController {
 			}
 
 			break;
-			
-		case "Request":
-			
+
+		case "request":
+
 			final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
 			final TextMessage textMessage = new TextMessage("Receiver name:");
 			final PushMessage pushMessage = new PushMessage(userId, textMessage);
@@ -173,18 +173,18 @@ public class BotController {
 			}
 			System.out.println(botApiResponse);
 			logger.info("Request", resolvedQuery);
-			
+
 			break;
-			
-		case "default fallback intent":		
-		
+
+		case "default fallback intent":
+
 			resolvedQuery.toLowerCase();
 			List<UserInformation> user = userInformationRepository.findUserByName(resolvedQuery, null).getContent();
 			System.out.println(user);
 
-//			hm.put("English", "English");
-//			typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
-//			logger.info("Receiver *******" + customerMessage);
+			// hm.put("English", "English");
+			// typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
+			// logger.info("Receiver *******" + customerMessage);
 
 			break;
 
