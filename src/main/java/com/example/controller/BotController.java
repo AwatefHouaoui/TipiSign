@@ -180,11 +180,14 @@ public class BotController {
 
 			resolvedQuery.toLowerCase();
 			List<UserInformation> user = userInformationRepository.findUserByName(resolvedQuery, null).getContent();
-			System.out.println("size"+user.size());
-
-			// hm.put("English", "English");
-			// typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
-			// logger.info("Receiver *******" + customerMessage);
+			for (int i=0; i < user.size(); i++)
+			{
+				hm.put(resolvedQuery + user.get(i).getFamilyName(),resolvedQuery + user.get(i).getFamilyName());
+				System.out.println("size : " + user.get(user.size()).getFamilyName());
+			}
+			
+			typeBRecursiveChoices(null, null, "Did you mean:", hm, channelToken, userId);
+			logger.info("Receiver *******" + customerMessage);
 
 			break;
 
