@@ -180,10 +180,11 @@ public class BotController {
 
 			resolvedQuery.toLowerCase();
 			List<UserInformation> user = userInformationRepository.findUserByName(resolvedQuery, null).getContent();
-			for (int i=0; i < user.size(); i++)
+			int a = user.size();
+			for (int i=0; i < a; i++)
 			{
 				//hm.put(resolvedQuery + user.get(i).getFamilyName(),resolvedQuery + user.get(i).getFamilyName());
-				System.out.println("size ***************************: " + user.get(user.size()).getFamilyName());
+				System.out.println("size ***************************: " + user.get(i).getFamilyName());
 			}
 			
 			typeBRecursiveChoices(null, null, "Did you mean:", hm, channelToken, userId);
