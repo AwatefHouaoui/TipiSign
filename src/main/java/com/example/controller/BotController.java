@@ -162,7 +162,7 @@ public class BotController {
 		case "request":
 
 			final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
-			final TextMessage textMessage = new TextMessage("Receiver name:");
+			final TextMessage textMessage = new TextMessage("Receiver name :");
 			final PushMessage pushMessage = new PushMessage(userId, textMessage);
 			final BotApiResponse botApiResponse;
 			try {
@@ -180,7 +180,7 @@ public class BotController {
 
 			resolvedQuery.toLowerCase();
 			List<UserInformation> user = userInformationRepository.findUserByName(resolvedQuery, null).getContent();
-			System.out.println(user);
+			System.out.println("size"+user.size());
 
 			// hm.put("English", "English");
 			// typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
