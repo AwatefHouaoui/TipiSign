@@ -183,8 +183,8 @@ public class BotController {
 			int a = user.size();
 			for (int i=0; i < a; i++)
 			{
-				//hm.put(resolvedQuery + user.get(i).getFamilyName(),resolvedQuery + user.get(i).getFamilyName());
-				System.out.println("size ***************************: " + user.get(i).getFamilyName());
+				hm.put(resolvedQuery + user.get(i).getFamilyName(),resolvedQuery + user.get(i).getFamilyName());
+				System.out.println("size *******************: " + user.get(i).getFamilyName());
 			}
 			
 			typeBRecursiveChoices(null, null, "Did you mean:", hm, channelToken, userId);
