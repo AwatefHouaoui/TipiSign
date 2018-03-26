@@ -1,13 +1,11 @@
 package com.example.service;
 
-import java.util.List;
-
 import com.example.entities.UserInformation;
 import com.example.metier.UserInformationMetier;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +19,10 @@ public class UserInformationService {
 
 	@RequestMapping(value = "/UserInfo", method = RequestMethod.POST)
 	public UserInformation saveUserInformation(@RequestBody UserInformation u) {
+		String userName = u.getUserName();
+		u.setUserName(userName.toLowerCase());
+		String familyName = u.getFamilyName();
+		u.setFamilyName(familyName.toLowerCase());
 		return userInformationMetier.saveUserInformation(u);
 	}
 
@@ -29,11 +31,11 @@ public class UserInformationService {
 		return userInformationMetier.listUserInformation();
 	}
 
-	@RequestMapping(value = "/getUserByName/{userName}", method = RequestMethod.GET)
-	public Page<UserInformation> findUserByName(@PathVariable(name = "userName") String userName, 
-			                                    @RequestParam(name = "numPage", defaultValue = "0") int numPage,
-			                                    @RequestParam(name = "size", defaultValue = "50") int size) {
-		return userInformationMetier.findUserByName(userName, new PageRequest(numPage, size));
+	@RequestMapping(value = "/getUser", method = RequestMethod.GET)
+	public Page<UserInformation> findUserByName(@RequestParam(name = "userName") String userName,
+			@RequestParam(name = "numPage", defaultValue = "0") int numPage,
+			@RequestParam(name = "size", defaultValue = "5") int size) {
+		return userInformationMetier.findUserByName("%" + userName + "%", new PageRequest(numPage, size));
 	}
 
 }

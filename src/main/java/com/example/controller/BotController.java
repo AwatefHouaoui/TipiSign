@@ -5,11 +5,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.example.dao.UserInformationRepository;
 import com.example.entities.UserInformation;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
@@ -45,7 +46,6 @@ import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.PostbackEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
-import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TemplateMessage;
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.template.ButtonsTemplate;
@@ -63,9 +63,12 @@ import retrofit2.Response;
 @RestController
 public class BotController {
 	Logger logger = LoggerFactory.getLogger(BotController.class);
-	public static final String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
+	public static final String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmC"
+			+ "jlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
 	@Autowired
 	LineMessagingClient lineMessagingClient;
+	@Autowired
+	UserInformationRepository userInformationRepository;
 
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
@@ -100,15 +103,14 @@ public class BotController {
 		JSONObject parameters = result.getJSONObject("parameters");
 		JSONObject fulfillment = result.getJSONObject("fulfillment");
 		String speech = fulfillment.getString("speech");
-		JSONArray messages = fulfillment.getJSONArray("messages");
-//		JSONObject msg = messages.getJSONObject(0);
-//		String speechMessage = msg.getString("speech");
+		// JSONArray messages = fulfillment.getJSONArray("messages");
+		// JSONObject msg = messages.getJSONObject(0);
+		// String speechMessage = msg.getString("speech");
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
-		logger.info("in intente name ****** '{}'" ,intentName);
-		logger.info("in resolved Query ****** '{}'" ,resolvedQuery);
-		logger.info("in customer Message ****** '{}'" ,customerMessage);
+		logger.info("in intente name ****** '{}'", intentName);
+		logger.info("in resolved Query ****** '{}'", resolvedQuery);
 
 		switch (intentName.toLowerCase()) {
 
@@ -117,18 +119,17 @@ public class BotController {
 			hm.put("English", "English");
 			hm.put("日本語", "日本語");
 			typeBRecursiveChoices(null, null, "Please select a language:", hm, channelToken, userId);
-			logger.info("Tunis :" + customerMessage);
+			logger.info("Choose a Language :" + customerMessage);
 
 			break;
 
 		case "selected language":
-			logger.info("in selected language case ****** '{}'" ,customerMessage);
+
 			if (customerMessage.equals("English")) {
-				logger.info("in if equals english case ****** '{}'" ,customerMessage);
+
 				final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
 				final TextMessage textMessage = new TextMessage("Now, I am speaking English");
 				final PushMessage pushMessage = new PushMessage(userId, textMessage);
-
 				final BotApiResponse botApiResponse;
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
@@ -137,18 +138,14 @@ public class BotController {
 					return json;
 				}
 				System.out.println(botApiResponse);
-        		logger.info("Tunis :" + customerMessage);
-//				
-//				
-				
-				
-				
-			} else {
+				logger.info("Langauge ***********", resolvedQuery);
+			}
+
+			else {
 
 				final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
 				final TextMessage textMessage = new TextMessage("じゃ、日本語で話しますね。");
 				final PushMessage pushMessage = new PushMessage(userId, textMessage);
-
 				final BotApiResponse botApiResponse;
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
@@ -157,17 +154,37 @@ public class BotController {
 					return json;
 				}
 				System.out.println(botApiResponse);
-				logger.info("in else case ****** '{}'" ,customerMessage);
+				logger.info("Langauge ***********", resolvedQuery);
 			}
-			logger.info("in break case ****** '{}'" ,customerMessage);
+
 			break;
+			
+		case "Request":
+			
+			final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
+			final TextMessage textMessage = new TextMessage("Receiver name:");
+			final PushMessage pushMessage = new PushMessage(userId, textMessage);
+			final BotApiResponse botApiResponse;
+			try {
+				botApiResponse = client.pushMessage(pushMessage).get();
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+				return json;
+			}
+			System.out.println(botApiResponse);
+			logger.info("Request", resolvedQuery);
+			
+			break;
+			
+		case "default fallback intent":		
+		
+			resolvedQuery.toLowerCase();
+			List<UserInformation> user = userInformationRepository.findUserByName(resolvedQuery, null).getContent();
+			System.out.println(user);
 
-		case "Default Fallback Intent":
-
-			hm.put("English", "English");
-			hm.put("日本語", "日本語");
-			typeBRecursiveChoices(null, null, "Please select a language:", hm, channelToken, userId);
-			logger.info("Tunis :" + customerMessage);
+//			hm.put("English", "English");
+//			typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
+//			logger.info("Receiver *******" + customerMessage);
 
 			break;
 
@@ -192,8 +209,8 @@ public class BotController {
 									new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15", "23:59",
 											"00:00")))));
 			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
-			PushMessage pushMessage = new PushMessage(userId, templateMessage);
-			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage).execute();
+			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
 			logger.info("osaka :" + customerMessage);
 
 			break;
