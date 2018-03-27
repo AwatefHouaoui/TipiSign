@@ -177,9 +177,9 @@ public class BotController {
 			break;
 
 		case "default fallback intent":
-			resolvedQuery.toLowerCase();
+			customerMessage.toLowerCase();
 			
-			List<UserInformation> user = userInformationRepository.findUserByName(resolvedQuery, null).getContent();
+			List<UserInformation> user = userInformationRepository.findUserByName(customerMessage, null).getContent();
 			int a = user.size();
 			for (int i=0; i < a; i++)
 			{
@@ -192,7 +192,7 @@ public class BotController {
  
 			for (int i=0; i < a; i++)
 			{
-				if (resolvedQuery.equals(user.get(i).getUserName() + " " + user.get(i).getFamilyName())) 
+				if (customerMessage.equals(user.get(i).getUserName() + " " + user.get(i).getFamilyName())) 
 				{
 					final LineMessagingClient client1 = LineMessagingClient.builder(channelToken).build();
 					final TextMessage textMessage1 = new TextMessage("The request title?");
@@ -205,7 +205,7 @@ public class BotController {
 						return json;
 					}
 					System.out.println(botApiResponse1);
-					logger.info("Final Receiver ***********", resolvedQuery);
+					logger.info("Final Receiver ***********", customerMessage);
 				}	
 			
 			}
