@@ -203,6 +203,8 @@ public class BotController {
 						e.printStackTrace();
 						return json;
 					}
+					System.out.println(botApiResponse1);
+					logger.info("Final Receiver ***********", resolvedQuery);
 				}	
 			
 			}
