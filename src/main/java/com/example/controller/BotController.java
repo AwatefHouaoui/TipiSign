@@ -183,15 +183,32 @@ public class BotController {
 			int a = user.size();
 			for (int i=0; i < a; i++)
 			{
-				hm.put(resolvedQuery + user.get(i).getFamilyName(),resolvedQuery + user.get(i).getFamilyName());
-				System.out.println("size *******************: " + user.get(i).getFamilyName());
+				hm.put(resolvedQuery + " " + user.get(i).getFamilyName(),resolvedQuery + " " + user.get(i).getFamilyName());
 			}
 			
-			typeBRecursiveChoices(null, null, "Did you mean:", hm, channelToken, userId);
+			typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 			logger.info("Receiver *******" + customerMessage);
-
+ 
+			for (int i=0; i < a; i++)
+			{
+				if (resolvedQuery.equals(user.get(i).getUserName() + " " + user.get(i).getFamilyName())) 
+				{
+					final LineMessagingClient client1 = LineMessagingClient.builder(channelToken).build();
+					final TextMessage textMessage1 = new TextMessage("The request title?");
+					final PushMessage pushMessage1 = new PushMessage(userId, textMessage1);
+					final BotApiResponse botApiResponse1;
+					try {
+						botApiResponse1 = client1.pushMessage(pushMessage1).get();
+					    } catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+						return json;
+					}
+				}	
+			
+			}
+			
 			break;
-
+			
 		case "carousel":
 
 			String imageUrl = createUri("/static/buttons/1040.jpg");
