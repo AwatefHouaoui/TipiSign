@@ -177,17 +177,18 @@ public class BotController {
 			break;
 
 		case "default fallback intent":
-
 			resolvedQuery.toLowerCase();
+			
 			List<UserInformation> user = userInformationRepository.findUserByName(resolvedQuery, null).getContent();
 			int a = user.size();
 			for (int i=0; i < a; i++)
 			{
-				hm.put(resolvedQuery + " " + user.get(i).getFamilyName(),resolvedQuery + " " + user.get(i).getFamilyName());
+				hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(),user.get(i).getUserName() + " " + user.get(i).getFamilyName());
+				logger.info("Receiver *******" + user.get(i).getUserName() + " " + user.get(i).getFamilyName());
 			}
 			
 			typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
-			logger.info("Receiver *******" + customerMessage);
+			
  
 			for (int i=0; i < a; i++)
 			{
