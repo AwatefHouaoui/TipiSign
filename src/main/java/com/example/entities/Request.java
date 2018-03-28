@@ -26,11 +26,14 @@ public class Request implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long requestId;
 	
+	/** The title. */
+	private String title;
+	
 	/** The hidden. */
 	private boolean hidden;
 	
 	/** The status. */
-	private String status;
+	private String status = "pending";
 	
 	/** The from user. */
 	private UserInformation fromUser;
@@ -41,12 +44,15 @@ public class Request implements Serializable {
 	/** The created at. */
 	private Date createdAt;
 	
+	/** The updated at. */
+	private Date updatedAt;
+	
 	/** The detail. */
 	private String detail;
 	
 	/** The visibility. */
 	private long visibility;
-	
+
 	/** The user. */
 	@ManyToOne
 	@JoinColumn(name = "User_Info")
@@ -134,6 +140,78 @@ public class Request implements Serializable {
 	 */
 	public void setRequestId(long requestId) {
 		this.requestId = requestId;
+	}
+	
+	/**
+	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
+	 *
+	 * @author awatef
+	 * 
+	 * Using JRE: 1.8
+	 * 
+	 * Project Name: TipiSign
+	 * 
+	 * Class Name: Request.java
+	 * 
+	 * Gets the title.
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
+	 *
+	 * @author awatef
+	 * 
+	 * Using JRE: 1.8
+	 * 
+	 * Project Name: TipiSign
+	 * 
+	 * Class Name: Request.java
+	 * 
+	 * Sets the title.
+	 * @param title the new title
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	/**
+	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
+	 *
+	 * @author awatef
+	 * 
+	 * Using JRE: 1.8
+	 * 
+	 * Project Name: TipiSign
+	 * 
+	 * Class Name: Request.java
+	 * 
+	 * Gets the updated at.
+	 * @return the updated at
+	 */
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	/**
+	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
+	 *
+	 * @author awatef
+	 * 
+	 * Using JRE: 1.8
+	 * 
+	 * Project Name: TipiSign
+	 * 
+	 * Class Name: Request.java
+	 * 
+	 * Sets the updated at.
+	 * @param updatedAt the new updated at
+	 */
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	/**

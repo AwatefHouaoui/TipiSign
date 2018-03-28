@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.example.dao.UserInformationRepository;
 import com.example.entities.UserInformation;
 import com.linecorp.bot.client.LineMessagingClient;
@@ -69,6 +68,7 @@ public class BotController {
 	LineMessagingClient lineMessagingClient;
 	@Autowired
 	UserInformationRepository userInformationRepository;
+	
 
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
@@ -106,9 +106,13 @@ public class BotController {
 		// JSONArray messages = fulfillment.getJSONArray("messages");
 		// JSONObject msg = messages.getJSONObject(0);
 		// String speechMessage = msg.getString("speech");
+		
+		UserInformation userLine = userInformationRepository.findOne(userId);
+				
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
+		logger.info("the user ID ****** '{}'", userId);
 		logger.info("in intente name ****** '{}'", intentName);
 		logger.info("in resolved Query ****** '{}'", resolvedQuery);
 
@@ -177,38 +181,89 @@ public class BotController {
 			break;
 
 		case "default fallback intent":
+			
 			customerMessage.toLowerCase();
+			logger.info("customer Message in lower case", customerMessage);
 			
-			List<UserInformation> user = userInformationRepository.findUserByName(customerMessage, null).getContent();
+			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
 			int a = user.size();
-			for (int i=0; i < a; i++)
-			{
-				hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(),user.get(i).getUserName() + " " + user.get(i).getFamilyName());
-				logger.info("Receiver *******" + user.get(i).getUserName() + " " + user.get(i).getFamilyName());
-			}
 			
-			typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
+			switch (userLine.getStatus()) {
 			
- 
-			for (int i=0; i < a; i++)
-			{
-				if (customerMessage.equals(user.get(i).getUserName() + " " + user.get(i).getFamilyName())) 
+			case "Default":
+				
+				for (int i=0; i < a; i++)
 				{
-					final LineMessagingClient client1 = LineMessagingClient.builder(channelToken).build();
-					final TextMessage textMessage1 = new TextMessage("The request title?");
-					final PushMessage pushMessage1 = new PushMessage(userId, textMessage1);
-					final BotApiResponse botApiResponse1;
-					try {
-						botApiResponse1 = client1.pushMessage(pushMessage1).get();
-					    } catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
-						return json;
+					hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(),user.get(i).getUserName() + " " + user.get(i).getFamilyName());
+					logger.info("Receiver *******" + user.get(i).getUserName() + " " + user.get(i).getFamilyName());
+				}
+				hm.put("not available", "not available");
+				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
+				
+				userLine.setStatus("Receiver chosen");
+				
+				break;
+				
+			case "Receiver chosen":
+				for (int i=0; i < a; i++)
+				{
+					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
+					if (customerMessage.equals(x)) {
+						final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+						final TextMessage textMessage2 = new TextMessage("Request Title :");
+						final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+						final BotApiResponse botApiResponse2;
+						try {
+							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+							return json;
+						}
+						System.out.println(botApiResponse2);
+						logger.info("receiver has been chosen", customerMessage);
+						userLine.setStatus("Request titled");
+						
+					}	
+					else {
+						final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+						final TextMessage textMessage2 = new TextMessage("Try Again");
+						final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+						final BotApiResponse botApiResponse2;
+						try {
+							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+							return json;
+						}
+						System.out.println(botApiResponse2);
+						logger.info("receiver not chosen", customerMessage);
 					}
-					System.out.println(botApiResponse1);
-					logger.info("Final Receiver ***********", customerMessage);
-				}	
+				}
+				
+				break;
+				
+			case "Request titled": 
+				
+				final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+				final TextMessage textMessage2 = new TextMessage("Request Detail");
+				final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+				final BotApiResponse botApiResponse2;
+				try {
+					botApiResponse2 = client2.pushMessage(pushMessage2).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
+				}
+				System.out.println(botApiResponse2);
+				logger.info("Request Titled", customerMessage);
+				userLine.setStatus("Request Detailed");
+				
+				break;
+				
 			
-			}
+			}	
+			
+			
 			
 			break;
 			
@@ -477,7 +532,7 @@ public class BotController {
 			String channelToken, String userId) throws IOException {
 		List<Action> messageActions = new ArrayList<>();
 		hm.size();
-		if (hm.size() <= 3) {
+		if (hm.size() <= 4) {
 			for (Map.Entry m : hm.entrySet()) {
 				MessageAction ma = new MessageAction(m.getKey().toString(), m.getValue().toString());
 				messageActions.add(ma);

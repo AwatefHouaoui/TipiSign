@@ -26,8 +26,7 @@ public class UserInformation implements Serializable {
 
 	/** The user id. */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long userId;
+	private String userId;
 	
 	/** The user name. */
 	private String userName;
@@ -36,7 +35,7 @@ public class UserInformation implements Serializable {
 	private String familyName;
 	
 	/** The status. */
-	private String status;
+	private String status = "Default";
 	
 	/** The email. */
 	private String email;
@@ -111,7 +110,7 @@ public class UserInformation implements Serializable {
 	 * @param detail the detail
 	 * @param authority the authority
 	 */
-	public UserInformation(long userId, String userName, String detail, Authority authority) {
+	public UserInformation(String userId, String userName, String detail, Authority authority) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
@@ -133,7 +132,7 @@ public class UserInformation implements Serializable {
 	 * Gets the user id.
 	 * @return the user id
 	 */
-	public long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
@@ -151,7 +150,7 @@ public class UserInformation implements Serializable {
 	 * Sets the user id.
 	 * @param userId the new user id
 	 */
-	public void setUserId(long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
