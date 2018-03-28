@@ -1,11 +1,9 @@
 package com.example.entities;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
@@ -47,13 +45,10 @@ public class UserInformation implements Serializable {
 	private String password;
 	
 	/** The created at. */
-	private Date createdAt;
-	
-	/** The detail. */
-	private String detail;
+	private Timestamp createdAt;
 	
 	/** The last login. */
-	private Date lastLogin;
+	private Timestamp lastLogin;
 	
 	/** The system language. */
 	private String systemLanguage = "English";
@@ -110,11 +105,10 @@ public class UserInformation implements Serializable {
 	 * @param detail the detail
 	 * @param authority the authority
 	 */
-	public UserInformation(String userId, String userName, String detail, Authority authority) {
+	public UserInformation(String userId, String userName, Authority authority) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
-		this.detail = detail;
 		this.authority = authority;
 	}
 
@@ -387,7 +381,7 @@ public class UserInformation implements Serializable {
 	 * Gets the created at.
 	 * @return the created at
 	 */
-	public Date getCreatedAt() {
+	public Timestamp getCreatedAt() {
 		return createdAt;
 	}
 
@@ -405,44 +399,8 @@ public class UserInformation implements Serializable {
 	 * Sets the created at.
 	 * @param createdAt the new created at
 	 */
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
-	}
-
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the detail.
-	 * @return the detail
-	 */
-	public String getDetail() {
-		return detail;
-	}
-
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the detail.
-	 * @param detail the new detail
-	 */
-	public void setDetail(String detail) {
-		this.detail = detail;
 	}
 
 	/**
@@ -459,7 +417,7 @@ public class UserInformation implements Serializable {
 	 * Gets the last login.
 	 * @return the last login
 	 */
-	public Date getLastLogin() {
+	public Timestamp getLastLogin() {
 		return lastLogin;
 	}
 
@@ -477,7 +435,7 @@ public class UserInformation implements Serializable {
 	 * Sets the last login.
 	 * @param lastLogin the new last login
 	 */
-	public void setLastLogin(Date lastLogin) {
+	public void setLastLogin(Timestamp lastLogin) {
 		this.lastLogin = lastLogin;
 	}
 

@@ -1,8 +1,8 @@
 package com.example.entities;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,22 +30,19 @@ public class Request implements Serializable {
 	private String title;
 	
 	/** The hidden. */
-	private boolean hidden;
+	private boolean hidden = false;
 	
 	/** The status. */
 	private String status = "pending";
-	
-	/** The from user. */
-	private UserInformation fromUser;
 	
 	/** The to user. */
 	private UserInformation toUser;
 	
 	/** The created at. */
-	private Date createdAt;
+	private Timestamp createdAt;
 	
 	/** The updated at. */
-	private Date updatedAt;
+	private Timestamp updatedAt;
 	
 	/** The detail. */
 	private String detail;
@@ -93,15 +90,15 @@ public class Request implements Serializable {
 	 * Instantiates a new request.
 	 * @param requestId the request id
 	 * @param hidden the hidden
-	 * @param fromUser the from user
+	 * @param user the user
 	 * @param toUser the to user
 	 * @param visibility the visibility
 	 */
-	public Request(long requestId, boolean hidden, UserInformation fromUser, UserInformation toUser, long visibility) {
+	public Request(long requestId, boolean hidden,UserInformation user, UserInformation toUser, long visibility) {
 		super();
 		this.requestId = requestId;
 		this.hidden = hidden;
-		this.fromUser = fromUser;
+		this.user = user;
 		this.toUser = toUser;
 		this.visibility = visibility;
 	}
@@ -192,7 +189,7 @@ public class Request implements Serializable {
 	 * Gets the updated at.
 	 * @return the updated at
 	 */
-	public Date getUpdatedAt() {
+	public Timestamp getUpdatedAt() {
 		return updatedAt;
 	}
 
@@ -210,44 +207,8 @@ public class Request implements Serializable {
 	 * Sets the updated at.
 	 * @param updatedAt the new updated at
 	 */
-	public void setUpdatedAt(Date updatedAt) {
+	public void setUpdatedAt(Timestamp updatedAt) {
 		this.updatedAt = updatedAt;
-	}
-
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: Request.java
-	 * 
-	 * Gets the from user.
-	 * @return the from user
-	 */
-	public UserInformation getFromUser() {
-		return fromUser;
-	}
-
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: Request.java
-	 * 
-	 * Sets the from user.
-	 * @param fromUser the new from user
-	 */
-	public void setFromUser(UserInformation fromUser) {
-		this.fromUser = fromUser;
 	}
 
 	/**
@@ -373,7 +334,7 @@ public class Request implements Serializable {
 	 * Gets the created at.
 	 * @return the created at
 	 */
-	public Date getCreatedAt() {
+	public Timestamp getCreatedAt() {
 		return createdAt;
 	}
 
@@ -391,7 +352,7 @@ public class Request implements Serializable {
 	 * Sets the created at.
 	 * @param createdAt the new created at
 	 */
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
 	}
 

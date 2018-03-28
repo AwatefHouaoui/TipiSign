@@ -182,7 +182,7 @@ public class BotController {
 
 		case "default fallback intent":
 			
-			customerMessage.toLowerCase();
+			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case", customerMessage);
 			
 			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
@@ -262,7 +262,6 @@ public class BotController {
 				
 			
 			}	
-			
 			
 			
 			break;
