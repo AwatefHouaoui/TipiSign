@@ -112,9 +112,9 @@ public class BotController {
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
-		logger.info("the user ID ****** '{}'", userId);
-		logger.info("in intente name ****** '{}'", intentName);
-		logger.info("in resolved Query ****** '{}'", resolvedQuery);
+		logger.info("the user ID ****** '{}'" + userId);
+		logger.info("in intente name ****** '{}'" + intentName);
+		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("status*********" + userLine.getStatus()); 
 
 		switch (intentName.toLowerCase()) {
@@ -143,7 +143,7 @@ public class BotController {
 					return json;
 				}
 				System.out.println(botApiResponse);
-				logger.info("Langauge ***********", resolvedQuery);
+				logger.info("Langauge ***********" + resolvedQuery);
 			}
 
 			else {
@@ -159,7 +159,7 @@ public class BotController {
 					return json;
 				}
 				System.out.println(botApiResponse);
-				logger.info("Langauge ***********", resolvedQuery);
+				logger.info("Langauge ***********" + resolvedQuery);
 			}
 
 			break;
@@ -177,7 +177,7 @@ public class BotController {
 				return json;
 			}
 			System.out.println(botApiResponse);
-			logger.info("Request", resolvedQuery);
+			logger.info("Request " + resolvedQuery);
 
 			break;
 
@@ -207,30 +207,29 @@ public class BotController {
 				
 			case "Receiverchosen":
 		
-						final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-						final TextMessage textMessage2 = new TextMessage("Request Title :");
-						final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-						final BotApiResponse botApiResponse2;
-						try {
-							botApiResponse2 = client2.pushMessage(pushMessage2).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-							return json;
+				final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+				final TextMessage textMessage2 = new TextMessage("Request Title :");
+				final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+				final BotApiResponse botApiResponse2;
+				try {
+					botApiResponse2 = client2.pushMessage(pushMessage2).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				return json;
 						}
-						System.out.println(botApiResponse2);
-						logger.info("receiver has been chosen", customerMessage);
-						userLine.setStatus("Requesttitled");
-						userInformationRepository.save(userLine);
-						
-						
+				System.out.println(botApiResponse2);
+				logger.info("receiver has been chosen" + customerMessage);
 				
+				userLine.setStatus("Requesttitled");
+				userInformationRepository.save(userLine);
+				System.out.println("status*********" + userLine.getStatus());
 				
 				break;
 				
 			case "Requesttitled": 
 				
 				final LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
-				final TextMessage textMessage3 = new TextMessage("Request Detail");
+				final TextMessage textMessage3 = new TextMessage("Request Detail :");
 				final PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
 				final BotApiResponse botApiResponse3;
 				try {
@@ -240,9 +239,11 @@ public class BotController {
 					return json;
 				}
 				System.out.println(botApiResponse3);
-				logger.info("Request Titled", customerMessage);
+				logger.info("Request Titled " + customerMessage);
+				
 				userLine.setStatus("RequestDetailed");
 				userInformationRepository.save(userLine);
+				System.out.println("status*********" + userLine.getStatus());
 				
 				break;
 				
@@ -260,8 +261,10 @@ public class BotController {
 				}
 				System.out.println(botApiResponse4);
 				logger.info("Request detailed", customerMessage);
+				
 				userLine.setStatus("Default");
 				userInformationRepository.save(userLine);
+				System.out.println("status*********" + userLine.getStatus());
 				
 				break;
 			}	
