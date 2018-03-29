@@ -200,6 +200,7 @@ public class BotController {
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 				
 				userLine.setStatus("Receiver chosen");
+				userInformationRepository.save(userLine);
 				System.out.println("status*********" + userLine.getStatus()); 
 				
 				break;
@@ -222,6 +223,7 @@ public class BotController {
 						System.out.println(botApiResponse2);
 						logger.info("receiver has been chosen", customerMessage);
 						userLine.setStatus("Request titled");
+						userInformationRepository.save(userLine);
 						
 					}	
 					else {
@@ -257,6 +259,7 @@ public class BotController {
 				System.out.println(botApiResponse2);
 				logger.info("Request Titled", customerMessage);
 				userLine.setStatus("Request Detailed");
+				userInformationRepository.save(userLine);
 				
 				break;
 			
