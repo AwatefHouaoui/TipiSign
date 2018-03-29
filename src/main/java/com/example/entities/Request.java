@@ -11,6 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class Request.
@@ -442,6 +445,8 @@ public class Request implements Serializable {
 	 * Gets the user.
 	 * @return the user
 	 */
+	
+	@JsonIgnore
 	public UserInformation getUser() {
 		return user;
 	}
@@ -460,6 +465,8 @@ public class Request implements Serializable {
 	 * Sets the user.
 	 * @param user the new user
 	 */
+	
+	@JsonSetter
 	public void setUser(UserInformation user) {
 		this.user = user;
 	}
