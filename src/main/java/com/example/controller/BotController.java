@@ -32,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.dao.UserInformationRepository;
 import com.example.entities.UserInformation;
+import com.example.metier.RequestMetier;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.bot.model.PushMessage;
@@ -68,6 +69,8 @@ public class BotController {
 	LineMessagingClient lineMessagingClient;
 	@Autowired
 	UserInformationRepository userInformationRepository;
+	@Autowired
+	RequestMetier requestMetier;
 	
 
 	@EventMapping
@@ -259,7 +262,6 @@ public class BotController {
 				userLine.setStatus("Request Detailed");
 				
 				break;
-				
 			
 			}	
 			
