@@ -5,12 +5,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -186,7 +184,7 @@ public class BotController {
 		case "default fallback intent":
 			
 			customerMessage = customerMessage.toLowerCase();
-			logger.info("customer Message in lower case", customerMessage);
+			logger.info("customer Message in lower case" + customerMessage);
 			
 			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
 			int a = user.size();
@@ -198,12 +196,11 @@ public class BotController {
 				for (int i=0; i < a; i++)
 				{
 					hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(),user.get(i).getUserName() + " " + user.get(i).getFamilyName());
-					logger.info("Receiver *******" + user.get(i).getUserName() + " " + user.get(i).getFamilyName());
 				}
-				hm.put("not available", "not available");
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 				
 				userLine.setStatus("Receiver chosen");
+				System.out.println("status*********" + userLine.getStatus()); 
 				
 				break;
 				
