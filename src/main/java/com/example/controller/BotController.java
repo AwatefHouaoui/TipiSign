@@ -109,7 +109,8 @@ public class BotController {
 		// String speechMessage = msg.getString("speech");
 		
 		UserInformation userLine = userInformationRepository.findOne(userId);
-				
+		userLine.setStatus("Default");
+		userInformationRepository.save(userLine);
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
@@ -185,7 +186,7 @@ public class BotController {
 		case "default fallback intent":
 			
 			customerMessage = customerMessage.toLowerCase();
-			logger.info("customer Message in lower case" + customerMessage);
+			logger.info("customer Message in lower case : " + customerMessage);
 			
 			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
 			int a = user.size();
