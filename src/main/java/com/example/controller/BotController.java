@@ -28,9 +28,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import com.example.dao.RequestRepository;
 import com.example.dao.UserInformationRepository;
+import com.example.entities.Request;
 import com.example.entities.UserInformation;
-import com.example.metier.RequestMetier;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.bot.model.PushMessage;
@@ -68,7 +69,7 @@ public class BotController {
 	@Autowired
 	UserInformationRepository userInformationRepository;
 	@Autowired
-	RequestMetier requestMetier;
+	RequestRepository requestRepository;
 	
 
 	@EventMapping
@@ -87,7 +88,6 @@ public class BotController {
 		String channelToken = TOKEN;
 
 		Map<String, Object> json = new HashMap<>();
-
 		JSONObject jsonResult = new JSONObject(obj);
 		JSONObject rsl = jsonResult.getJSONObject("originalRequest");
 		JSONObject data = rsl.getJSONObject("data");
@@ -109,7 +109,13 @@ public class BotController {
 		// String speechMessage = msg.getString("speech");
 		
 		UserInformation userLine = userInformationRepository.findOne(userId);
-
+		userLine.setStatus("Default");
+		userInformationRepository.save(userLine);
+		
+		Request request = new Request();
+		request.setUser(userLine);
+		requestRepository.save(request);
+	
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
 		logger.info("the user ID ****** '{}'" + userId);
@@ -132,10 +138,10 @@ public class BotController {
 
 			if (customerMessage.equals("English")) {
 
-				final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
-				final TextMessage textMessage = new TextMessage("Now, I am speaking English");
-				final PushMessage pushMessage = new PushMessage(userId, textMessage);
-				final BotApiResponse botApiResponse;
+				LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
+				TextMessage textMessage = new TextMessage("Now, I am speaking English");
+				PushMessage pushMessage = new PushMessage(userId, textMessage);
+				BotApiResponse botApiResponse;
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -148,10 +154,10 @@ public class BotController {
 
 			else {
 
-				final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
-				final TextMessage textMessage = new TextMessage("じゃ、日本語で話しますね。");
-				final PushMessage pushMessage = new PushMessage(userId, textMessage);
-				final BotApiResponse botApiResponse;
+				LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
+				TextMessage textMessage = new TextMessage("じゃ、日本語で話しますね。");
+				PushMessage pushMessage = new PushMessage(userId, textMessage);
+				BotApiResponse botApiResponse;
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -165,11 +171,11 @@ public class BotController {
 			break;
 
 		case "request":
-
-			final LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
-			final TextMessage textMessage = new TextMessage("Receiver name :");
-			final PushMessage pushMessage = new PushMessage(userId, textMessage);
-			final BotApiResponse botApiResponse;
+			
+			LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
+			TextMessage textMessage = new TextMessage("Receiver name :");
+			PushMessage pushMessage = new PushMessage(userId, textMessage);
+			BotApiResponse botApiResponse;
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
 			} catch (InterruptedException | ExecutionException e) {
@@ -206,11 +212,20 @@ public class BotController {
 				break;
 				
 			case "Receiverchosen":
-		
-				final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-				final TextMessage textMessage2 = new TextMessage("Request Title :");
-				final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-				final BotApiResponse botApiResponse2;
+				
+				for (int i=0; i < a; i++)
+				{
+					if (customerMessage.equals(user.get(i).getUserName() + " " + user.get(i).getFamilyName())) {
+						String ID = user.get(i).getUserId();
+						UserInformation receiver = userInformationRepository.findOne(ID);
+						request.setToUser(receiver);
+						requestRepository.save(request);
+					}
+				}
+				LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+				TextMessage textMessage2 = new TextMessage("Request Title :");
+				PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+				BotApiResponse botApiResponse2;
 				try {
 					botApiResponse2 = client2.pushMessage(pushMessage2).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -228,10 +243,13 @@ public class BotController {
 				
 			case "Requesttitled": 
 				
-				final LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
-				final TextMessage textMessage3 = new TextMessage("Request Detail :");
-				final PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
-				final BotApiResponse botApiResponse3;
+				request.setTitle(resolvedQuery);
+				requestRepository.save(request);
+				
+				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
+				TextMessage textMessage3 = new TextMessage("Request Detail :");
+				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
+				BotApiResponse botApiResponse3;
 				try {
 					botApiResponse3 = client3.pushMessage(pushMessage3).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -249,10 +267,13 @@ public class BotController {
 				
 			case "RequestDetailed":
 				
-				final LineMessagingClient client4 = LineMessagingClient.builder(channelToken).build();
-				final TextMessage textMessage4 = new TextMessage("Request Detail");
-				final PushMessage pushMessage4 = new PushMessage(userId, textMessage4);
-				final BotApiResponse botApiResponse4;
+				request.setDetail(resolvedQuery);
+				requestRepository.save(request);
+				
+				LineMessagingClient client4 = LineMessagingClient.builder(channelToken).build();
+				TextMessage textMessage4 = new TextMessage("Request Authority");
+				PushMessage pushMessage4 = new PushMessage(userId, textMessage4);
+				BotApiResponse botApiResponse4;
 				try {
 					botApiResponse4 = client4.pushMessage(pushMessage4).get();
 				} catch (InterruptedException | ExecutionException e) {
