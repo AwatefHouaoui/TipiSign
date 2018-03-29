@@ -116,6 +116,7 @@ public class BotController {
 		logger.info("the user ID ****** '{}'", userId);
 		logger.info("in intente name ****** '{}'", intentName);
 		logger.info("in resolved Query ****** '{}'", resolvedQuery);
+		logger.info("status*********" + userLine.getStatus()); 
 
 		switch (intentName.toLowerCase()) {
 
@@ -199,13 +200,13 @@ public class BotController {
 				}
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 				
-				userLine.setStatus("Receiver chosen");
+				userLine.setStatus("Receiverchosen");
 				userInformationRepository.save(userLine);
 				System.out.println("status*********" + userLine.getStatus()); 
 				
 				break;
 				
-			case "Receiver chosen":
+			case "Receiverchosen":
 				for (int i=0; i < a; i++)
 				{
 					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
