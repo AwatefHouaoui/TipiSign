@@ -109,8 +109,6 @@ public class BotController {
 		// String speechMessage = msg.getString("speech");
 		
 		UserInformation userLine = userInformationRepository.findOne(userId);
-		userLine.setStatus("Default");
-		userInformationRepository.save(userLine);
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
@@ -208,10 +206,7 @@ public class BotController {
 				break;
 				
 			case "Receiverchosen":
-				for (int i=0; i < a; i++)
-				{
-					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
-					if (customerMessage.equals(x)) {
+		
 						final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
 						final TextMessage textMessage2 = new TextMessage("Request Title :");
 						final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
@@ -224,47 +219,51 @@ public class BotController {
 						}
 						System.out.println(botApiResponse2);
 						logger.info("receiver has been chosen", customerMessage);
-						userLine.setStatus("Request titled");
+						userLine.setStatus("Requesttitled");
 						userInformationRepository.save(userLine);
 						
-					}	
-					else {
-						final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-						final TextMessage textMessage2 = new TextMessage("Try Again");
-						final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-						final BotApiResponse botApiResponse2;
-						try {
-							botApiResponse2 = client2.pushMessage(pushMessage2).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-							return json;
-						}
-						System.out.println(botApiResponse2);
-						logger.info("receiver not chosen", customerMessage);
-					}
-				}
+						
+				
 				
 				break;
 				
-			case "Request titled": 
+			case "Requesttitled": 
 				
-				final LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-				final TextMessage textMessage2 = new TextMessage("Request Detail");
-				final PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-				final BotApiResponse botApiResponse2;
+				final LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
+				final TextMessage textMessage3 = new TextMessage("Request Detail");
+				final PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
+				final BotApiResponse botApiResponse3;
 				try {
-					botApiResponse2 = client2.pushMessage(pushMessage2).get();
+					botApiResponse3 = client3.pushMessage(pushMessage3).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 					return json;
 				}
-				System.out.println(botApiResponse2);
+				System.out.println(botApiResponse3);
 				logger.info("Request Titled", customerMessage);
-				userLine.setStatus("Request Detailed");
+				userLine.setStatus("RequestDetailed");
 				userInformationRepository.save(userLine);
 				
 				break;
-			
+				
+			case "RequestDetailed":
+				
+				final LineMessagingClient client4 = LineMessagingClient.builder(channelToken).build();
+				final TextMessage textMessage4 = new TextMessage("Request Detail");
+				final PushMessage pushMessage4 = new PushMessage(userId, textMessage4);
+				final BotApiResponse botApiResponse4;
+				try {
+					botApiResponse4 = client4.pushMessage(pushMessage4).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
+				}
+				System.out.println(botApiResponse4);
+				logger.info("Request detailed", customerMessage);
+				userLine.setStatus("Default");
+				userInformationRepository.save(userLine);
+				
+				break;
 			}	
 			
 			
