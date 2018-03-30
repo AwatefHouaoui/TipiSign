@@ -215,10 +215,7 @@ public class BotController {
 
 			case "receiverchosen":
 
-				for (int i = 0; 	logger.info("Request " + resolvedQuery);
-						userLine.setStatus("Default");
-						userInformationRepository.save(userLine);
-						System.out.println("status*********" + userLine.getStatus());i < a; i++) {
+				for (int i = 0; i < a; i++) {
 					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
 					logger.info("who is the receiver****************" + x);
 
