@@ -202,15 +202,16 @@ public class BotController {
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 				
 				for (int i = 0; i < a; i++) {
-					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
+					String x = "%" + user.get(i).getUserName()+ "%" + " " + "%" + user.get(i).getFamilyName() + "%";
 					logger.info("who is the receiver****************" + x);
-//					 if (customerMessage.equals(x)) {
-//					 String ID = user.get(i).getUserId();
-//					 UserInformation receiver = userInformationRepository.findOne(ID);
-//					 request.setToUser(receiver);
-//					 requestRepository.save(request);
-//					 logger.info("the receiver is ++++++++++++ ****************" + customerMessage);
-//					 }
+					 
+					if (customerMessage.equals(x)) {
+					 String ID = user.get(i).getUserId();
+					 UserInformation receiver = userInformationRepository.findOne(ID);
+					 request.setToUser(receiver);
+					 requestRepository.save(request);
+					 logger.info("the receiver is ++++++++++++ ****************" + customerMessage);
+					 }
 				}
 
 //				userLine.setStatus("receiverchosen");
