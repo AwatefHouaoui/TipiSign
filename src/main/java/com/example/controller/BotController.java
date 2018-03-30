@@ -70,7 +70,6 @@ public class BotController {
 	UserInformationRepository userInformationRepository;
 	@Autowired
 	RequestRepository requestRepository;
-	
 
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
@@ -107,15 +106,15 @@ public class BotController {
 		// JSONArray messages = fulfillment.getJSONArray("messages");
 		// JSONObject msg = messages.getJSONObject(0);
 		// String speechMessage = msg.getString("speech");
-		
+
 		UserInformation userLine = userInformationRepository.findOne(userId);
-	
+
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
 		logger.info("the user ID ****** '{}'" + userId);
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
-		logger.info("status*********" + userLine.getStatus()); 
+		logger.info("status*********" + userLine.getStatus());
 
 		switch (intentName.toLowerCase()) {
 
@@ -165,113 +164,116 @@ public class BotController {
 			break;
 
 		case "request":
-			
+
 			LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
 			TextMessage textMessage = new TextMessage("Receiver name :");
 			PushMessage pushMessage = new PushMessage(userId, textMessage);
 			BotApiResponse botApiResponse;
 			try {
+
 				botApiResponse = client.pushMessage(pushMessage).get();
+				logger.info("Request " + resolvedQuery);
+				userLine.setStatus("Default");
+				userInformationRepository.save(userLine);
+				System.out.println("status*********" + userLine.getStatus());
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 				return json;
 			}
 			System.out.println(botApiResponse);
-			logger.info("Request " + resolvedQuery);
-			
-			userLine.setStatus("Default");
-			userInformationRepository.save(userLine);
-			System.out.println("status*********" + userLine.getStatus());
-			
 
 			break;
 
 		case "default fallback intent":
-			
+
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
-			
+
 			Request request = new Request();
 			request.setUser(userLine);
 			requestRepository.save(request);
-			
-			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
+
+			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
+					.getContent();
 			int a = user.size();
-			
+
 			switch (userLine.getStatus()) {
-			
+
 			case "Default":
-				
-				for (int i=0; i < a; i++)
-				{
-					hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(),user.get(i).getUserName() + " " + user.get(i).getFamilyName());
+
+				for (int i = 0; i < a; i++) {
+					hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(),
+							user.get(i).getUserName() + " " + user.get(i).getFamilyName());
 				}
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
-				
+
 				userLine.setStatus("receiverchosen");
 				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus()); 
-				
+				System.out.println("status*********" + userLine.getStatus());
+
 				break;
-				
+
 			case "receiverchosen":
-				
-				for (int i=0; i < a; i++)
-				{
-					String x = user.get(i).getUserName()+" "+user.get(i).getFamilyName();
+
+				for (int i = 0; 	logger.info("Request " + resolvedQuery);
+						userLine.setStatus("Default");
+						userInformationRepository.save(userLine);
+						System.out.println("status*********" + userLine.getStatus());i < a; i++) {
+					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
 					logger.info("who is the receiver****************" + x);
-					
-//					if (customerMessage.equals(x)) {
-//						String ID = user.get(i).getUserId();
-//						UserInformation receiver = userInformationRepository.findOne(ID);
-//						request.setToUser(receiver);
-//						requestRepository.save(request);
-						
-//						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-//						TextMessage textMessage2 = new TextMessage("Request Title :");
-//						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-//						BotApiResponse botApiResponse2;
-//						try {
-//							botApiResponse2 = client2.pushMessage(pushMessage2).get();
-//						} catch (InterruptedException | ExecutionException e) {
-//							e.printStackTrace();
-//						return json;
-//								}
-//						System.out.println(botApiResponse2);
-//						logger.info("receiver has been chosen" + customerMessage);
-//						
-//						userLine.setStatus("Requesttitled");
-//						userInformationRepository.save(userLine);
-//						System.out.println("status*********" + userLine.getStatus());
-//					}
-//					else {
-//						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-//						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
-//						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-//						BotApiResponse botApiResponse2;
-//						try {
-//							botApiResponse2 = client2.pushMessage(pushMessage2).get();
-//						} catch (InterruptedException | ExecutionException e) {
-//							e.printStackTrace();
-//						return json;
-//								}
-//						System.out.println(botApiResponse2);
-//						logger.info("receiver has not been chosen" + customerMessage);
-//						
-//						userLine.setStatus("Default");
-//						userInformationRepository.save(userLine);
-//						System.out.println("status*********" + userLine.getStatus());
-//					}
+
+					// if (customerMessage.equals(x)) {
+					// String ID = user.get(i).getUserId();
+					// UserInformation receiver = userInformationRepository.findOne(ID);
+					// request.setToUser(receiver);
+					// requestRepository.save(request);
+
+					// LineMessagingClient client2 =
+					// LineMessagingClient.builder(channelToken).build();
+					// TextMessage textMessage2 = new TextMessage("Request Title :");
+					// PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+					// BotApiResponse botApiResponse2;
+					// try {
+					// botApiResponse2 = client2.pushMessage(pushMessage2).get();
+					// } catch (InterruptedException | ExecutionException e) {
+					// e.printStackTrace();
+					// return json;
+					// }
+					// System.out.println(botApiResponse2);
+					// logger.info("receiver has been chosen" + customerMessage);
+					//
+					// userLine.setStatus("Requesttitled");
+					// userInformationRepository.save(userLine);
+					// System.out.println("status*********" + userLine.getStatus());
+					// }
+					// else {
+					// LineMessagingClient client2 =
+					// LineMessagingClient.builder(channelToken).build();
+					// TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
+					// PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+					// BotApiResponse botApiResponse2;
+					// try {
+					// botApiResponse2 = client2.pushMessage(pushMessage2).get();
+					// } catch (InterruptedException | ExecutionException e) {
+					// e.printStackTrace();
+					// return json;
+					// }
+					// System.out.println(botApiResponse2);
+					// logger.info("receiver has not been chosen" + customerMessage);
+					//
+					// userLine.setStatus("Default");
+					// userInformationRepository.save(userLine);
+					// System.out.println("status*********" + userLine.getStatus());
+					// }
 				}
-				
-				
+
 				break;
-				
-			case "Requesttitled": 
-				
+
+			case "Requesttitled":
+
 				request.setTitle(resolvedQuery);
 				requestRepository.save(request);
-				
+
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
 				TextMessage textMessage3 = new TextMessage("Request Detail :");
 				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
@@ -284,18 +286,18 @@ public class BotController {
 				}
 				System.out.println(botApiResponse3);
 				logger.info("Request Titled " + customerMessage);
-				
+
 				userLine.setStatus("RequestDetailed");
 				userInformationRepository.save(userLine);
 				System.out.println("status*********" + userLine.getStatus());
-				
+
 				break;
-				
+
 			case "RequestDetailed":
-				
+
 				request.setDetail(resolvedQuery);
 				requestRepository.save(request);
-				
+
 				LineMessagingClient client4 = LineMessagingClient.builder(channelToken).build();
 				TextMessage textMessage4 = new TextMessage("Request Authority :");
 				PushMessage pushMessage4 = new PushMessage(userId, textMessage4);
@@ -308,17 +310,16 @@ public class BotController {
 				}
 				System.out.println(botApiResponse4);
 				logger.info("Request detailed", customerMessage);
-				
+
 				userLine.setStatus("Default");
 				userInformationRepository.save(userLine);
 				System.out.println("status*********" + userLine.getStatus());
-				
+
 				break;
-			}	
-			
-			
+			}
+
 			break;
-			
+
 		case "carousel":
 
 			String imageUrl = createUri("/static/buttons/1040.jpg");
