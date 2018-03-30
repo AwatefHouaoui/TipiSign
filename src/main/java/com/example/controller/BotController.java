@@ -108,6 +108,8 @@ public class BotController {
 		// String speechMessage = msg.getString("speech");
 
 		UserInformation userLine = userInformationRepository.findOne(userId);
+		userLine.setStatus("Default");
+		userInformationRepository.save(userLine);
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
@@ -168,20 +170,15 @@ public class BotController {
 			LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
 			TextMessage textMessage = new TextMessage("Receiver name :");
 			PushMessage pushMessage = new PushMessage(userId, textMessage);
-			BotApiResponse botApiResponse = null;
+			BotApiResponse botApiResponse;
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
 			} catch (InterruptedException | ExecutionException e) {
-				System.err.println(e.getMessage());
+				e.printStackTrace();
 				return json;
-			} finally {
-				System.out.println(
-						"botApiResponse" + botApiResponse == null ? "null botapi" : botApiResponse.getMessage());
-				logger.info("Request " + resolvedQuery);
-				userLine.setStatus("Default");
-				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus());
 			}
+			System.out.println(botApiResponse);
+			logger.info("Request ***********" + resolvedQuery);
 
 			break;
 
