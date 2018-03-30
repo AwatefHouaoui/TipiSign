@@ -168,19 +168,20 @@ public class BotController {
 			LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
 			TextMessage textMessage = new TextMessage("Receiver name :");
 			PushMessage pushMessage = new PushMessage(userId, textMessage);
-			BotApiResponse botApiResponse;
+			BotApiResponse botApiResponse = null;
 			try {
-
 				botApiResponse = client.pushMessage(pushMessage).get();
+			} catch (InterruptedException | ExecutionException e) {
+				System.err.println(e.getMessage());
+				return json;
+			} finally {
+				System.out.println(
+						"botApiResponse" + botApiResponse == null ? "null botapi" : botApiResponse.getMessage());
 				logger.info("Request " + resolvedQuery);
 				userLine.setStatus("Default");
 				userInformationRepository.save(userLine);
 				System.out.println("status*********" + userLine.getStatus());
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
-				return json;
 			}
-			System.out.println(botApiResponse);
 
 			break;
 
