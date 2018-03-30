@@ -109,12 +109,6 @@ public class BotController {
 		// String speechMessage = msg.getString("speech");
 		
 		UserInformation userLine = userInformationRepository.findOne(userId);
-		userLine.setStatus("Default");
-		userInformationRepository.save(userLine);
-		
-		Request request = new Request();
-		request.setUser(userLine);
-		requestRepository.save(request);
 	
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
@@ -192,6 +186,10 @@ public class BotController {
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
 			
+			Request request = new Request();
+			request.setUser(userLine);
+			requestRepository.save(request);
+			
 			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
 			int a = user.size();
 			
@@ -215,29 +213,50 @@ public class BotController {
 				
 				for (int i=0; i < a; i++)
 				{
-					if (customerMessage.equals(user.get(i).getUserName() + " " + user.get(i).getFamilyName())) {
+					String x = user.get(i).getUserName()+" "+user.get(i).getFamilyName();
+					if (customerMessage.equals(x)) {
 						String ID = user.get(i).getUserId();
 						UserInformation receiver = userInformationRepository.findOne(ID);
 						request.setToUser(receiver);
 						requestRepository.save(request);
+						
+						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+						TextMessage textMessage2 = new TextMessage("Request Title :");
+						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+						BotApiResponse botApiResponse2;
+						try {
+							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						return json;
+								}
+						System.out.println(botApiResponse2);
+						logger.info("receiver has been chosen" + customerMessage);
+						
+						userLine.setStatus("Requesttitled");
+						userInformationRepository.save(userLine);
+						System.out.println("status*********" + userLine.getStatus());
+					}
+					else {
+						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
+						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+						BotApiResponse botApiResponse2;
+						try {
+							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						return json;
+								}
+						System.out.println(botApiResponse2);
+						logger.info("receiver has not been chosen" + customerMessage);
+						
+						userLine.setStatus("Default");
+						userInformationRepository.save(userLine);
+						System.out.println("status*********" + userLine.getStatus());
 					}
 				}
-				LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-				TextMessage textMessage2 = new TextMessage("Request Title :");
-				PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-				BotApiResponse botApiResponse2;
-				try {
-					botApiResponse2 = client2.pushMessage(pushMessage2).get();
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-				return json;
-						}
-				System.out.println(botApiResponse2);
-				logger.info("receiver has been chosen" + customerMessage);
 				
-				userLine.setStatus("Requesttitled");
-				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus());
 				
 				break;
 				
@@ -271,7 +290,7 @@ public class BotController {
 				requestRepository.save(request);
 				
 				LineMessagingClient client4 = LineMessagingClient.builder(channelToken).build();
-				TextMessage textMessage4 = new TextMessage("Request Authority");
+				TextMessage textMessage4 = new TextMessage("Request Authority :");
 				PushMessage pushMessage4 = new PushMessage(userId, textMessage4);
 				BotApiResponse botApiResponse4;
 				try {
