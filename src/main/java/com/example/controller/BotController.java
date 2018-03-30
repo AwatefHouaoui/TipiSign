@@ -196,12 +196,12 @@ public class BotController {
 			switch (userLine.getStatus()) {
 
 			case "Default":
-
-				for (int i = 0; i < a; i++) {
-					hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(),
-							user.get(i).getUserName() + " " + user.get(i).getFamilyName());
-				}
-				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
+//
+//				for (int i = 0; i < a; i++) {
+//					hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(),
+//							user.get(i).getUserName() + " " + user.get(i).getFamilyName());
+//				}
+//				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 				
 				for (int i = 0; i < a; i++) {
 					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
