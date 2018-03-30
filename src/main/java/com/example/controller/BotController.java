@@ -202,7 +202,7 @@ public class BotController {
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 				
 				for (int i = 0; i < a; i++) {
-					String x = "%" + user.get(i).getUserName()+ "%" + " " + "%" + user.get(i).getFamilyName() + "%";
+					String x = user.get(i).getUserName()+" "+user.get(i).getFamilyName();
 					logger.info("who is the receiver****************" + x);
 					 
 					if (customerMessage.equals(x)) {
@@ -211,6 +211,19 @@ public class BotController {
 					 request.setToUser(receiver);
 					 requestRepository.save(request);
 					 logger.info("the receiver is ++++++++++++ ****************" + customerMessage);
+					 
+					 LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+					TextMessage textMessage2 = new TextMessage("Request Title :");
+					PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+					BotApiResponse botApiResponse2;
+					try {
+					botApiResponse2 = client2.pushMessage(pushMessage2).get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					return json;
+					 }
+					System.out.println(botApiResponse2);
+					logger.info("receiver has been chosen" + customerMessage);
 					 }
 				}
 
