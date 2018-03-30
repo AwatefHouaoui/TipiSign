@@ -215,47 +215,48 @@ public class BotController {
 				{
 					String x = user.get(i).getUserName()+" "+user.get(i).getFamilyName();
 					logger.info("who is the receiver" + x);
+					
 					if (customerMessage.equals(x)) {
 						String ID = user.get(i).getUserId();
 						UserInformation receiver = userInformationRepository.findOne(ID);
 						request.setToUser(receiver);
 						requestRepository.save(request);
 						
-						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-						TextMessage textMessage2 = new TextMessage("Request Title :");
-						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-						BotApiResponse botApiResponse2;
-						try {
-							botApiResponse2 = client2.pushMessage(pushMessage2).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						return json;
-								}
-						System.out.println(botApiResponse2);
-						logger.info("receiver has been chosen" + customerMessage);
-						
-						userLine.setStatus("Requesttitled");
-						userInformationRepository.save(userLine);
-						System.out.println("status*********" + userLine.getStatus());
+//						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+//						TextMessage textMessage2 = new TextMessage("Request Title :");
+//						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+//						BotApiResponse botApiResponse2;
+//						try {
+//							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+//						} catch (InterruptedException | ExecutionException e) {
+//							e.printStackTrace();
+//						return json;
+//								}
+//						System.out.println(botApiResponse2);
+//						logger.info("receiver has been chosen" + customerMessage);
+//						
+//						userLine.setStatus("Requesttitled");
+//						userInformationRepository.save(userLine);
+//						System.out.println("status*********" + userLine.getStatus());
 					}
-					else {
-						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
-						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-						BotApiResponse botApiResponse2;
-						try {
-							botApiResponse2 = client2.pushMessage(pushMessage2).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						return json;
-								}
-						System.out.println(botApiResponse2);
-						logger.info("receiver has not been chosen" + customerMessage);
-						
-						userLine.setStatus("Default");
-						userInformationRepository.save(userLine);
-						System.out.println("status*********" + userLine.getStatus());
-					}
+//					else {
+//						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+//						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
+//						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+//						BotApiResponse botApiResponse2;
+//						try {
+//							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+//						} catch (InterruptedException | ExecutionException e) {
+//							e.printStackTrace();
+//						return json;
+//								}
+//						System.out.println(botApiResponse2);
+//						logger.info("receiver has not been chosen" + customerMessage);
+//						
+//						userLine.setStatus("Default");
+//						userInformationRepository.save(userLine);
+//						System.out.println("status*********" + userLine.getStatus());
+//					}
 				}
 				
 				
