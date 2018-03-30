@@ -108,8 +108,6 @@ public class BotController {
 		// String speechMessage = msg.getString("speech");
 
 		UserInformation userLine = userInformationRepository.findOne(userId);
-		userLine.setStatus("Default");
-		userInformationRepository.save(userLine);
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
@@ -204,10 +202,15 @@ public class BotController {
 							user.get(i).getUserName() + " " + user.get(i).getFamilyName());
 				}
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
+				
+				for (int i = 0; i < a; i++) {
+					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
+					logger.info("who is the receiver****************" + x);
+				}
 
-				userLine.setStatus("receiverchosen");
-				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus());
+//				userLine.setStatus("receiverchosen");
+//				userInformationRepository.save(userLine);
+//				System.out.println("status*********" + userLine.getStatus());
 
 				break;
 
