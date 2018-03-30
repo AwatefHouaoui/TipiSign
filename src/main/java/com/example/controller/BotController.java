@@ -178,6 +178,11 @@ public class BotController {
 			}
 			System.out.println(botApiResponse);
 			logger.info("Request " + resolvedQuery);
+			
+			userLine.setStatus("Default");
+			userInformationRepository.save(userLine);
+			System.out.println("status*********" + userLine.getStatus());
+			
 
 			break;
 
@@ -203,24 +208,24 @@ public class BotController {
 				}
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 				
-				userLine.setStatus("Receiverchosen");
+				userLine.setStatus("receiverchosen");
 				userInformationRepository.save(userLine);
 				System.out.println("status*********" + userLine.getStatus()); 
 				
 				break;
 				
-			case "Receiverchosen":
+			case "receiverchosen":
 				
 				for (int i=0; i < a; i++)
 				{
 					String x = user.get(i).getUserName()+" "+user.get(i).getFamilyName();
 					logger.info("who is the receiver" + x);
 					
-					if (customerMessage.equals(x)) {
-						String ID = user.get(i).getUserId();
-						UserInformation receiver = userInformationRepository.findOne(ID);
-						request.setToUser(receiver);
-						requestRepository.save(request);
+//					if (customerMessage.equals(x)) {
+//						String ID = user.get(i).getUserId();
+//						UserInformation receiver = userInformationRepository.findOne(ID);
+//						request.setToUser(receiver);
+//						requestRepository.save(request);
 						
 //						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
 //						TextMessage textMessage2 = new TextMessage("Request Title :");
@@ -238,7 +243,7 @@ public class BotController {
 //						userLine.setStatus("Requesttitled");
 //						userInformationRepository.save(userLine);
 //						System.out.println("status*********" + userLine.getStatus());
-					}
+//					}
 //					else {
 //						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
 //						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
