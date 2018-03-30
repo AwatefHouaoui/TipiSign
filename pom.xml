@@ -97,13 +97,12 @@
 			<artifactId>logging-interceptor</artifactId>
 			<version>3.0.0-RC1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
-		<dependency>
-			<groupId>com.squareup.okhttp3</groupId>
-			<artifactId>okhttp</artifactId>
-			<version>3.10.0</version>
-		</dependency>
 
+<dependency>
+    <groupId>com.squareup.okhttp3</groupId>
+    <artifactId>okhttp-urlconnection</artifactId>
+    <version>3.2.0</version>
+</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
