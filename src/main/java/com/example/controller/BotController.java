@@ -70,6 +70,8 @@ public class BotController {
 	UserInformationRepository userInformationRepository;
 	@Autowired
 	RequestRepository requestRepository;
+	
+	LinkedHashMap<String, String> hm;
 
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
@@ -109,7 +111,7 @@ public class BotController {
 
 		UserInformation userLine = userInformationRepository.findOne(userId);
 
-		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
+		hm = new LinkedHashMap<>();
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
@@ -189,15 +191,16 @@ public class BotController {
 
 			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
 					.getContent();
-			int a = user.size();
 
 			switch (userLine.getStatus()) {
 
 			case "Default":
 
-				for (int i = 0; i < a; i++) {
-					hm.put(user.get(i).getUserName() + " " + user.get(i).getFamilyName(), user.get(i).getUserName() + " " + user.get(i).getFamilyName());
-				}
+				user.forEach(u -> {
+					hm.put(u.getUserName() + " " + u.getFamilyName(), u.getUserName() + " " + u.getFamilyName());
+
+				});
+
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 
 				userLine.setStatus("receiverchosen");
@@ -208,12 +211,12 @@ public class BotController {
 
 			case "receiverchosen":
 
-				for (int i = 0; i < a; i++) {
-					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
+				for (UserInformation u : user) {
+					String x = u.getUserName() + " " + u.getFamilyName();
 					logger.info("who is the receiver****************" + x);
 
-					if (customerMessage.equals(user.get(i).getUserName() + " " + user.get(i).getFamilyName())) {
-						String ID = user.get(i).getUserId();
+					if (customerMessage.equals(x.toLowerCase())) {
+						String ID = u.getUserId();
 						UserInformation receiver = userInformationRepository.findOne(ID);
 						request.setToUser(receiver);
 						requestRepository.save(request);
@@ -231,11 +234,12 @@ public class BotController {
 						}
 						System.out.println(botApiResponse2);
 						logger.info("receiver has been chosen" + customerMessage);
-					}
-					else {
+					} else {
 						logger.info("receiver has noooooooot been chosen" + customerMessage);
 					}
 				}
+					
+			
 
 				// else {
 				// LineMessagingClient client2 =
