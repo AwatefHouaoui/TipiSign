@@ -39,7 +39,7 @@ public class Request implements Serializable {
 	private String status = "pending";
 	
 	/** The to user. */
-	@JsonIgnoreProperties({"status", "email", "emailVerification", "password", "createdAt", "lastLogin", "English", "initialSetting", "authority", "Requests", "companies"})
+	@JsonIgnoreProperties({"status", "email", "emailVerification", "password", "createdAt", "lastLogin", "systemLanguage", "initialSetting", "authority", "Requests", "companies"})
 	private UserInformation toUser;
 	
 	/** The created at. */

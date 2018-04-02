@@ -242,6 +242,7 @@ public class BotController {
 						userInformationRepository.save(userLine);
 						System.out.println("status*********" + userLine.getStatus());
 						logger.info("receiver has noooooooot been chosen" + customerMessage);
+						
 						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
 						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
 						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
