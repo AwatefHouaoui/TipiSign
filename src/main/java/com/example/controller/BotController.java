@@ -213,10 +213,11 @@ public class BotController {
 
 				for (UserInformation u : user) {
 					String x = u.getUserName() + " " + u.getFamilyName();
-					logger.info("who is the receiver****************" + x + " user = " + u + "  /id =" + u.getUserId()
-							+ "// size =" + user.size());
+					logger.info(
+							"who is the receiver****************" + x + " user = " + u.getUserName() + "familyName = "
+									+ u.getFamilyName() + "  /id =" + u.getUserId() + "// size =" + user.size());
 
-					if (customerMessage.equals(x.toLowerCase())) {
+					if (customerMessage.trim().equals(x.toLowerCase().trim())) {
 						String ID = u.getUserId();
 						System.out.println("im id = " + ID);
 						UserInformation receiver = userInformationRepository.findOne(ID);
