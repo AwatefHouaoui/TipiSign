@@ -70,7 +70,7 @@ public class BotController {
 	UserInformationRepository userInformationRepository;
 	@Autowired
 	RequestRepository requestRepository;
-	
+
 	LinkedHashMap<String, String> hm;
 
 	@EventMapping
@@ -213,10 +213,12 @@ public class BotController {
 
 				for (UserInformation u : user) {
 					String x = u.getUserName() + " " + u.getFamilyName();
-					logger.info("who is the receiver****************" + x);
+					logger.info("who is the receiver****************" + x + " user = " + u + "  /id =" + u.getUserId()
+							+ "// size =" + user.size());
 
 					if (customerMessage.equals(x.toLowerCase())) {
 						String ID = u.getUserId();
+						System.out.println("im id = " + ID);
 						UserInformation receiver = userInformationRepository.findOne(ID);
 						request.setToUser(receiver);
 						requestRepository.save(request);
@@ -238,8 +240,6 @@ public class BotController {
 						logger.info("receiver has noooooooot been chosen" + customerMessage);
 					}
 				}
-					
-			
 
 				// else {
 				// LineMessagingClient client2 =
