@@ -64,6 +64,7 @@ public class BotController {
 	Logger logger = LoggerFactory.getLogger(BotController.class);
 	public static final String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmC"
 			+ "jlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
+	
 	@Autowired
 	LineMessagingClient lineMessagingClient;
 	@Autowired
@@ -187,8 +188,7 @@ public class BotController {
 			Request request = new Request();
 			request.setUser(userLine);
 
-			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
-					.getContent();
+			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
 			int a = user.size();
 
 			switch (userLine.getStatus()) {
