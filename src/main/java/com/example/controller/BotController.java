@@ -71,8 +71,6 @@ public class BotController {
 	@Autowired
 	RequestRepository requestRepository;
 
-	LinkedHashMap<String, String> hm;
-
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
 		TextMessageContent message = event.getMessage();
@@ -111,7 +109,7 @@ public class BotController {
 
 		UserInformation userLine = userInformationRepository.findOne(userId);
 
-		hm = new LinkedHashMap<>();
+		LinkedHashMap<String, String>  hm = new LinkedHashMap<>();
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
@@ -217,9 +215,9 @@ public class BotController {
 					logger.info("who is the receiver ****************" + x);
 					
 					if (customerMessage.equals(x)) {
-						String ID = user.get(i).getUserId();
-						System.out.println("im id = " + ID);
-						UserInformation receiver = userInformationRepository.findOne(ID);
+						String receiverId = user.get(i).getUserId();
+						System.out.println("im id = " + receiverId);
+						UserInformation receiver = userInformationRepository.findOne(receiverId);
 						request.setToUser(receiver);
 						requestRepository.save(request);
 						logger.info("the receiver is ++++++++++++ ****************" + customerMessage);
