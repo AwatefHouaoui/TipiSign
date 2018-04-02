@@ -10,8 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 // TODO: Auto-generated Javadoc
@@ -39,6 +39,7 @@ public class Request implements Serializable {
 	private String status = "pending";
 	
 	/** The to user. */
+	@JsonIgnoreProperties({"status", "email", "emailVerification", "password", "createdAt", "lastLogin", "English", "initialSetting", "authority", "Requests", "companies"})
 	private UserInformation toUser;
 	
 	/** The created at. */

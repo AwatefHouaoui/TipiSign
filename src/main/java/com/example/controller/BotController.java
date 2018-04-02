@@ -109,7 +109,7 @@ public class BotController {
 
 		UserInformation userLine = userInformationRepository.findOne(userId);
 
-		LinkedHashMap<String, String>  hm = new LinkedHashMap<>();
+		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
@@ -187,18 +187,18 @@ public class BotController {
 			Request request = new Request();
 			request.setUser(userLine);
 
-			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
+			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
+					.getContent();
 			int a = user.size();
 
 			switch (userLine.getStatus()) {
 
 			case "Default":
 
-				for (int i = 0; i < a; i++)
-				{
-					hm.put(user.get(i).getUserName(), user.get(i).getUserName());	
+				for (int i = 0; i < a; i++) {
+					hm.put(user.get(i).getUserName(), user.get(i).getUserName());
 				}
-				
+
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 
 				userLine.setStatus("receiverchosen");
@@ -213,7 +213,7 @@ public class BotController {
 
 					String x = user.get(i).getUserName();
 					logger.info("who is the receiver ****************" + x);
-					
+
 					if (customerMessage.equals(x)) {
 						String receiverId = user.get(i).getUserId();
 						System.out.println("im id = " + receiverId);
@@ -221,6 +221,9 @@ public class BotController {
 						request.setToUser(receiver);
 						requestRepository.save(request);
 						logger.info("the receiver is ++++++++++++ ****************" + customerMessage);
+
+						userLine.setStatus("Requesttitled");
+						userInformationRepository.save(userLine);
 
 						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
 						TextMessage textMessage2 = new TextMessage("Request Title :");
@@ -235,29 +238,23 @@ public class BotController {
 						System.out.println(botApiResponse2);
 						logger.info("receiver has been chosen" + customerMessage);
 					} else {
+						userLine.setStatus("Default");
+						userInformationRepository.save(userLine);
+						System.out.println("status*********" + userLine.getStatus());
 						logger.info("receiver has noooooooot been chosen" + customerMessage);
+						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
+						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
+						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
+						BotApiResponse botApiResponse2;
+						try {
+							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+							return json;
+						}
+						System.out.println(botApiResponse2);
 					}
 				}
-
-				// else {
-				// LineMessagingClient client2 =
-				// LineMessagingClient.builder(channelToken).build();
-				// TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
-				// PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-				// BotApiResponse botApiResponse2;
-				// try {
-				// botApiResponse2 = client2.pushMessage(pushMessage2).get();
-				// } catch (InterruptedException | ExecutionException e) {
-				// e.printStackTrace();
-				// return json;
-				// }
-				// System.out.println(botApiResponse2);
-				// logger.info("receiver has not been chosen" + customerMessage);
-				//
-				// userLine.setStatus("Default");
-				// userInformationRepository.save(userLine);
-				// System.out.println("status*********" + userLine.getStatus());
-				// }
 
 				break;
 
@@ -265,6 +262,11 @@ public class BotController {
 
 				request.setTitle(resolvedQuery);
 				requestRepository.save(request);
+
+				userLine.setStatus("RequestDetailed");
+				userInformationRepository.save(userLine);
+				System.out.println("status*********" + userLine.getStatus());
+				logger.info("Request Titled " + customerMessage);
 
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
 				TextMessage textMessage3 = new TextMessage("Request Detail :");
@@ -277,11 +279,6 @@ public class BotController {
 					return json;
 				}
 				System.out.println(botApiResponse3);
-				logger.info("Request Titled " + customerMessage);
-
-				userLine.setStatus("RequestDetailed");
-				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus());
 
 				break;
 
@@ -289,6 +286,11 @@ public class BotController {
 
 				request.setDetail(resolvedQuery);
 				requestRepository.save(request);
+
+				userLine.setStatus("Default");
+				userInformationRepository.save(userLine);
+				System.out.println("status*********" + userLine.getStatus());
+				logger.info("Request detailed", customerMessage);
 
 				LineMessagingClient client4 = LineMessagingClient.builder(channelToken).build();
 				TextMessage textMessage4 = new TextMessage("Request Authority :");
@@ -301,11 +303,6 @@ public class BotController {
 					return json;
 				}
 				System.out.println(botApiResponse4);
-				logger.info("Request detailed", customerMessage);
-
-				userLine.setStatus("Default");
-				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus());
 
 				break;
 			}
