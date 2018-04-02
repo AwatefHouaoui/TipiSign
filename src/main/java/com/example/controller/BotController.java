@@ -212,7 +212,7 @@ public class BotController {
 					String x = user.get(i).getUserName() + " " + user.get(i).getFamilyName();
 					logger.info("who is the receiver****************" + x);
 
-					if (customerMessage.equals(x)) {
+					if (customerMessage == x) {
 						String ID = user.get(i).getUserId();
 						UserInformation receiver = userInformationRepository.findOne(ID);
 						request.setToUser(receiver);
