@@ -21,8 +21,6 @@ public class UserInformationService {
 	public UserInformation saveUserInformation(@RequestBody UserInformation u) {
 		String userName = u.getUserName();
 		u.setUserName(userName.toLowerCase());
-		String familyName = u.getFamilyName();
-		u.setFamilyName(familyName.toLowerCase());
 		return userInformationMetier.saveUserInformation(u);
 	}
 

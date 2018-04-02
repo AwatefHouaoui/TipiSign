@@ -29,9 +29,6 @@ public class UserInformation implements Serializable {
 	/** The user name. */
 	private String userName;
 	
-	/** The family name. */
-	private String familyName;
-	
 	/** The status. */
 	private String status = "Default";
 	
@@ -183,45 +180,6 @@ public class UserInformation implements Serializable {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-
-	
-	/**
-	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the family name.
-	 * @return the family name
-	 */
-	public String getFamilyName() {
-		return familyName;
-	}
-
-
-	/**
-	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the family name.
-	 * @param familyName the new family name
-	 */
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
-	}
-
 
 	/**
 	 * Copyright (c) 2018 by HRDatabank. All rights reserved.

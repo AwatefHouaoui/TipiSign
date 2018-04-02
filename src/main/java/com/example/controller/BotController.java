@@ -189,18 +189,18 @@ public class BotController {
 			Request request = new Request();
 			request.setUser(userLine);
 
-			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
-					.getContent();
+			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
+			int a = user.size();
 
 			switch (userLine.getStatus()) {
 
 			case "Default":
 
-				user.forEach(u -> {
-					hm.put(u.getUserName() + " " + u.getFamilyName(), u.getUserName() + " " + u.getFamilyName());
-
-				});
-
+				for (int i = 0; i < a; i++)
+				{
+					hm.put(user.get(i).getUserName(), user.get(i).getUserName());	
+				}
+				
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 
 				userLine.setStatus("receiverchosen");
@@ -211,14 +211,13 @@ public class BotController {
 
 			case "receiverchosen":
 
-				for (UserInformation u : user) {
-					String x = u.getUserName() + " " + u.getFamilyName();
-					logger.info(
-							"who is the receiver****************" + x + " user = " + u.getUserName() + "familyName = "
-									+ u.getFamilyName() + "  /id =" + u.getUserId() + "// size =" + user.size());
+				for (int i = 0; i < a; i++) {
 
-					if (customerMessage.trim().equals(x.toLowerCase().trim())) {
-						String ID = u.getUserId();
+					String x = user.get(i).getUserName();
+					logger.info("who is the receiver ****************" + x);
+					
+					if (customerMessage.equals(x)) {
+						String ID = user.get(i).getUserId();
 						System.out.println("im id = " + ID);
 						UserInformation receiver = userInformationRepository.findOne(ID);
 						request.setToUser(receiver);
