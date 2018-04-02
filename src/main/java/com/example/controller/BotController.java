@@ -232,6 +232,9 @@ public class BotController {
 						System.out.println(botApiResponse2);
 						logger.info("receiver has been chosen" + customerMessage);
 					}
+					else {
+						logger.info("receiver has noooooooot been chosen" + customerMessage);
+					}
 				}
 
 				// else {
