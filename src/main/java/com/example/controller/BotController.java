@@ -361,10 +361,34 @@ public class BotController {
 				request.setCreatedAt(ts);
 				request.setUpdatedAt(ts);
 				requestRepository.save(request);
+				
+				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
+				TextMessage textMessage3 = new TextMessage("Your request has been sent successfully.");
+				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
+				BotApiResponse botApiResponse3;
+				try {
+					botApiResponse3 = client3.pushMessage(pushMessage3).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
+				}
+				System.out.println(botApiResponse3);
 
 			} else {
 
 				lineProgressRepository.delete(lineProgress);
+				
+				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
+				TextMessage textMessage3 = new TextMessage("Your request has been deleted.");
+				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
+				BotApiResponse botApiResponse3;
+				try {
+					botApiResponse3 = client3.pushMessage(pushMessage3).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
+				}
+				System.out.println(botApiResponse3);
 
 			}
 
