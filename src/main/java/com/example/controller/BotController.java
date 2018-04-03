@@ -349,8 +349,11 @@ public class BotController {
 			break;
 
 		case "confirm":
+			
+			logger.info("request decesion**************************" + customerMessage);
 
 			if (customerMessage.equals("Send")) {
+				
 				Request request = new Request();
 				request.setTitle(title);
 				request.setDetail(detail);
