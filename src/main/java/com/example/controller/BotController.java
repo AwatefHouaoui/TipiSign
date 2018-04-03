@@ -360,9 +360,9 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-				Timestamp ts = Timestamp.valueOf(timestamp);
-				request.setCreatedAt(ts);
-				request.setUpdatedAt(ts);
+//				Timestamp ts = Timestamp.valueOf(timestamp);
+//				request.setCreatedAt(ts);
+//				request.setUpdatedAt(ts);
 				requestRepository.save(request);
 				
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
