@@ -2,8 +2,13 @@ package com.example.controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,8 +33,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import com.example.dao.AuthorityRepository;
+import com.example.dao.LineProgressRepository;
 import com.example.dao.RequestRepository;
 import com.example.dao.UserInformationRepository;
+import com.example.entities.Authority;
+import com.example.entities.LineProgress;
 import com.example.entities.Request;
 import com.example.entities.UserInformation;
 import com.linecorp.bot.client.LineMessagingClient;
@@ -64,13 +74,17 @@ public class BotController {
 	Logger logger = LoggerFactory.getLogger(BotController.class);
 	public static final String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmC"
 			+ "jlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
-	
+
 	@Autowired
 	LineMessagingClient lineMessagingClient;
 	@Autowired
 	UserInformationRepository userInformationRepository;
 	@Autowired
 	RequestRepository requestRepository;
+	@Autowired
+	LineProgressRepository lineProgressRepository;
+	@Autowired
+	AuthorityRepository authorityRepository;
 
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
@@ -81,6 +95,11 @@ public class BotController {
 	private static String createUri(String path) {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
+
+	String title, detail;
+	UserInformation toUser;
+	long visibility;
+	LineProgress lineProgress = new LineProgress();
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -108,13 +127,13 @@ public class BotController {
 		// JSONObject msg = messages.getJSONObject(0);
 		// String speechMessage = msg.getString("speech");
 
-		UserInformation userLine = userInformationRepository.findOne(userId);
+		lineProgress.setUserLine(userInformationRepository.getOne(userId));
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
-		logger.info("status*********" + userLine.getStatus());
+		logger.info("status*********" + lineProgress.getStatusLine());
 
 		switch (intentName.toLowerCase()) {
 
@@ -185,15 +204,13 @@ public class BotController {
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
 
-			Request request = new Request();
-			request.setUser(userLine);
-
-			List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
-			int a = user.size();
-
-			switch (userLine.getStatus()) {
+			switch (lineProgress.getStatusLine()) {
 
 			case "Default":
+
+				List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
+						.getContent();
+				int a = user.size();
 
 				for (int i = 0; i < a; i++) {
 					hm.put(user.get(i).getUserName(), user.get(i).getUserName());
@@ -201,13 +218,16 @@ public class BotController {
 
 				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
 
-				userLine.setStatus("receiverchosen");
-				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus());
+				lineProgress.setStatusLine("receiverchosen");
+				lineProgressRepository.save(lineProgress);
+				System.out.println("status*********" + lineProgress.getStatusLine());
 
 				break;
 
 			case "receiverchosen":
+
+				user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
+				a = user.size();
 
 				for (int i = 0; i < a; i++) {
 
@@ -218,12 +238,11 @@ public class BotController {
 						String receiverId = user.get(i).getUserId();
 						System.out.println("im id = " + receiverId);
 						UserInformation receiver = userInformationRepository.findOne(receiverId);
-						request.setToUser(receiver);
-						requestRepository.save(request);
-						logger.info("the receiver is ++++++++++++ ****************" + customerMessage);
+						toUser = receiver;
+						logger.info("the receiver is ++++++++++++ ****************" + toUser);
 
-						userLine.setStatus("Requesttitled");
-						userInformationRepository.save(userLine);
+						lineProgress.setStatusLine("Requesttitled");
+						lineProgressRepository.save(lineProgress);
 
 						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
 						TextMessage textMessage2 = new TextMessage("Request Title :");
@@ -238,11 +257,11 @@ public class BotController {
 						System.out.println(botApiResponse2);
 						logger.info("receiver has been chosen" + customerMessage);
 					} else {
-						userLine.setStatus("Default");
-						userInformationRepository.save(userLine);
-						System.out.println("status*********" + userLine.getStatus());
+						lineProgress.setStatusLine("Default");
+						lineProgressRepository.save(lineProgress);
+						System.out.println("status*********" + lineProgress.getStatusLine());
 						logger.info("receiver has noooooooot been chosen" + customerMessage);
-						
+
 						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
 						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
 						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
@@ -261,12 +280,11 @@ public class BotController {
 
 			case "Requesttitled":
 
-				request.setTitle(resolvedQuery);
-				requestRepository.save(request);
+				title = resolvedQuery;
 
-				userLine.setStatus("RequestDetailed");
-				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus());
+				lineProgress.setStatusLine("RequestDetailed");
+				lineProgressRepository.save(lineProgress);
+				System.out.println("status*********" + lineProgress.getStatusLine());
 				logger.info("Request Titled " + customerMessage);
 
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
@@ -285,27 +303,69 @@ public class BotController {
 
 			case "RequestDetailed":
 
-				request.setDetail(resolvedQuery);
-				requestRepository.save(request);
+				detail = resolvedQuery;
 
-				userLine.setStatus("Default");
-				userInformationRepository.save(userLine);
-				System.out.println("status*********" + userLine.getStatus());
+				lineProgress.setStatusLine("Default");
+				lineProgressRepository.save(lineProgress);
+				System.out.println("status*********" + lineProgress.getStatusLine());
 				logger.info("Request detailed", customerMessage);
 
-				LineMessagingClient client4 = LineMessagingClient.builder(channelToken).build();
-				TextMessage textMessage4 = new TextMessage("Request Authority :");
-				PushMessage pushMessage4 = new PushMessage(userId, textMessage4);
-				BotApiResponse botApiResponse4;
-				try {
-					botApiResponse4 = client4.pushMessage(pushMessage4).get();
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-					return json;
-				}
-				System.out.println(botApiResponse4);
+				hm.put("1 : Director", "Director");
+				hm.put("2 : Manager", "Manager");
+				hm.put("3 : Team leader", "Team leader");
+				hm.put("4 : Developer", "Developer");
+				typeBRecursiveChoices(null, null, "Please select the request authority:", hm, channelToken, userId);
+				logger.info("Choose request authority :" + customerMessage);
 
 				break;
+			}
+
+			break;
+
+		case "authority":
+
+			switch (customerMessage) {
+
+			case "Director":
+				visibility = 1;
+				break;
+
+			case "Manager":
+				visibility = 2;
+				break;
+
+			case "Team leader":
+				visibility = 3;
+				break;
+
+			case "Developer":
+				visibility = 4;
+				break;
+			}
+
+			typeCQuestion("Do you want to send the request? ", "Send", "Send", "Cancel", "Cancel", "Confirm",
+					channelToken, userId);
+
+			break;
+
+		case "confirm":
+
+			if (customerMessage.equals("Send")) {
+				Request request = new Request();
+				request.setTitle(title);
+				request.setDetail(detail);
+				request.setToUser(toUser);
+				request.setFromUser(userId);
+				request.setVisibility(visibility);
+				Timestamp ts = Timestamp.valueOf(timestamp);
+				request.setCreatedAt(ts);
+				request.setUpdatedAt(ts);
+				requestRepository.save(request);
+
+			} else {
+
+				lineProgressRepository.delete(lineProgress);
+
 			}
 
 			break;

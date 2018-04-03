@@ -10,7 +10,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -30,7 +32,7 @@ public class UserInformation implements Serializable {
 	private String userName;
 	
 	/** The status. */
-	private String status = "Default";
+	private String status;
 	
 	/** The email. */
 	private String email;
@@ -59,8 +61,12 @@ public class UserInformation implements Serializable {
 	@JsonIgnoreProperties({ "authorityName", "ranking" })
 	private Authority authority;
 	
+	/** The line progress. */
+	@OneToMany(mappedBy = "userLine")
+	private Collection<LineProgress> lineProgresses;
+	
 	/** The Requests. */
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "toUser")
 	private Collection<Request> Requests;
 	
 	/** The companies. */
@@ -99,7 +105,6 @@ public class UserInformation implements Serializable {
 	 * Instantiates a new user information.
 	 * @param userId the user id
 	 * @param userName the user name
-	 * @param detail the detail
 	 * @param authority the authority
 	 */
 	public UserInformation(String userId, String userName, Authority authority) {
@@ -577,5 +582,46 @@ public class UserInformation implements Serializable {
 		this.companies = companies;
 	}
 
+
+	/**
+	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
+	 *
+	 * @author awatef
+	 * 
+	 * Using JRE: 1.8
+	 * 
+	 * Project Name: TipiSign
+	 * 
+	 * Class Name: UserInformation.java
+	 * 
+	 * Gets the line progress.
+	 * @return the line progress
+	 */
+	@JsonIgnore
+	public Collection<LineProgress> getLineProgresses() {
+		return lineProgresses;
+	}
+
+
+	/**
+	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
+	 *
+	 * @author awatef
+	 * 
+	 * Using JRE: 1.8
+	 * 
+	 * Project Name: TipiSign
+	 * 
+	 * Class Name: UserInformation.java
+	 * 
+	 * Sets the line progress.
+	 * @param lineProgress the new line progress
+	 */
+	@JsonSetter
+	public void setLineProgresses(Collection<LineProgress> lineProgresses) {
+		this.lineProgresses = lineProgresses;
+	}
+
+	
 }
 

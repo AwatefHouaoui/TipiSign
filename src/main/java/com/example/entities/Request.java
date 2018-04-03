@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 // TODO: Auto-generated Javadoc
@@ -38,7 +37,12 @@ public class Request implements Serializable {
 	private String status = "pending";
 	
 	/** The to user. */
+	@ManyToOne
+	@JoinColumn(name = "User_Info")
 	private UserInformation toUser;
+	
+    /** The  from user. */
+	private String fromUser;
 	
 	/** The created at. */
 	private Timestamp createdAt;
@@ -51,11 +55,6 @@ public class Request implements Serializable {
 	
 	/** The visibility. */
 	private long visibility;
-
-	/** The user. */
-	@ManyToOne
-	@JoinColumn(name = "User_Info")
-	private UserInformation user;
 	
 	/** The comments. */
 	@OneToMany(mappedBy = "request")
@@ -92,15 +91,15 @@ public class Request implements Serializable {
 	 * Instantiates a new request.
 	 * @param requestId the request id
 	 * @param hidden the hidden
-	 * @param user the user
+	 * @param fromUser the from user
 	 * @param toUser the to user
 	 * @param visibility the visibility
 	 */
-	public Request(long requestId, boolean hidden,UserInformation user, UserInformation toUser, long visibility) {
+	public Request(long requestId, boolean hidden,String fromUser, UserInformation toUser, long visibility) {
 		super();
 		this.requestId = requestId;
 		this.hidden = hidden;
-		this.user = user;
+		this.fromUser = fromUser;
 		this.toUser = toUser;
 		this.visibility = visibility;
 	}
@@ -445,9 +444,8 @@ public class Request implements Serializable {
 	 * @return the user
 	 */
 	
-	@JsonIgnore
-	public UserInformation getUser() {
-		return user;
+	public String getFromUser() {
+		return fromUser;
 	}
 
 	/**
@@ -462,12 +460,12 @@ public class Request implements Serializable {
 	 * Class Name: Request.java
 	 * 
 	 * Sets the user.
-	 * @param user the new user
+	 * @param fromUser the new user
 	 */
 	
 	@JsonSetter
-	public void setUser(UserInformation user) {
-		this.user = user;
+	public void setFromUser(String fromUser) {
+		this.fromUser = fromUser;
 	}
 
 	/**
