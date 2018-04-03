@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 // TODO: Auto-generated Javadoc
@@ -226,6 +228,7 @@ public class Request implements Serializable {
 	 * Gets the to user.
 	 * @return the to user
 	 */
+	@JsonIgnore
 	public UserInformation getToUser() {
 		return toUser;
 	}
@@ -244,6 +247,7 @@ public class Request implements Serializable {
 	 * Sets the to user.
 	 * @param toUser the new to user
 	 */
+	@JsonSetter
 	public void setToUser(UserInformation toUser) {
 		this.toUser = toUser;
 	}
