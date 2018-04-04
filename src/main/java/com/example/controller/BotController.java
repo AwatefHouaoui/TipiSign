@@ -2,10 +2,8 @@ package com.example.controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -361,8 +359,8 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-			    request.setCreatedAt(new Date());
-                request.setUpdatedAt(new Date());
+			    request.setCreatedAt(timestamp);
+                request.setUpdatedAt(timestamp);
 				requestRepository.save(request);
 
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();

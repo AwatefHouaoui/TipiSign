@@ -2,8 +2,6 @@ package com.example.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -48,10 +46,10 @@ public class Request implements Serializable {
 	private String fromUser;
 
 	/** The created at. */
-	private Date createdAt;
+	private String createdAt;
 
 	/** The updated at. */
-	private Date updatedAt;
+	private String updatedAt;
 
 	/** The detail. */
 	private String detail;
@@ -200,7 +198,7 @@ public class Request implements Serializable {
 	 *         Gets the updated at.
 	 * @return the updated at
 	 */
-	public Date getUpdatedAt() {
+	public String getUpdatedAt() {
 		return updatedAt;
 	}
 
@@ -219,7 +217,7 @@ public class Request implements Serializable {
 	 * @param updatedAt
 	 *            the new updated at
 	 */
-	public void setUpdatedAt(Date updatedAt) {
+	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
@@ -348,7 +346,7 @@ public class Request implements Serializable {
 	 *         Gets the created at.
 	 * @return the created at
 	 */
-	public Date getCreatedAt() {
+	public String getCreatedAt() {
 		return createdAt;
 	}
 
@@ -367,7 +365,7 @@ public class Request implements Serializable {
 	 * @param createdAt
 	 *            the new created at
 	 */
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 
