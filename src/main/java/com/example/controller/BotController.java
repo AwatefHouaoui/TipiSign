@@ -2,6 +2,9 @@ package com.example.controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -342,8 +345,8 @@ public class BotController {
 			}
 
 			typeCQuestion(
-					"Do you want to send the request? \n To : " + toUser.getUserName() + "\n Title : " + title + "\n Detail : "
-							+ detail + "\n Authority : " + authority, "Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
+					"Do you want to send the request? \n RECEIVER: " + toUser.getUserName() + "\n TITLE: " + title + "\n DETAIL: "
+							+ detail + "\n AUTHORITY: " + authority, "Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
 
 			break;
 
@@ -359,8 +362,9 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-//				request.setCreatedAt(timestamp);
-//				request.setUpdatedAt(timestamp);
+				
+//				request.setCreatedAt(ts);
+//              request.setUpdatedAt(ts);
 				requestRepository.save(request);
 
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
