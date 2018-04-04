@@ -2,10 +2,6 @@ package com.example.controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,7 +92,7 @@ public class BotController {
 	String title, detail;
 	UserInformation toUser;
 	long visibility;
-	LineProgress lineProgress = new LineProgress();
+	LineProgress lineProgress;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -111,7 +107,7 @@ public class BotController {
 		JSONObject message = data.getJSONObject("message");
 		String userId = source.getString("userId");
 		String customerMessage = message.getString("text");
-		Timestamp timestamp = (Timestamp) jsonResult.get("timestamp");
+		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
 		String action = result.getString("action");
@@ -125,12 +121,11 @@ public class BotController {
 		// String speechMessage = msg.getString("speech");
 
 		lineProgress.setUserLine(userInformationRepository.getOne(userId));
-
+		
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
-		logger.info("status*********" + lineProgress.getStatusLine());
 		logger.info("timestamp*********" + timestamp);
 
 		switch (intentName.toLowerCase()) {
@@ -359,8 +354,8 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-				request.setCreatedAt(timestamp);
-				request.setUpdatedAt(timestamp);
+//				request.setCreatedAt(timestamp);
+//				request.setUpdatedAt(timestamp);
 				requestRepository.save(request);
 
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
@@ -469,7 +464,7 @@ public class BotController {
 
 		default:
 
-			sendAlertViaSlack(userId, timestamp.toString(), customerMessage);
+			sendAlertViaSlack(userId, timestamp, customerMessage);
 			logger.info("slack :" + customerMessage);
 
 			break;
