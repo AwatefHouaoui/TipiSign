@@ -2,8 +2,6 @@ package com.example.controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -362,9 +360,8 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-				
-//				request.setCreatedAt(ts);
-//              request.setUpdatedAt(ts);
+			    request.setCreatedAt(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss:aa"));
+                request.setUpdatedAt(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss:aa"));
 				requestRepository.save(request);
 
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();

@@ -1,7 +1,7 @@
 package com.example.entities;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -47,10 +47,10 @@ public class Request implements Serializable {
 	private String fromUser;
 	
 	/** The created at. */
-	private Timestamp createdAt;
+	private SimpleDateFormat createdAt;
 	
 	/** The updated at. */
-	private Timestamp updatedAt;
+	private SimpleDateFormat updatedAt;
 	
 	/** The detail. */
 	private String detail;
@@ -192,7 +192,7 @@ public class Request implements Serializable {
 	 * Gets the updated at.
 	 * @return the updated at
 	 */
-	public Timestamp getUpdatedAt() {
+	public SimpleDateFormat getUpdatedAt() {
 		return updatedAt;
 	}
 
@@ -210,7 +210,7 @@ public class Request implements Serializable {
 	 * Sets the updated at.
 	 * @param updatedAt the new updated at
 	 */
-	public void setUpdatedAt(Timestamp updatedAt) {
+	public void setUpdatedAt(SimpleDateFormat updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
@@ -337,7 +337,7 @@ public class Request implements Serializable {
 	 * Gets the created at.
 	 * @return the created at
 	 */
-	public Timestamp getCreatedAt() {
+	public SimpleDateFormat getCreatedAt() {
 		return createdAt;
 	}
 
@@ -355,7 +355,7 @@ public class Request implements Serializable {
 	 * Sets the created at.
 	 * @param createdAt the new created at
 	 */
-	public void setCreatedAt(Timestamp createdAt) {
+	public void setCreatedAt(SimpleDateFormat createdAt) {
 		this.createdAt = createdAt;
 	}
 
