@@ -10,9 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -41,6 +39,8 @@ public class Request implements Serializable {
 	/** The to user. */
 	@ManyToOne
 	@JoinColumn(name = "User_Info")
+	@JsonIgnoreProperties({ "status", "email", "emailVerification", "password", "createdAt", "lastLogin",
+		"systemLanguage", "initialSetting", "authority", "lineProgresses", "Requests", "companies" })
 	private UserInformation toUser;
 	
     /** The  from user. */
@@ -228,7 +228,6 @@ public class Request implements Serializable {
 	 * Gets the to user.
 	 * @return the to user
 	 */
-	@JsonIgnore
 	public UserInformation getToUser() {
 		return toUser;
 	}
@@ -247,7 +246,6 @@ public class Request implements Serializable {
 	 * Sets the to user.
 	 * @param toUser the new to user
 	 */
-	@JsonSetter
 	public void setToUser(UserInformation toUser) {
 		this.toUser = toUser;
 	}
@@ -447,7 +445,6 @@ public class Request implements Serializable {
 	 * Gets the user.
 	 * @return the user
 	 */
-	
 	public String getFromUser() {
 		return fromUser;
 	}
@@ -466,8 +463,6 @@ public class Request implements Serializable {
 	 * Sets the user.
 	 * @param fromUser the new user
 	 */
-	
-	@JsonSetter
 	public void setFromUser(String fromUser) {
 		this.fromUser = fromUser;
 	}

@@ -345,8 +345,8 @@ public class BotController {
 			}
 
 			typeCQuestion(
-					"Do you want to send the request? \n RECEIVER: " + toUser.getUserName() + "\n TITLE: " + title + "\n DETAIL: "
-							+ detail + "\n AUTHORITY: " + authority, "Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
+					"Do you want to send the request? \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title + "\nDETAIL: "
+							+ detail + "\nAUTHORITY: " + authority, "Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
 
 			break;
 
