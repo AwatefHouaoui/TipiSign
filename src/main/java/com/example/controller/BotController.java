@@ -469,7 +469,7 @@ public class BotController {
 
 		default:
 
-			sendAlertViaSlack(userId, timestamp, customerMessage);
+			sendAlertViaSlack(userId, timestamp.toString(), customerMessage);
 			logger.info("slack :" + customerMessage);
 
 			break;
