@@ -89,7 +89,7 @@ public class BotController {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	String title, detail;
+	String title, detail, authority;
 	UserInformation toUser;
 	long visibility;
 	LineProgress lineProgress = new LineProgress();
@@ -126,6 +126,7 @@ public class BotController {
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
+		logger.info("status ************" + lineProgress.getStatusLine());
 		logger.info("timestamp*********" + timestamp);
 
 		switch (intentName.toLowerCase()) {
@@ -321,24 +322,28 @@ public class BotController {
 
 			case "Director":
 				visibility = 1;
+				authority = customerMessage;
 				break;
 
 			case "Manager":
 				visibility = 2;
+				authority = customerMessage;
 				break;
 
 			case "Team leader":
 				visibility = 3;
+				authority = customerMessage;
 				break;
 
 			case "Developer":
 				visibility = 4;
+				authority = customerMessage;
 				break;
 			}
 
 			typeCQuestion(
-					"Do you want to send the request? \n To : " + toUser + "\n Title : " + title + "\n Detail : "
-							+ detail + "\n Authority : " + visibility, "Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
+					"Do you want to send the request? \n To : " + toUser.getUserName() + "\n Title : " + title + "\n Detail : "
+							+ detail + "\n Authority : " + authority, "Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
 
 			break;
 
