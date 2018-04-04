@@ -360,6 +360,7 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
+				timestamp = timestamp.format("yyyy-MM-ddTHH:mm:ss.SSSZ", "yyyy-MM-dd HH:mm:ss.SSS", null);
 			    request.setCreatedAt(timestamp);
                 request.setUpdatedAt(timestamp);
 				requestRepository.save(request);
