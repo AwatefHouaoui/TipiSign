@@ -2,7 +2,10 @@ package com.example.controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -108,7 +111,7 @@ public class BotController {
 		JSONObject message = data.getJSONObject("message");
 		String userId = source.getString("userId");
 		String customerMessage = message.getString("text");
-		String timestamp = jsonResult.getString("timestamp");
+		Timestamp timestamp = (Timestamp) jsonResult.get("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
 		String action = result.getString("action");
@@ -128,6 +131,7 @@ public class BotController {
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("status*********" + lineProgress.getStatusLine());
+		logger.info("timestamp*********" + timestamp);
 
 		switch (intentName.toLowerCase()) {
 
@@ -337,28 +341,28 @@ public class BotController {
 				break;
 			}
 
-			typeCQuestion("Do you want to send the request? ", "Send", "Send", "Cancel", "Cancel", "Confirm",
-					channelToken, userId);
+			typeCQuestion(
+					"Do you want to send the request? \n To : " + toUser + "\n Title : " + title + "\n Detail : "
+							+ detail + "\n Authority : " + visibility, "Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
 
 			break;
 
 		case "confirm":
-			
+
 			logger.info("request decesion**************************" + customerMessage);
 
 			if (customerMessage.equals("Send")) {
-				
+
 				Request request = new Request();
 				request.setTitle(title);
 				request.setDetail(detail);
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-//				Timestamp ts = Timestamp.valueOf(timestamp);
-//				request.setCreatedAt(ts);
-//				request.setUpdatedAt(ts);
+				request.setCreatedAt(timestamp);
+				request.setUpdatedAt(timestamp);
 				requestRepository.save(request);
-				
+
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
 				TextMessage textMessage3 = new TextMessage("Your request has been sent successfully.");
 				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
@@ -374,7 +378,7 @@ public class BotController {
 			} else {
 
 				lineProgressRepository.delete(lineProgress);
-				
+
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
 				TextMessage textMessage3 = new TextMessage("Your request has been deleted.");
 				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
