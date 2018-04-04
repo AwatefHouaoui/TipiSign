@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -360,8 +361,8 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-			    request.setCreatedAt(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss:aa"));
-                request.setUpdatedAt(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss:aa"));
+			    request.setCreatedAt(new Date());
+                request.setUpdatedAt(new Date());
 				requestRepository.save(request);
 
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
