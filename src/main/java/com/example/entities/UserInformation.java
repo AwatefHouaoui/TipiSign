@@ -524,6 +524,7 @@ public class UserInformation implements Serializable {
 	 * Gets the requests.
 	 * @return the requests
 	 */
+	@JsonIgnore
 	public Collection<Request> getRequests() {
 		return Requests;
 	}
@@ -542,6 +543,7 @@ public class UserInformation implements Serializable {
 	 * Sets the requests.
 	 * @param requests the new requests
 	 */
+	@JsonSetter
 	public void setRequests(Collection<Request> requests) {
 		Requests = requests;
 	}
