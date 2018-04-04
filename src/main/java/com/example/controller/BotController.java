@@ -92,7 +92,7 @@ public class BotController {
 	String title, detail;
 	UserInformation toUser;
 	long visibility;
-	LineProgress lineProgress;
+	LineProgress lineProgress = new LineProgress();
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
