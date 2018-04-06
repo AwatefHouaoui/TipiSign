@@ -110,18 +110,16 @@ public class BotController {
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
-		//String action = result.getString("action");
+		// String action = result.getString("action");
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
-		//JSONObject parameters = result.getJSONObject("parameters");
-		//JSONObject fulfillment = result.getJSONObject("fulfillment");
-		//String speech = fulfillment.getString("speech");
+		// JSONObject parameters = result.getJSONObject("parameters");
+		// JSONObject fulfillment = result.getJSONObject("fulfillment");
+		// String speech = fulfillment.getString("speech");
 		// JSONArray messages = fulfillment.getJSONArray("messages");
 		// JSONObject msg = messages.getJSONObject(0);
 		// String speechMessage = msg.getString("speech");
 
-		lineProgress.setUserLine(userInformationRepository.getOne(userId));
-		
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
 		logger.info("in intente name ****** '{}'" + intentName);
@@ -195,6 +193,7 @@ public class BotController {
 
 		case "default fallback intent":
 
+			lineProgress.setUserLine(userInformationRepository.getOne(userId));
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
 
@@ -230,7 +229,6 @@ public class BotController {
 
 					if (customerMessage.equals(x)) {
 						String receiverId = user.get(i).getUserId();
-						System.out.println("im id = " + receiverId);
 						UserInformation receiver = userInformationRepository.findOne(receiverId);
 						toUser = receiver;
 						logger.info("the receiver is ++++++++++++ ****************" + toUser);
@@ -342,8 +340,9 @@ public class BotController {
 			}
 
 			typeCQuestion(
-					"Do you want to send the request? \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title + "\nDETAIL: "
-							+ detail + "\nAUTHORITY: " + authority, "Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
+					"Do you want to send the request? \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
+							+ "\nDETAIL: " + detail + "\nAUTHORITY: " + authority,
+					"Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
 
 			break;
 
@@ -359,8 +358,8 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-			    request.setCreatedAt(timestamp);
-                request.setUpdatedAt(timestamp);
+				request.setCreatedAt(timestamp);
+				request.setUpdatedAt(timestamp);
 				requestRepository.save(request);
 
 				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
@@ -391,6 +390,32 @@ public class BotController {
 				}
 				System.out.println(botApiResponse3);
 
+			}
+
+			break;
+
+		case "history":
+
+			List<Request> requests = requestRepository.findAll();
+			int s = requests.size();
+
+			for (int i = 0; i < s; i++) {
+				if (userId.equals(requests.get(i).getToUser().getUserId())) {
+					if (requests.get(i).getStatus().equals("pending")
+							|| (requests.get(i).getStatus().equals("passed"))) {
+
+						String imageUrl = createUri("/static/buttons/decision.jpg");
+						CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays
+								.asList(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
+										"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
+												.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
+										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
+												new MessageAction("Disapprove", "Request refused")))));
+						TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
+						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+						LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+					}
+				}
 			}
 
 			break;
