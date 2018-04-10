@@ -94,7 +94,7 @@ public class BotController {
 	long visibility;
 	LineProgress lineProgress = new LineProgress();
 	CarouselTemplate carouselTemplate;
-	List<CarouselColumn> carouselColumnList;
+	List<CarouselColumn> carouselColumnList = null;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -413,6 +413,7 @@ public class BotController {
 										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
 												new MessageAction("Disapprove", "Request refused")));
 						carouselColumnList.add(carouselColumn);
+						logger.info("request List**************************" + requests.get(i).getToUser().getUserName());
 					           
 					}
 				}
