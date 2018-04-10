@@ -414,6 +414,7 @@ public class BotController {
 												.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
 												new MessageAction("Disapprove", "Request refused")));
+						logger.info("carouselColumn**************************" + customerMessage);
 						carouselColumnList.add(carouselColumn);
 						logger.info("request List**************************" + requests.get(i).getToUser().getUserName());
 					           
