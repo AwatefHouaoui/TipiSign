@@ -2,6 +2,7 @@ package com.example.service;
 
 import java.util.List;
 
+import com.example.dao.RequestRepository;
 import com.example.entities.Request;
 import com.example.metier.RequestMetier;
 
@@ -17,6 +18,10 @@ public class RequestService {
 	@Autowired
 	private RequestMetier requestMetier;
 
+	@Autowired
+	 RequestRepository requestRepository;
+
+
 	@RequestMapping(value = "/Request", method = RequestMethod.POST)
 	public Request saveRequest(@RequestBody Request r) {
 		return requestMetier.saveRequest(r);
@@ -27,9 +32,10 @@ public class RequestService {
 		return requestMetier.listRequest();
 	}
 
-	@RequestMapping(value = "/editRequest/{id}/{status}", method = RequestMethod.PUT)
-	public Request saveStatusRequest(@PathVariable (name="id") long id, @PathVariable (name="status") String status) {
-		return requestMetier.saveStatusRequest(id, status);
+	@RequestMapping(value = "/editRequest/{id}", method = RequestMethod.PUT)
+	public Request saveStatusRequest(@PathVariable long id,@RequestBody Request r) {
+		r.getStatus();
+		return requestRepository.save(r);
 	}
 	
 	
