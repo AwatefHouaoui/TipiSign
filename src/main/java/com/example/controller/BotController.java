@@ -408,13 +408,12 @@ public class BotController {
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
 
-						 logger.info("request List**************************" + customerMessage);
 						 carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
 										"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 												.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
 												new MessageAction("Disapprove", "Request refused")));
-						logger.info("carouselColumn**************************" + customerMessage);
+	
 						carouselColumnList.add(carouselColumn);
 						logger.info("request List**************************" + requests.get(i).getToUser().getUserName());
 					           
