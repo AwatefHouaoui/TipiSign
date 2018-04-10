@@ -401,15 +401,16 @@ public class BotController {
 
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
-			String imageUrl = "../static/buttons/decision.jpg";
 			carouselColumnList = new ArrayList<>();
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
-					
+
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
 
-						carouselColumn = new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
+						carouselColumn = new CarouselColumn(
+								"https://www.google.tn/search?q=approve+disapprove&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiw-rnyzK_aAhXMuhQKHXCfAloQ_AUICigB&biw=1600&bih=807#imgrc=Bj8jJ7m27v1zUM:",
+								"Request title: " + requests.get(i).getTitle(),
 								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 								Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
