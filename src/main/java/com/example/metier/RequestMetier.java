@@ -8,5 +8,7 @@ public interface RequestMetier {
 	public Request saveRequest(Request r);
 
 	public List<Request> listRequest();
+	
+	public Request saveStatusRequest(long id, String status);
 
 }

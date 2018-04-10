@@ -6,6 +6,7 @@ import com.example.entities.Request;
 import com.example.metier.RequestMetier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,5 +26,12 @@ public class RequestService {
 	public List<Request> listRequest() {
 		return requestMetier.listRequest();
 	}
+
+	@RequestMapping(value = "/editRequest/{id}/{status}", method = RequestMethod.PUT)
+	public Request saveStatusRequest(@PathVariable long id, @PathVariable String status) {
+		return requestMetier.saveStatusRequest(id, status);
+	}
+	
+	
 
 }
