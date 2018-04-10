@@ -27,7 +27,7 @@ public class RequestService {
 		return requestMetier.listRequest();
 	}
 
-	@RequestMapping(value = "/editRequest/{id}/{status}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/editRequest/{id}/{status}", method = RequestMethod.GET)
 	public Request saveStatusRequest(@PathVariable long id, @PathVariable String status) {
 		return requestMetier.saveStatusRequest(id, status);
 	}
