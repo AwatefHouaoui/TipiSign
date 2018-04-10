@@ -405,9 +405,10 @@ public class BotController {
 
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
+					carouselColumnList = new ArrayList<>();
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
-						carouselColumnList = new ArrayList<>();
+
 						carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
 								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
