@@ -28,7 +28,7 @@ public class RequestService {
 	}
 
 	@RequestMapping(value = "/editRequest/{id}/{status}", method = RequestMethod.PUT)
-	public Request saveStatusRequest(@PathVariable long id, @PathVariable String status) {
+	public Request saveStatusRequest(@PathVariable (name="id") long id, @PathVariable (name="status") String status) {
 		return requestMetier.saveStatusRequest(id, status);
 	}
 	

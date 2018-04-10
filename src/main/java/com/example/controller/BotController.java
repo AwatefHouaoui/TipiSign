@@ -410,8 +410,8 @@ public class BotController {
 						carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
 								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
-								Arrays.asList(new PostbackAction("Approve", "/editRequest/{"+requests.get(i).getRequestId()+"}/{approved}", "Request approved successfully"),
-										new PostbackAction("Disapprove", "/editRequest/{"+requests.get(i).getRequestId()+"}/{disapproved}", "Request refused")));
+								Arrays.asList(new PostbackAction("Approve", "/editRequest/{"+requests.get(i).getRequestId()+"}/{approved}", "Approve Request"),
+										new PostbackAction("Disapprove", "/editRequest/{"+requests.get(i).getRequestId()+"}/{disapproved}", "Disapprove Request")));
 						carouselColumnList.add(carouselColumn);
 					}
 				}
@@ -421,6 +421,20 @@ public class BotController {
 			PushMessage pushMessage2 = new PushMessage(userId, templateMessage1);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage2).execute();
 
+			break;
+			
+		case "approve.disapprove":
+			
+			switch (customerMessage) {
+			case "Approve Request":
+				
+				break;
+
+			case "Disapprove Request":
+				
+				break;
+			}
+			
 			break;
 
 		case "carousel":
