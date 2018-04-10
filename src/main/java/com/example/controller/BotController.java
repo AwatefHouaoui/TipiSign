@@ -402,10 +402,10 @@ public class BotController {
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
 			// String imageUrl = "../static/buttons/decision.jpg";
-
+			carouselColumnList = new ArrayList<>();
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
-					carouselColumnList = new ArrayList<>();
+					
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
 
