@@ -401,30 +401,29 @@ public class BotController {
 
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
-			//String imageUrl = "../static/buttons/decision.jpg";
-			
+			// String imageUrl = "../static/buttons/decision.jpg";
+
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
+						carouselColumnList = new ArrayList<>();
+						carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
+								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
+										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
+								Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
+										new MessageAction("Disapprove", "Request refused")));
 
-						 carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
-										"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
-												.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
-										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
-												new MessageAction("Disapprove", "Request refused")));
-	
 						carouselColumnList.add(carouselColumn);
-						logger.info("request List**************************" + requests.get(i).getToUser().getUserName());
-					           
+						logger.info("request List**************************" + carouselColumnList.size());
+
 					}
 				}
 			}
-			carouselTemplate = new CarouselTemplate (carouselColumnList);
-			TemplateMessage templateMessage1 = new TemplateMessage("Carousel alt text", carouselTemplate);
+			carouselTemplate = new CarouselTemplate(carouselColumnList);
+			TemplateMessage templateMessage1 = new TemplateMessage("Carousel", carouselTemplate);
 			PushMessage pushMessage2 = new PushMessage(userId, templateMessage1);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage2).execute();
-			
 
 			break;
 
