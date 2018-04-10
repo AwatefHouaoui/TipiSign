@@ -34,7 +34,7 @@ public class RequestService {
 
 	@RequestMapping(value = "/editRequest/{id}", method = RequestMethod.PUT)
 	public Request saveStatusRequest(@PathVariable long id,@RequestBody Request r) {
-		r.getStatus();
+		r.getRequestId();
 		return requestRepository.save(r);
 	}
 	
