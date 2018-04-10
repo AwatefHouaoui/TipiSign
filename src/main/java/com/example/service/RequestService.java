@@ -33,10 +33,11 @@ public class RequestService {
 	}
 
 	@RequestMapping(value = "/editRequest/{id}", method = RequestMethod.PUT)
-	public Request saveStatusRequest(@PathVariable long id,@RequestBody Request r) {
-		r.getRequestId();
+	public Request saveStatusRequest(@PathVariable long id ,@RequestBody Request r) {
+		r.setRequestId(id);
 		return requestRepository.save(r);
 	}
+	
 	
 	
 
