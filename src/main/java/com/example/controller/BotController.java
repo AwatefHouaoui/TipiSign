@@ -94,6 +94,7 @@ public class BotController {
 	long visibility;
 	LineProgress lineProgress = new LineProgress();
 	CarouselTemplate carouselTemplate;
+	CarouselColumn carouselColumn;
 	List<CarouselColumn> carouselColumnList = null;
 
 	@ResponseBody
@@ -407,7 +408,8 @@ public class BotController {
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
 
-						CarouselColumn carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
+						 logger.info("request List**************************" + customerMessage);
+						 carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
 										"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 												.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
