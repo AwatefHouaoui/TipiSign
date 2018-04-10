@@ -94,6 +94,7 @@ public class BotController {
 	long visibility;
 	LineProgress lineProgress = new LineProgress();
 	CarouselTemplate carouselTemplate;
+	CarouselColumn carouselColumn;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -399,22 +400,22 @@ public class BotController {
 
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
+			String imageUrl = createUri("/static/buttons/decision.jpg");
 
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
 
-						String imageUrl = createUri("/static/buttons/decision.jpg");
-						carouselTemplate = new CarouselTemplate (Arrays
-								.asList(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
+					           carouselColumn = new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
 										"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 												.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
-												new MessageAction("Disapprove", "Request refused")))));
+												new MessageAction("Disapprove", "Request refused")));
 					}
 				}
 			}
+			carouselTemplate = new CarouselTemplate (Arrays.asList(carouselColumn));
 			TemplateMessage templateMessage1 = new TemplateMessage("Carousel alt text", carouselTemplate);
 			PushMessage pushMessage2 = new PushMessage(userId, templateMessage1);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage2).execute();
@@ -424,17 +425,17 @@ public class BotController {
 
 		case "carousel":
 
-			String imageUrl = createUri("/static/buttons/1040.jpg");
+			String imageUrl1 = createUri("/static/buttons/1040.jpg");
 			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
-					new CarouselColumn(imageUrl, "hoge", "fuga",
+					new CarouselColumn(imageUrl1, "hoge", "fuga",
 							Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
 									new URIAction("Go to line.me", "https://line.me"),
 									new PostbackAction("Say hello1", "hello こんにちは"))),
-					new CarouselColumn(imageUrl, "hoge", "fuga",
+					new CarouselColumn(imageUrl1, "hoge", "fuga",
 							Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
 									new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
 									new MessageAction("Say message", "Rice=米"))),
-					new CarouselColumn(imageUrl, "Datetime Picker", "Please select a date, time or datetime",
+					new CarouselColumn(imageUrl1, "Datetime Picker", "Please select a date, time or datetime",
 							Arrays.asList(
 									new DatetimePickerAction("Datetime", "action=sel", "datetime", "2017-06-18T06:15",
 											"2100-12-31T23:59", "1900-01-01T00:00"),
