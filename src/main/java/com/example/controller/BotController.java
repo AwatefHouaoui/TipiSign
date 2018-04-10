@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.json.JSONException;
@@ -403,14 +400,14 @@ public class BotController {
 
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
-			String imageUrl = "../static/buttons/decision.jpg";
+			//String imageUrl = "../static/buttons/decision.jpg";
 			
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
 
-						CarouselColumn carouselColumn = new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
+						CarouselColumn carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
 										"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 												.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
