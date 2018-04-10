@@ -93,6 +93,7 @@ public class BotController {
 	UserInformation toUser;
 	long visibility;
 	LineProgress lineProgress = new LineProgress();
+	CarouselTemplate carouselTemplate;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -405,18 +406,19 @@ public class BotController {
 							|| (requests.get(i).getStatus().equals("passed"))) {
 
 						String imageUrl = createUri("/static/buttons/decision.jpg");
-						CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays
+						carouselTemplate = new CarouselTemplate (Arrays
 								.asList(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
 										"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 												.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 										Arrays.asList(new MessageAction("Approve", "Request approved successfully"),
 												new MessageAction("Disapprove", "Request refused")))));
-						TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
-						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-						LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
 					}
 				}
 			}
+			TemplateMessage templateMessage1 = new TemplateMessage("Carousel alt text", carouselTemplate);
+			PushMessage pushMessage2 = new PushMessage(userId, templateMessage1);
+			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage2).execute();
+			
 
 			break;
 
