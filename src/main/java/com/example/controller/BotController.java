@@ -94,6 +94,7 @@ public class BotController {
 	long visibility;
 	LineProgress lineProgress = new LineProgress();
 	CarouselColumn carouselColumn;
+	String userId;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -106,7 +107,7 @@ public class BotController {
 		JSONObject data = rsl.getJSONObject("data");
 		JSONObject source = data.getJSONObject("source");
 		JSONObject message = data.getJSONObject("message");
-		String userId = source.getString("userId");
+		userId = source.getString("userId");
 		String customerMessage = message.getString("text");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
@@ -192,7 +193,6 @@ public class BotController {
 			logger.info("Request ***********" + resolvedQuery);
 
 			break;
-
 		case "default fallback intent":
 
 			lineProgress.setUserLine(userInformationRepository.getOne(userId));
@@ -401,43 +401,41 @@ public class BotController {
 			if (customerMessage.equals("Decision history")) {
 
 				List<Request> requests = requestRepository.findAll();
-				int s = requests.size();
+
 				List<CarouselColumn> carouselColumnList = new ArrayList<>();
 
-				for (int i = 0; i < s; i++) {
-					if (userId.equals(requests.get(i).getToUser().getUserId())) {
-						if (requests.get(i).getStatus().equals("pending")
-								|| (requests.get(i).getStatus().equals("passed"))) {
+				requests.forEach(req -> {
+					if (userId.equals(req.getToUser().getUserId())) {
+						if (req.getStatus().equals("pending") || (req.getStatus().equals("passed"))) {
 
 							logger.info("carousel *************************");
-							carouselColumn = new CarouselColumn("", "Request title: " + requests.get(i).getTitle(),
-									"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
-											.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
-									Arrays.asList(
-											new MessageAction("Approve",
-													"Approve request" + requests.get(i).getRequestId()),
-											new MessageAction("Disapprove", "Disapprove request")));
+							carouselColumn = new CarouselColumn(
+									"https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png",
+									"Request title: " + req.getTitle(),
+									"FROM: " + userInformationRepository.findOne(req.getFromUser()).getUserName()
+											+ "\nDETAIL: " + req.getDetail(),
+									Arrays.asList(new MessageAction("Approve", "Approve request" + req.getRequestId()),
+											new MessageAction("Disapprove",
+													"Disapprove request" + req.getRequestId())));
 
 							carouselColumnList.add(carouselColumn);
 							logger.info("carousel list***************" + carouselColumnList.size());
-						
+
 						}
 					}
-				}
+				});
+
 				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
 				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
 				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-				LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
-						.execute();
+				LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
 				logger.info("osakaaaaaaaaaaaaaaaaaaaa");
-			}
-
-			else {
+			} else {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
 
 				switch (part1) {
-				case "Approve": 
+				case "Approve":
 
 					long number = parameters.getLong("number");
 					Request r = requestRepository.findOne(number);
@@ -448,7 +446,7 @@ public class BotController {
 					break;
 
 				case "Disapprove":
-					
+
 					long number1 = parameters.getLong("number");
 					Request r1 = requestRepository.findOne(number1);
 					r1.setStatus("approved");
@@ -464,7 +462,7 @@ public class BotController {
 
 		case "carousel":
 
-			String imageUrl = createUri("/static/buttons/1040.jpg");
+			String imageUrl ="https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; //createUri("/static/buttons/1040.jpg");
 			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
 					new CarouselColumn(imageUrl, "hoge", "fuga",
 							Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
