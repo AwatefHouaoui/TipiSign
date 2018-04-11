@@ -428,7 +428,8 @@ public class BotController {
 						return;
 					}
 
-				});
+				});System.out.println("carousel size " );
+				System.out.println("carousel size " + carouselColumnList.size());
 				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
 				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
 				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
