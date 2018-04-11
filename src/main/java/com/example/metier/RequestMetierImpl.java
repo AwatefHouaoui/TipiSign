@@ -24,11 +24,5 @@ public class RequestMetierImpl implements RequestMetier {
 		return requestRepository.findAll();
 	}
 
-	@Override
-	public Request saveStatusRequest(long id, String status) {
-		Request r = requestRepository.findOne(id);
-		r.setStatus(status);
-		return requestRepository.save(r);
-	}
 
 }

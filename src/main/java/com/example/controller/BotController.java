@@ -408,6 +408,7 @@ public class BotController {
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
 			carouselColumnList = new ArrayList<>();
+			
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
 					if (requests.get(i).getStatus().equals("pending")
