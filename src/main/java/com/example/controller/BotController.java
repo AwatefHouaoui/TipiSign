@@ -115,7 +115,7 @@ public class BotController {
 		//String action = result.getString("action");
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
-		// JSONObject parameters = result.getJSONObject("parameters");
+		JSONObject parameters = result.getJSONObject("parameters");
 		// JSONObject fulfillment = result.getJSONObject("fulfillment");
 		// String speech = fulfillment.getString("speech");
 		//JSONArray messages = fulfillment.getJSONArray("messages");
@@ -425,7 +425,7 @@ public class BotController {
 				}
 			}
 			logger.info("carousel list***************"+ carouselColumnList.size());
-			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(carouselColumn));
+			CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
 			TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
 			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
@@ -435,14 +435,25 @@ public class BotController {
 		else {
 		 String[] table=customerMessage.split(" ");
 		 String part1 = table[0];
-		 String part2 = table[3];
-			
+		 
 		 switch (part1) {
 			case "Approve":
-			
+			 
+				long number = parameters.getLong("number");
+				Request r = requestRepository.findOne(number);
+				r.setStatus("approved");
+				requestRepository.save(r);
+				logger.info("approooooooooooooooved");
+				
 			break;
 			
 		case "Disapprove":
+			
+			long number1 = parameters.getLong("number");
+			Request r1 = requestRepository.findOne(number1);
+			r1.setStatus("approved");
+			requestRepository.save(r1);
+			logger.info("disapproooooooooooooooved");
 		
 			break;
 		}
