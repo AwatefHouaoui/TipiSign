@@ -422,14 +422,23 @@ public class BotController {
 							logger.info("carousel list***************" + carouselColumnList.size());
 
 						}
+						CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+						TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+						try {
+							LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
+									.execute();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+					} else {
+						return;
 					}
+
 				});
 
-				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-				LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
-				logger.info("osakaaaaaaaaaaaaaaaaaaaa");
 			} else {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
@@ -462,7 +471,7 @@ public class BotController {
 
 		case "carousel":
 
-			String imageUrl ="https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; //createUri("/static/buttons/1040.jpg");
+			String imageUrl = "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; // createUri("/static/buttons/1040.jpg");
 			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
 					new CarouselColumn(imageUrl, "hoge", "fuga",
 							Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
