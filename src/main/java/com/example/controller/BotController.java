@@ -94,7 +94,6 @@ public class BotController {
 	long visibility;
 	LineProgress lineProgress = new LineProgress();
 	CarouselColumn carouselColumn;
-	List<CarouselColumn> carouselColumnList;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -404,7 +403,7 @@ public class BotController {
 					
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
-			carouselColumnList = new ArrayList<>();
+			List<CarouselColumn> carouselColumnList = new ArrayList<>();
 			
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
@@ -419,17 +418,22 @@ public class BotController {
 										new MessageAction("Approve", "Approve request" +requests.get(i).getRequestId()),
 										new MessageAction("Disapprove", "Disapprove request")));
 						
-						carouselColumnList.add(carouselColumn);
-						logger.info("carousel liiiiiiiiiiiiiiist*************************");						
+						carouselColumnList.add(carouselColumn);	
+						logger.info("carousel list***************" + carouselColumnList.size());
 					}
 				}
 			}
-			logger.info("carousel list***************"+ carouselColumnList.size());
-			CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-			TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
-			logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+			try {
+				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+				LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+				logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+			}catch(Exception exception) {
+				System.out.println("teeeeeeeeeeeeeeeeeeeest");
+				System.out.println(exception.getMessage());
+			}
+			
 		}
 
 		else {
