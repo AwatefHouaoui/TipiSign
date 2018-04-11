@@ -93,7 +93,6 @@ public class BotController {
 	UserInformation toUser;
 	long visibility;
 	LineProgress lineProgress = new LineProgress();
-	CarouselTemplate carouselTemplate;
 	CarouselColumn carouselColumn;
 	List<CarouselColumn> carouselColumnList;
 
@@ -430,8 +429,7 @@ public class BotController {
 			}
 			
 			//logger.info("carousel list***************"+ carouselColumnList.size());
-			carouselTemplate = new CarouselTemplate(Arrays.asList(carouselColumn));
-		
+			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(carouselColumn));
 			TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
 			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
