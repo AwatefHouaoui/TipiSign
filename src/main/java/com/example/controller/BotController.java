@@ -429,8 +429,8 @@ public class BotController {
 					} else {
 						finished = true;
 					}
-
-					if (finished) {
+				}
+//					if (finished) {
 						System.out.println("carousel size ");
 						System.out.println("carousel size " + carouselColumnList.size());
 						CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
@@ -444,8 +444,8 @@ public class BotController {
 							e.printStackTrace();
 						}
 						logger.info("osakaaaaaaaaaaaaaaaaaaaa");
-					}
-				}
+//					}
+				
 			} else {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
