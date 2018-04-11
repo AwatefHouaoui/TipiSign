@@ -419,9 +419,7 @@ public class BotController {
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 								Arrays.asList(
 										new PostbackAction("Approve", " " + requests.get(i).getRequestId() + " ", "Approve Request"),
-										new PostbackAction("Disapprove",
-												"/editRequest/{" + requests.get(i).getRequestId() + "}/{disapproved}",
-												"Disapprove Request")));
+										new PostbackAction("Disapprove", " " + requests.get(i).getRequestId() + " ", "Disapprove Request")));
 						carouselColumnList.add(carouselColumn);
 					}
 				}
