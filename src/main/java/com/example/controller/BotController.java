@@ -420,23 +420,17 @@ public class BotController {
 
 							carouselColumnList.add(carouselColumn);
 							logger.info("carousel list***************" + carouselColumnList.size());
-
+							if (i == s - 1) {
+								CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+								TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+								PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+								LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
+										.execute();
+								logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+							}
 						}
 					}
 				}
-				logger.info("teest hani 2");
-				logger.info("teest hani 1    11" + carouselColumnList.size());
-				try {
-					CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-					TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-					PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-					LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
-					logger.info("osakaaaaaaaaaaaaaaaaaaaa");
-				} catch (Exception exception) {
-					System.out.println("teeeeeeeeeeeeeeeeeeeest");
-					System.out.println(exception.getMessage());
-				}
-
 			}
 
 			else {
