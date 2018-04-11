@@ -410,7 +410,7 @@ public class BotController {
 								|| (requests.get(i).getStatus().equals("passed"))) {
 
 							logger.info("carousel *************************");
-							carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
+							carouselColumn = new CarouselColumn("", "Request title: " + requests.get(i).getTitle(),
 									"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 											.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 									Arrays.asList(
@@ -420,17 +420,16 @@ public class BotController {
 
 							carouselColumnList.add(carouselColumn);
 							logger.info("carousel list***************" + carouselColumnList.size());
-							if (i == s - 1) {
-								CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-								TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-								PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-								LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
-										.execute();
-								logger.info("osakaaaaaaaaaaaaaaaaaaaa");
-							}
+						
 						}
 					}
 				}
+				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+				LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
+						.execute();
+				logger.info("osakaaaaaaaaaaaaaaaaaaaa");
 			}
 
 			else {
@@ -438,7 +437,7 @@ public class BotController {
 				String part1 = table[0];
 
 				switch (part1) {
-				case "Approve":
+				case "Approve": 
 
 					long number = parameters.getLong("number");
 					Request r = requestRepository.findOne(number);
@@ -449,7 +448,7 @@ public class BotController {
 					break;
 
 				case "Disapprove":
-
+					
 					long number1 = parameters.getLong("number");
 					Request r1 = requestRepository.findOne(number1);
 					r1.setStatus("approved");
