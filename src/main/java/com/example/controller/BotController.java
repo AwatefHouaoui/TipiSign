@@ -442,26 +442,17 @@ public class BotController {
 
 		case "Approve request":
 			
-			JSONObject columns = message.getJSONObject("columns");
-			JSONArray actions = columns.getJSONArray("messages");
-			JSONObject msg = actions.getJSONObject(0);
-			String dataPost = msg.getString("data");
+			JSONObject postback = data.getJSONObject("postback");
+			String dataPost = postback.getString("data");
 			logger.info("data"+ dataPost);
-			logger.info("message "+ message);
-			logger.info("actions"+ actions);
 			
 			break;
 			
 		case "Disapprove request":
 			
-			JSONObject columns1 = message.getJSONObject("columns");
-			JSONArray actions1 = columns1.getJSONArray("messages");
-			JSONObject msg1 = actions1.getJSONObject(0);
-			String dataPost1 = msg1.getString("data");
-			logger.info("data"+ dataPost1);
-			logger.info("message "+ message);
-			logger.info("actions"+ actions1);
-			
+		    postback = data.getJSONObject("postback");
+			dataPost = postback.getString("data");
+			logger.info("data"+ dataPost);
 			break;
 		}
 		
