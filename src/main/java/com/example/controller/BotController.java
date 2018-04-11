@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -109,11 +111,14 @@ public class BotController {
 		JSONObject message = data.getJSONObject("message");
 		String userId = source.getString("userId");
 		String customerMessage = message.getString("text");
-		//String datad = message.getString("data");
+		JSONObject columns = message.getJSONObject("columns");
+		JSONArray actions = columns.getJSONArray("messages");
+		JSONObject msg = actions.getJSONObject(0);
+		String dataPost = msg.getString("data");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
-		// String action = result.getString("action");
+		String action = result.getString("action");
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
 		// JSONObject parameters = result.getJSONObject("parameters");
@@ -441,13 +446,17 @@ public class BotController {
 
 		case "Approve request":
 			
-			
+			logger.info("data"+ dataPost);
+			logger.info("message "+ message);
+			logger.info("actions"+ actions);
 			
 			break;
 			
 		case "Disapprove request":
 			
-			
+			logger.info("data"+ dataPost);
+			logger.info("message "+ message);
+			logger.info("actions"+ actions);
 			
 			break;
 		}
