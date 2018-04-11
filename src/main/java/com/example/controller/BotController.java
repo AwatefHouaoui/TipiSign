@@ -129,7 +129,7 @@ public class BotController {
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("status ************" + lineProgress.getStatusLine());
 		logger.info("timestamp*********" + timestamp);
-		logger.info("timestamp*********" + json);
+		logger.info("timestamp*********" + jsonResult);
 		
 
 		switch (intentName.toLowerCase()) {
