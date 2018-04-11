@@ -401,6 +401,10 @@ public class BotController {
 
 		case "history":
 
+		switch (customerMessage) {
+		
+		case "Decision history":
+			
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
 			carouselColumnList = new ArrayList<>();
@@ -425,9 +429,24 @@ public class BotController {
 			TemplateMessage templateMessage1 = new TemplateMessage("Carousel", carouselTemplate);
 			PushMessage pushMessage2 = new PushMessage(userId, templateMessage1);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage2).execute();
-
+			
 			break;
 
+		case "Approve request":
+			
+			
+			
+			break;
+			
+		case "Disapprove request":
+			
+			
+			
+			break;
+		}
+		
+		break;
+		
 		case "carousel":
 
 			String imageUrl = createUri("/static/buttons/1040.jpg");
