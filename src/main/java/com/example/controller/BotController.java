@@ -406,6 +406,7 @@ public class BotController {
 		case "Decision history":
 			
 			logger.info("Decision history*************************");
+			
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
 			carouselColumnList = new ArrayList<>();
@@ -414,13 +415,16 @@ public class BotController {
 					if (requests.get(i).getStatus().equals("pending")
 							|| (requests.get(i).getStatus().equals("passed"))) {
 
+						logger.info("carousel *************************");
 						carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
 								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 								Arrays.asList(
 										new PostbackAction("Approve", "request A", "Approve Request"),
 										new PostbackAction("Disapprove", "request B", "Disapprove Request")));
+						
 						carouselColumnList.add(carouselColumn);
+						logger.info("carousel liiiiiiiiiiiiiiist*************************");
 					}
 				}
 			}
