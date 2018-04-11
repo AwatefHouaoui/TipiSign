@@ -442,6 +442,7 @@ public class BotController {
 
 		case "Approve request":
 			
+			logger.info("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 			JSONObject postback = data.getJSONObject("postback");
 			String dataPost = postback.getString("data");
 			logger.info("data"+ dataPost);
@@ -450,6 +451,7 @@ public class BotController {
 			
 		case "Disapprove request":
 			
+			logger.info("nnnnnnnnnnnnnnnnnnnnnnnn");
 		    postback = data.getJSONObject("postback");
 			dataPost = postback.getString("data");
 			logger.info("data"+ dataPost);
