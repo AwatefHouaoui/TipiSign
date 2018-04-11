@@ -397,15 +397,14 @@ public class BotController {
 			break;
 
 		case "history":
-
+			List<CarouselColumn> carouselColumnListFinal = new ArrayList<>();
 			if (customerMessage.equals("Decision history")) {
 
 				List<Request> requests = requestRepository.findAll();
 				carouselColumnList = new ArrayList<>();
 				int finished = 0;
 				for (Request req : requests) {
-					if (userId.equals(req.getToUser().getUserId())) {
-						if (req.getStatus().equals("pending") || (req.getStatus().equals("passed"))) {
+					if (userId != null && userId.equals(req.getToUser().getUserId())) && (req.getStatus().equals("pending") || (req.getStatus().equals("passed"))) {
 							logger.info("carousel *************************");
 							carouselColumn = new CarouselColumn(
 									"https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png",
@@ -419,15 +418,17 @@ public class BotController {
 							carouselColumnList.add(carouselColumn);
 							logger.info("carousel list***************" + carouselColumnList.size());
 
-						}
+						
 
 					} else {
 						finished++;
+						carouselColumnListFinal.clear();
+						carouselColumnListFinal.addAll(carouselColumnList);
 						System.out.println(finished + " finished");
 
 					}
 					if (finished == 1) {
-						CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+						CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnListFinal);
 						TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
 						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
 						try {
