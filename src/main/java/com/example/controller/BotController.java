@@ -401,7 +401,7 @@ public class BotController {
 			if (customerMessage.equals("Decision history")) {
 
 				List<Request> requests = requestRepository.findAll();
-				boolean finished = false;
+				int finished = 0;
 
 				for (Request req : requests) {
 
@@ -427,25 +427,23 @@ public class BotController {
 						}
 
 					} else {
-						finished = true;
+						finished++;
+						if (finished == 1) {
+							CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+							TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+							PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+							try {
+								LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
+										.execute();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+						}
+						break;
 					}
 				}
-//					if (finished) {
-						System.out.println("carousel size ");
-						System.out.println("carousel size " + carouselColumnList.size());
-						CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-						TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-						try {
-							LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
-									.execute();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						logger.info("osakaaaaaaaaaaaaaaaaaaaa");
-//					}
-				
 			} else {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
