@@ -119,8 +119,8 @@ public class BotController {
 		// JSONObject parameters = result.getJSONObject("parameters");
 		// JSONObject fulfillment = result.getJSONObject("fulfillment");
 		// String speech = fulfillment.getString("speech");
-		// JSONArray messages = fulfillment.getJSONArray("messages");
-		// JSONObject msg = messages.getJSONObject(0);
+		//JSONArray messages = fulfillment.getJSONArray("messages");
+		//JSONObject msg = messages.getJSONObject(0);
 		// String speechMessage = msg.getString("speech");
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
@@ -129,6 +129,8 @@ public class BotController {
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("status ************" + lineProgress.getStatusLine());
 		logger.info("timestamp*********" + timestamp);
+		logger.info("timestamp*********" + json);
+		
 
 		switch (intentName.toLowerCase()) {
 
@@ -410,8 +412,11 @@ public class BotController {
 						carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
 								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
-								Arrays.asList(new PostbackAction("Approve", "/editRequest/{"+requests.get(i).getRequestId()+"}/{approved}", "Approve Request"),
-										new PostbackAction("Disapprove", "/editRequest/{"+requests.get(i).getRequestId()+"}/{disapproved}", "Disapprove Request")));
+								Arrays.asList(
+										new PostbackAction("Approve", "" + requests.get(i).getRequestId() + "", "Approve Request"),
+										new PostbackAction("Disapprove",
+												"/editRequest/{" + requests.get(i).getRequestId() + "}/{disapproved}",
+												"Disapprove Request")));
 						carouselColumnList.add(carouselColumn);
 					}
 				}
@@ -421,20 +426,6 @@ public class BotController {
 			PushMessage pushMessage2 = new PushMessage(userId, templateMessage1);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage2).execute();
 
-			break;
-			
-		case "approve.disapprove":
-			
-			switch (customerMessage) {
-			case "Approve Request":
-				
-				break;
-
-			case "Disapprove Request":
-				
-				break;
-			}
-			
 			break;
 
 		case "carousel":
