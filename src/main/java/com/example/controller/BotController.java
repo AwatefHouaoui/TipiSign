@@ -403,9 +403,11 @@ public class BotController {
 				List<Request> requests = requestRepository.findAll();
 
 				requests.forEach(req -> {
+					System.out.println("req" + req.getRequestId());
 					if (userId.equals(req.getToUser().getUserId())) {
+						System.out.println("after if iduser");
 						if (req.getStatus().equals("pending") || (req.getStatus().equals("passed"))) {
-
+							System.out.println("after pending status");
 							logger.info("carousel *************************");
 							carouselColumn = new CarouselColumn(
 									"https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png",
@@ -417,6 +419,7 @@ public class BotController {
 													"Disapprove request" + req.getRequestId())));
 
 							carouselColumnList.add(carouselColumn);
+							System.out.println("after carousel add");
 							logger.info("carousel list***************" + carouselColumnList.size());
 
 						}
@@ -424,19 +427,18 @@ public class BotController {
 					} else {
 						return;
 					}
-					CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-					TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-					PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-					try {
-						LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					logger.info("osakaaaaaaaaaaaaaaaaaaaa");
 
 				});
-
+				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+				try {
+					LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				logger.info("osakaaaaaaaaaaaaaaaaaaaa");
 			} else {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
