@@ -404,7 +404,7 @@ public class BotController {
 				carouselColumnList = new ArrayList<>();
 				int finished = 0;
 				for (Request req : requests) {
-					if (userId != null && userId.equals(req.getToUser().getUserId())) && (req.getStatus().equals("pending") || (req.getStatus().equals("passed"))) {
+					if (userId != null && userId.equals(req.getToUser().getUserId()) && (req.getStatus().equals("pending") || (req.getStatus().equals("passed")))) {
 							logger.info("carousel *************************");
 							carouselColumn = new CarouselColumn(
 									"https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png",
