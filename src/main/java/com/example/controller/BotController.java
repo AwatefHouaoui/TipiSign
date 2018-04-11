@@ -424,19 +424,20 @@ public class BotController {
 					} else {
 						finished++;
 						System.out.println(finished + " finished");
-						if (finished == 1) {
-							CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-							TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-							PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-							try {
-								LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
-										.execute();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+
+					}
+					if (finished == 1) {
+						CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+						TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+						try {
+							LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
+									.execute();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
+						logger.info("osakaaaaaaaaaaaaaaaaaaaa");
 					}
 				}
 			} else {
