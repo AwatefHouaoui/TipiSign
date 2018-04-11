@@ -424,16 +424,18 @@ public class BotController {
 						
 						//carouselColumnList.add(carouselColumn);
 						logger.info("carousel liiiiiiiiiiiiiiist*************************");
+						CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(carouselColumn));
+						TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+						LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+						logger.info("osakaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+						
 					}
 				}
 			}
 			
 			//logger.info("carousel list***************"+ carouselColumnList.size());
-			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(carouselColumn));
-			TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
-			logger.info("osakaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+			
 			
 			break;
 
