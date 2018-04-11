@@ -428,11 +428,13 @@ public class BotController {
 					}
 				}
 			}
+			
 			carouselTemplate = new CarouselTemplate(carouselColumnList);
-			TemplateMessage templateMessage1 = new TemplateMessage("Carousel", carouselTemplate);
-			PushMessage pushMessage2 = new PushMessage(userId, templateMessage1);
-			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage2).execute();
-			logger.info("Decision historyyyyyyyyyyy*************************");
+			logger.info("osakiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
+			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+			logger.info("osakaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 			
 			break;
 
