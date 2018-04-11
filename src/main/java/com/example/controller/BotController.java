@@ -429,6 +429,7 @@ public class BotController {
 			}
 			
 			logger.info("carousel list***************"+ carouselColumnList.size());
+			carouselColumnList.toArray();
 			carouselTemplate = new CarouselTemplate(carouselColumnList);
 		
 			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
