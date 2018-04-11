@@ -110,6 +110,7 @@ public class BotController {
 		JSONObject message = data.getJSONObject("message");
 		String userId = source.getString("userId");
 		String customerMessage = message.getString("text");
+		//String datad = message.getString("data");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
