@@ -401,6 +401,7 @@ public class BotController {
 			if (customerMessage.equals("Decision history")) {
 
 				List<Request> requests = requestRepository.findAll();
+				carouselColumnList = new ArrayList<>();
 				int finished = 0;
 				for (Request req : requests) {
 					if (userId.equals(req.getToUser().getUserId())) {
