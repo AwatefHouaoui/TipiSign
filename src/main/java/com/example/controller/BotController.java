@@ -111,14 +111,14 @@ public class BotController {
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
-		//String action = result.getString("action");
+		// String action = result.getString("action");
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
 		JSONObject parameters = result.getJSONObject("parameters");
 		// JSONObject fulfillment = result.getJSONObject("fulfillment");
 		// String speech = fulfillment.getString("speech");
-		//JSONArray messages = fulfillment.getJSONArray("messages");
-		//JSONObject msg = messages.getJSONObject(0);
+		// JSONArray messages = fulfillment.getJSONArray("messages");
+		// JSONObject msg = messages.getJSONObject(0);
 		// String speechMessage = msg.getString("speech");
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
@@ -128,7 +128,6 @@ public class BotController {
 		logger.info("status ************" + lineProgress.getStatusLine());
 		logger.info("timestamp*********" + timestamp);
 		logger.info("timestamp*********" + jsonResult);
-		
 
 		switch (intentName.toLowerCase()) {
 
@@ -399,73 +398,77 @@ public class BotController {
 
 		case "history":
 
-		if (customerMessage.equals("Decision history")) {
-					
-			List<Request> requests = requestRepository.findAll();
-			int s = requests.size();
-			List<CarouselColumn> carouselColumnList = new ArrayList<>();
-			
-			for (int i = 0; i < s; i++) {
-				if (userId.equals(requests.get(i).getToUser().getUserId())) {
-					if (requests.get(i).getStatus().equals("pending")
-							|| (requests.get(i).getStatus().equals("passed"))) {
+			if (customerMessage.equals("Decision history")) {
 
-						logger.info("carousel *************************");
-						carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
-								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
-										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
-								Arrays.asList(
-										new MessageAction("Approve", "Approve request" +requests.get(i).getRequestId()),
-										new MessageAction("Disapprove", "Disapprove request")));
-						
-						carouselColumnList.add(carouselColumn);	
-						logger.info("carousel list***************" + carouselColumnList.size());
+				List<Request> requests = requestRepository.findAll();
+				int s = requests.size();
+				List<CarouselColumn> carouselColumnList = new ArrayList<>();
+
+				for (int i = 0; i < s; i++) {
+					if (userId.equals(requests.get(i).getToUser().getUserId())) {
+						if (requests.get(i).getStatus().equals("pending")
+								|| (requests.get(i).getStatus().equals("passed"))) {
+
+							logger.info("carousel *************************");
+							carouselColumn = new CarouselColumn(null, "Request title: " + requests.get(i).getTitle(),
+									"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
+											.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
+									Arrays.asList(
+											new MessageAction("Approve",
+													"Approve request" + requests.get(i).getRequestId()),
+											new MessageAction("Disapprove", "Disapprove request")));
+
+							carouselColumnList.add(carouselColumn);
+							logger.info("carousel list***************" + carouselColumnList.size());
+
+						}
 					}
 				}
-			}
-			try {
-				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-				LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
-				logger.info("osakaaaaaaaaaaaaaaaaaaaa");
-			}catch(Exception exception) {
-				System.out.println("teeeeeeeeeeeeeeeeeeeest");
-				System.out.println(exception.getMessage());
-			}
-			
-		}
+				logger.info("teest hani 2");
+				logger.info("teest hani 1    11" + carouselColumnList.size());
+				try {
+					CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+					TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+					PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+					LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+					logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+				} catch (Exception exception) {
+					System.out.println("teeeeeeeeeeeeeeeeeeeest");
+					System.out.println(exception.getMessage());
+				}
 
-		else {
-		 String[] table=customerMessage.split(" ");
-		 String part1 = table[0];
-		 
-		 switch (part1) {
-			case "Approve":
-			 
-				long number = parameters.getLong("number");
-				Request r = requestRepository.findOne(number);
-				r.setStatus("approved");
-				requestRepository.save(r);
-				logger.info("approooooooooooooooved");
-				
-			break;
-			
-		case "Disapprove":
-			
-			long number1 = parameters.getLong("number");
-			Request r1 = requestRepository.findOne(number1);
-			r1.setStatus("approved");
-			requestRepository.save(r1);
-			logger.info("disapproooooooooooooooved");
-		
-			break;
-		}
+			}
 
-		}
-		
-		break;
-		
+			else {
+				String[] table = customerMessage.split(" ");
+				String part1 = table[0];
+
+				switch (part1) {
+				case "Approve":
+
+					long number = parameters.getLong("number");
+					Request r = requestRepository.findOne(number);
+					r.setStatus("approved");
+					requestRepository.save(r);
+					logger.info("approooooooooooooooved");
+
+					break;
+
+				case "Disapprove":
+
+					long number1 = parameters.getLong("number");
+					Request r1 = requestRepository.findOne(number1);
+					r1.setStatus("approved");
+					requestRepository.save(r1);
+					logger.info("disapproooooooooooooooved");
+
+					break;
+				}
+
+			}
+
+			break;
+
 		case "carousel":
 
 			String imageUrl = createUri("/static/buttons/1040.jpg");
