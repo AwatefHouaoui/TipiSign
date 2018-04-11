@@ -422,22 +422,22 @@ public class BotController {
 							logger.info("carousel list***************" + carouselColumnList.size());
 
 						}
-						CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-						TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-						try {
-							LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
-									.execute();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+
 					} else {
 						return;
 					}
 
 				});
+				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+				try {
+					LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				logger.info("osakaaaaaaaaaaaaaaaaaaaa");
 
 			} else {
 				String[] table = customerMessage.split(" ");
