@@ -422,6 +422,7 @@ public class BotController {
 
 					} else {
 						finished++;
+						System.out.println("carouselColumnList " +carouselColumnList.size());
 						carouselColumnListFinal.clear();
 						carouselColumnListFinal.addAll(carouselColumnList);
 						System.out.println(finished + " finished");
