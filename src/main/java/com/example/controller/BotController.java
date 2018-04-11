@@ -418,8 +418,8 @@ public class BotController {
 								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 								Arrays.asList(
-										new PostbackAction("Approve", " " + requests.get(i).getRequestId() + " ", "Approve Request"),
-										new PostbackAction("Disapprove", " " + requests.get(i).getRequestId() + " ", "Disapprove Request")));
+										new PostbackAction("Approve", "request " + requests.get(i).getRequestId(), "Approve Request"),
+										new PostbackAction("Disapprove", "request " + requests.get(i).getRequestId(), "Disapprove Request")));
 						carouselColumnList.add(carouselColumn);
 					}
 				}
