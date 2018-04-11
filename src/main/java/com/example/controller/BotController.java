@@ -429,10 +429,9 @@ public class BotController {
 			}
 			
 			logger.info("carousel list***************"+ carouselColumnList.size());
-			carouselColumnList.toArray();
 			carouselTemplate = new CarouselTemplate(carouselColumnList);
 		
-			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
+			TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
 			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
 			logger.info("osakaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
