@@ -405,6 +405,7 @@ public class BotController {
 		
 		case "Decision history":
 			
+			logger.info("Decision history*************************");
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
 			carouselColumnList = new ArrayList<>();
@@ -417,7 +418,7 @@ public class BotController {
 								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 								Arrays.asList(
-										new PostbackAction("Approve", "" + requests.get(i).getRequestId() + "", "Approve Request"),
+										new PostbackAction("Approve", " " + requests.get(i).getRequestId() + " ", "Approve Request"),
 										new PostbackAction("Disapprove",
 												"/editRequest/{" + requests.get(i).getRequestId() + "}/{disapproved}",
 												"Disapprove Request")));
@@ -429,6 +430,7 @@ public class BotController {
 			TemplateMessage templateMessage1 = new TemplateMessage("Carousel", carouselTemplate);
 			PushMessage pushMessage2 = new PushMessage(userId, templateMessage1);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage2).execute();
+			logger.info("Decision historyyyyyyyyyyy*************************");
 			
 			break;
 
