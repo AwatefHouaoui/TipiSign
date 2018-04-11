@@ -404,9 +404,7 @@ public class BotController {
 		switch (customerMessage) {
 		
 		case "Decision history":
-			
-			logger.info("Decision history*************************");
-			
+					
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
 			carouselColumnList = new ArrayList<>();
@@ -429,8 +427,9 @@ public class BotController {
 				}
 			}
 			
+			logger.info("carousel list***************"+ carouselColumnList.size());
 			carouselTemplate = new CarouselTemplate(carouselColumnList);
-			logger.info("osakiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+		
 			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
 			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
 			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
