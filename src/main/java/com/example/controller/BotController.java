@@ -121,7 +121,7 @@ public class BotController {
 		// JSONArray messages = fulfillment.getJSONArray("messages");
 		// JSONObject msg = messages.getJSONObject(0);
 		// String speechMessage = msg.getString("speech");
-
+		List<CarouselColumn> carouselColumnList = new ArrayList<>();
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
 		logger.info("in intente name ****** '{}'" + intentName);
@@ -402,8 +402,6 @@ public class BotController {
 
 				List<Request> requests = requestRepository.findAll();
 
-				List<CarouselColumn> carouselColumnList = new ArrayList<>();
-
 				requests.forEach(req -> {
 					if (userId.equals(req.getToUser().getUserId())) {
 						if (req.getStatus().equals("pending") || (req.getStatus().equals("passed"))) {
@@ -426,18 +424,18 @@ public class BotController {
 					} else {
 						return;
 					}
+					CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
+					TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+					PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+					try {
+						LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					logger.info("osakaaaaaaaaaaaaaaaaaaaa");
 
 				});
-				CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnList);
-				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-				try {
-					LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				logger.info("osakaaaaaaaaaaaaaaaaaaaa");
 
 			} else {
 				String[] table = customerMessage.split(" ");
