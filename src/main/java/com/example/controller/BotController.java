@@ -9,8 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -114,7 +112,7 @@ public class BotController {
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
-		String action = result.getString("action");
+		//String action = result.getString("action");
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
 		// JSONObject parameters = result.getJSONObject("parameters");
@@ -402,13 +400,11 @@ public class BotController {
 
 		case "history":
 
-		switch (customerMessage) {
-		
-		case "Decision history":
+		if (customerMessage.equals("Decision history")) {
 					
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
-			//carouselColumnList = new ArrayList<>();
+			carouselColumnList = new ArrayList<>();
 			
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
@@ -420,42 +416,37 @@ public class BotController {
 								"FROM: " + userInformationRepository.findOne(requests.get(i).getFromUser())
 										.getUserName() + "\nDETAIL: " + requests.get(i).getDetail(),
 								Arrays.asList(
-										new PostbackAction("Approve", "request " + requests.get(i).getRequestId(), "Approve request"),
-										new PostbackAction("Disapprove", "request " + requests.get(i).getRequestId(), "Disapprove request")));
+										new MessageAction("Approve", "Approve request" +requests.get(i).getRequestId()),
+										new MessageAction("Disapprove", "Disapprove request")));
 						
-						//carouselColumnList.add(carouselColumn);
-						logger.info("carousel liiiiiiiiiiiiiiist*************************");
-						CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(carouselColumn));
-						TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-						LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
-						logger.info("osakaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-						
+						carouselColumnList.add(carouselColumn);
+						logger.info("carousel liiiiiiiiiiiiiiist*************************");						
 					}
 				}
 			}
-			
-			//logger.info("carousel list***************"+ carouselColumnList.size());
-			
-			
-			break;
+			logger.info("carousel list***************"+ carouselColumnList.size());
+			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(carouselColumn));
+			TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
+			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+			logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+		}
 
-		case "Approve request":
+		else {
+		 String[] table=customerMessage.split(" ");
+		 String part1 = table[0];
+		 String part2 = table[3];
 			
-			logger.info("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-			JSONObject postback = data.getJSONObject("postback");
-			String dataPost = postback.getString("data");
-			logger.info("data"+ dataPost);
+		 switch (part1) {
+			case "Approve":
 			
 			break;
 			
-		case "Disapprove request":
-			
-			logger.info("nnnnnnnnnnnnnnnnnnnnnnnn");
-		    postback = data.getJSONObject("postback");
-			dataPost = postback.getString("data");
-			logger.info("data"+ dataPost);
+		case "Disapprove":
+		
 			break;
+		}
+
 		}
 		
 		break;
