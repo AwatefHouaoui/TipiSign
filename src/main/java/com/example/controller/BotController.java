@@ -408,7 +408,7 @@ public class BotController {
 					
 			List<Request> requests = requestRepository.findAll();
 			int s = requests.size();
-			carouselColumnList = new ArrayList<>();
+			//carouselColumnList = new ArrayList<>();
 			
 			for (int i = 0; i < s; i++) {
 				if (userId.equals(requests.get(i).getToUser().getUserId())) {
@@ -423,14 +423,14 @@ public class BotController {
 										new PostbackAction("Approve", "request " + requests.get(i).getRequestId(), "Approve Request"),
 										new PostbackAction("Disapprove", "request " + requests.get(i).getRequestId(), "Disapprove Request")));
 						
-						carouselColumnList.add(carouselColumn);
+						//carouselColumnList.add(carouselColumn);
 						logger.info("carousel liiiiiiiiiiiiiiist*************************");
 					}
 				}
 			}
 			
-			logger.info("carousel list***************"+ carouselColumnList.size());
-			carouselTemplate = new CarouselTemplate(carouselColumnList);
+			//logger.info("carousel list***************"+ carouselColumnList.size());
+			carouselTemplate = new CarouselTemplate(Arrays.asList(carouselColumn));
 		
 			TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
 			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
