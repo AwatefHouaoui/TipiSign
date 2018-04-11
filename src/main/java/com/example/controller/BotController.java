@@ -111,10 +111,6 @@ public class BotController {
 		JSONObject message = data.getJSONObject("message");
 		String userId = source.getString("userId");
 		String customerMessage = message.getString("text");
-		JSONObject columns = message.getJSONObject("columns");
-		JSONArray actions = columns.getJSONArray("messages");
-		JSONObject msg = actions.getJSONObject(0);
-		String dataPost = msg.getString("data");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
@@ -446,6 +442,10 @@ public class BotController {
 
 		case "Approve request":
 			
+			JSONObject columns = message.getJSONObject("columns");
+			JSONArray actions = columns.getJSONArray("messages");
+			JSONObject msg = actions.getJSONObject(0);
+			String dataPost = msg.getString("data");
 			logger.info("data"+ dataPost);
 			logger.info("message "+ message);
 			logger.info("actions"+ actions);
@@ -454,9 +454,13 @@ public class BotController {
 			
 		case "Disapprove request":
 			
-			logger.info("data"+ dataPost);
+			JSONObject columns1 = message.getJSONObject("columns");
+			JSONArray actions1 = columns1.getJSONArray("messages");
+			JSONObject msg1 = actions1.getJSONObject(0);
+			String dataPost1 = msg1.getString("data");
+			logger.info("data"+ dataPost1);
 			logger.info("message "+ message);
-			logger.info("actions"+ actions);
+			logger.info("actions"+ actions1);
 			
 			break;
 		}
