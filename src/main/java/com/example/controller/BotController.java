@@ -826,7 +826,7 @@ public class BotController {
 			// messageActions.add(new MessageAction("N/A", "not available"));
 			ButtonsTemplate buttonsTemplate = new ButtonsTemplate(imageURL, boldTitle, normalTitle, messageActions);
 
-			TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
+			TemplateMessage templateMessage = new TemplateMessage("New Request", buttonsTemplate);
 			PushMessage pushMessage = new PushMessage(userId, templateMessage);
 			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 
