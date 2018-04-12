@@ -574,13 +574,13 @@ public class BotController {
 		List<Request> requests = requestRepository.findAll();
 		listOfCarouselColumns = new ArrayList<>();
 		logger.info("size of requests is =" + requests.size());
-		requests.forEach(req -> {
-
+		for (int i = 0; i < 3; i++) {
 			listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: ", "FROM:  \nDETAIL: ",
 					Arrays.asList(buildMessageAction("Approve", "Approve request"),
 							buildMessageAction("Disapprove", "Disapprove request"))));
 
-		});
+		}
+		
 
 		return listOfCarouselColumns;
 	}
