@@ -571,12 +571,16 @@ public class BotController {
 
 	private List<CarouselColumn> collectCarouselColumns() {
 		String imageUrl = "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; // createUri("/static/buttons/1040.jpg");
-
+		List<Request> requests = requestRepository.findAll();
 		listOfCarouselColumns = new ArrayList<>();
+		logger.info("size of requests is =" + requests.size());
+		requests.forEach(req -> {
 
-		listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: ", "FROM: \nDETAIL: ",
-				Arrays.asList(buildMessageAction("Approve", "Approve request"),
-						buildMessageAction("Disapprove", "Disapprove request"))));
+			listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: ", "FROM:  \nDETAIL: ",
+					Arrays.asList(buildMessageAction("Approve", "Approve request"),
+							buildMessageAction("Disapprove", "Disapprove request"))));
+
+		});
 
 		return listOfCarouselColumns;
 	}
