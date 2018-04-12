@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -95,6 +96,7 @@ public class BotController {
 	LineProgress lineProgress = new LineProgress();
 	CarouselColumn carouselColumn;
 	String userId;
+	List<CarouselColumn> listOfCarouselColumns;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -399,6 +401,7 @@ public class BotController {
 		case "history":
 
 			if (customerMessage.equals("Decision history")) {
+
 				//
 				// List<CarouselColumn> carouselColumnList = new ArrayList<>();
 				// List<CarouselColumn> carouselColumnListFinal = new ArrayList<>();
@@ -446,7 +449,6 @@ public class BotController {
 				// }
 				// }
 
-				String imageUrl = "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; // createUri("/static/buttons/1040.jpg");
 				CarouselTemplate carouselTemplate = new CarouselTemplate(collectCarouselColumns());
 				TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
 				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
@@ -569,22 +571,29 @@ public class BotController {
 
 	private List<CarouselColumn> collectCarouselColumns() {
 		String imageUrl = "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; // createUri("/static/buttons/1040.jpg");
+		List<Request> requests = requestRepository.findAll();
+		listOfCarouselColumns = new ArrayList<>();
+		requests.forEach(req -> {
+			if (req.getToUser().getUserId().equals(userId)
+					&& (req.getStatus().contains("pending") || req.getStatus().contains("passed"))) {
+				listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: " + req.getTitle(),
+						"FROM: " + userInformationRepository.findOne(req.getFromUser()).getUserName() + "\nDETAIL: "
+								+ req.getDetail(),
+						Arrays.asList(buildMessageAction("Approve", "Approve request" + req.getRequestId()),
+								buildMessageAction("Disapprove", "Disapprove request" + req.getRequestId()))));
+			}
+		});
 
-		return Arrays.asList(
-				new CarouselColumn(imageUrl, "hoge", "fuga",
-						Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
-								new URIAction("Go to line.me", "https://line.me"),
-								new PostbackAction("Say hello1", "hello こんにちは"))),
-				new CarouselColumn(imageUrl, "hoge", "fuga",
-						Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
-								new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
-								new MessageAction("Say message", "Rice=米"))),
-				new CarouselColumn(imageUrl, "Datetime Picker", "Please select a date, time or datetime", Arrays.asList(
-						new DatetimePickerAction("Datetime", "action=sel", "datetime", "2017-06-18T06:15",
-								"2100-12-31T23:59", "1900-01-01T00:00"),
-						new DatetimePickerAction("Date", "action=sel&only=date", "date", "2017-06-18", "2100-12-31",
-								"1900-01-01"),
-						new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15", "23:59", "00:00"))));
+		return listOfCarouselColumns;
+	}
+
+	private CarouselColumn buildCarouselColumn(String thumbnailImageUrl, String titre, String text,
+			List<Action> actions) {
+		return new CarouselColumn(thumbnailImageUrl, titre, text, actions);
+	}
+
+	private Action buildMessageAction(String label, String text) {
+		return new MessageAction(label, text);
 	}
 
 	@EventMapping
