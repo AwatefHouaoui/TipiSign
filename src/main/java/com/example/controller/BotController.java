@@ -108,6 +108,7 @@ public class BotController {
 	CarouselColumn carouselColumn;
 	String userId;
 	List<CarouselColumn> listOfCarouselColumns;
+	Request request;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -345,7 +346,7 @@ public class BotController {
 
 			if (customerMessage.equals("Send")) {
 
-				Request request = new Request();
+				request = new Request();
 				request.setTitle(title);
 				request.setDetail(detail);
 				request.setToUser(toUser);
