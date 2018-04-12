@@ -364,6 +364,17 @@ public class BotController {
 					return json;
 				}
 
+				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
+
+				hm.put("Approve", "Approve request " + request.getRequestId());
+				hm.put("Disapprove", "Disapprove request " + request.getRequestId());
+
+				typeBRecursiveChoices(imageUrl, "Request title: " + request.getTitle(), "FROM:"
+						+ userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + request.getDetail(),
+						hm, TOKEN, request.getToUser().getUserId());
+				logger.info("request sent to:" + request.getToUser().getUserName());
+
 			} else {
 
 				lineProgressRepository.delete(lineProgress);
@@ -386,7 +397,7 @@ public class BotController {
 
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
-				
+
 				List<Request> requests = requestRepository.findPendingRequestByToUser(userId);
 				List<CarouselColumn> listCarouselColumns = new ArrayList<>();
 				int a = requests.size();
