@@ -1,6 +1,7 @@
 package com.example.entities;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Collection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Request.
  */
@@ -46,10 +46,10 @@ public class Request implements Serializable {
 	private String fromUser;
 
 	/** The created at. */
-	private String createdAt;
+	private Timestamp createdAt;
 
 	/** The updated at. */
-	private String updatedAt;
+	private Timestamp updatedAt;
 
 	/** The detail. */
 	private String detail;
@@ -198,7 +198,7 @@ public class Request implements Serializable {
 	 *         Gets the updated at.
 	 * @return the updated at
 	 */
-	public String getUpdatedAt() {
+	public Timestamp getUpdatedAt() {
 		return updatedAt;
 	}
 
@@ -217,7 +217,7 @@ public class Request implements Serializable {
 	 * @param updatedAt
 	 *            the new updated at
 	 */
-	public void setUpdatedAt(String updatedAt) {
+	public void setUpdatedAt(Timestamp updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
@@ -346,7 +346,7 @@ public class Request implements Serializable {
 	 *         Gets the created at.
 	 * @return the created at
 	 */
-	public String getCreatedAt() {
+	public Timestamp getCreatedAt() {
 		return createdAt;
 	}
 
@@ -365,7 +365,7 @@ public class Request implements Serializable {
 	 * @param createdAt
 	 *            the new created at
 	 */
-	public void setCreatedAt(String createdAt) {
+	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
 	}
 

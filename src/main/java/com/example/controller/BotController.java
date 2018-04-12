@@ -2,11 +2,17 @@ package com.example.controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.json.JSONException;
@@ -80,6 +86,11 @@ public class BotController {
 	@Autowired
 	AuthorityRepository authorityRepository;
 
+	LineMessagingClient client = LineMessagingClient.builder(TOKEN).build();
+	TextMessage textMessage;
+	PushMessage pushMessage;
+	BotApiResponse botApiResponse;
+
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
 		TextMessageContent message = event.getMessage();
@@ -101,7 +112,6 @@ public class BotController {
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
 	private Map<String, Object> webhook(@RequestBody Map<String, Object> obj) throws JSONException, IOException {
-		String channelToken = TOKEN;
 
 		Map<String, Object> json = new HashMap<>();
 		JSONObject jsonResult = new JSONObject(obj);
@@ -117,13 +127,9 @@ public class BotController {
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
 		JSONObject parameters = result.getJSONObject("parameters");
-		// JSONObject fulfillment = result.getJSONObject("fulfillment");
-		// String speech = fulfillment.getString("speech");
-		// JSONArray messages = fulfillment.getJSONArray("messages");
-		// JSONObject msg = messages.getJSONObject(0);
-		// String speechMessage = msg.getString("speech");
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
+		pushMessage = new PushMessage(userId, textMessage);
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
@@ -136,7 +142,7 @@ public class BotController {
 
 			hm.put("English", "English");
 			hm.put("日本語", "日本語");
-			typeBRecursiveChoices(null, null, "Please select a language:", hm, channelToken, userId);
+			typeBRecursiveChoices(null, null, "Please select a language:", hm, TOKEN, userId);
 			logger.info("Choose a Language :" + customerMessage);
 
 			break;
@@ -145,33 +151,25 @@ public class BotController {
 
 			if (customerMessage.equals("English")) {
 
-				LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
-				TextMessage textMessage = new TextMessage("Now, I am speaking English");
-				PushMessage pushMessage = new PushMessage(userId, textMessage);
-				BotApiResponse botApiResponse;
+				textMessage = new TextMessage("Now, I am speaking English");
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 					return json;
 				}
-				System.out.println(botApiResponse);
 				logger.info("Langauge ***********" + resolvedQuery);
 			}
 
 			else {
 
-				LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
-				TextMessage textMessage = new TextMessage("じゃ、日本語で話しますね。");
-				PushMessage pushMessage = new PushMessage(userId, textMessage);
-				BotApiResponse botApiResponse;
+				textMessage = new TextMessage("じゃ、日本語で話しますね。");
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 					return json;
 				}
-				System.out.println(botApiResponse);
 				logger.info("Langauge ***********" + resolvedQuery);
 			}
 
@@ -179,17 +177,13 @@ public class BotController {
 
 		case "request":
 
-			LineMessagingClient client = LineMessagingClient.builder(channelToken).build();
-			TextMessage textMessage = new TextMessage("Receiver name :");
-			PushMessage pushMessage = new PushMessage(userId, textMessage);
-			BotApiResponse botApiResponse;
+			textMessage = new TextMessage("Receiver name :");
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 				return json;
 			}
-			System.out.println(botApiResponse);
 			logger.info("Request ***********" + resolvedQuery);
 
 			break;
@@ -212,7 +206,7 @@ public class BotController {
 					hm.put(user.get(i).getUserName(), user.get(i).getUserName());
 				}
 
-				typeBRecursiveChoices(null, null, "Do you mean:", hm, channelToken, userId);
+				typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
 
 				lineProgress.setStatusLine("receiverchosen");
 				lineProgressRepository.save(lineProgress);
@@ -239,35 +233,29 @@ public class BotController {
 						lineProgress.setStatusLine("Requesttitled");
 						lineProgressRepository.save(lineProgress);
 
-						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-						TextMessage textMessage2 = new TextMessage("Request Title :");
-						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-						BotApiResponse botApiResponse2;
+						textMessage = new TextMessage("Request Title :");
 						try {
-							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
 							return json;
 						}
-						System.out.println(botApiResponse2);
 						logger.info("receiver has been chosen" + customerMessage);
+
 					} else {
+
 						lineProgress.setStatusLine("Default");
 						lineProgressRepository.save(lineProgress);
 						System.out.println("status*********" + lineProgress.getStatusLine());
 						logger.info("receiver has noooooooot been chosen" + customerMessage);
 
-						LineMessagingClient client2 = LineMessagingClient.builder(channelToken).build();
-						TextMessage textMessage2 = new TextMessage("Try Again, receiver name :");
-						PushMessage pushMessage2 = new PushMessage(userId, textMessage2);
-						BotApiResponse botApiResponse2;
+						textMessage = new TextMessage("Try Again, receiver name :");
 						try {
-							botApiResponse2 = client2.pushMessage(pushMessage2).get();
+							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
 							return json;
 						}
-						System.out.println(botApiResponse2);
 					}
 				}
 
@@ -282,17 +270,13 @@ public class BotController {
 				System.out.println("status*********" + lineProgress.getStatusLine());
 				logger.info("Request Titled " + customerMessage);
 
-				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
-				TextMessage textMessage3 = new TextMessage("Request Detail :");
-				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
-				BotApiResponse botApiResponse3;
+				textMessage = new TextMessage("Request Detail :");
 				try {
-					botApiResponse3 = client3.pushMessage(pushMessage3).get();
+					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 					return json;
 				}
-				System.out.println(botApiResponse3);
 
 				break;
 
@@ -309,7 +293,8 @@ public class BotController {
 				hm.put("2 : Manager", "Manager");
 				hm.put("3 : Team leader", "Team leader");
 				hm.put("4 : Developer", "Developer");
-				typeBRecursiveChoices(null, null, "Please select the request authority:", hm, channelToken, userId);
+
+				typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
 				logger.info("Choose request authority :" + customerMessage);
 
 				break;
@@ -345,7 +330,7 @@ public class BotController {
 			typeCQuestion(
 					"Do you want to send the request? \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
 							+ "\nDETAIL: " + detail + "\nAUTHORITY: " + authority,
-					"Send", "Send", "Cancel", "Cancel", "Confirm", channelToken, userId);
+					"Send", "Send", "Cancel", "Cancel", "Confirm", TOKEN, userId);
 
 			break;
 
@@ -361,38 +346,29 @@ public class BotController {
 				request.setToUser(toUser);
 				request.setFromUser(userId);
 				request.setVisibility(visibility);
-				request.setCreatedAt(timestamp);
-				request.setUpdatedAt(timestamp);
+				request.setCreatedAt(convertToTimestamp(timestamp));
+				request.setUpdatedAt(convertToTimestamp(timestamp));
 				requestRepository.save(request);
 
-				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
-				TextMessage textMessage3 = new TextMessage("Your request has been sent successfully.");
-				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
-				BotApiResponse botApiResponse3;
+				textMessage = new TextMessage("Your request has been sent successfully.");
 				try {
-					botApiResponse3 = client3.pushMessage(pushMessage3).get();
+					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 					return json;
 				}
-				System.out.println(botApiResponse3);
 
 			} else {
 
 				lineProgressRepository.delete(lineProgress);
 
-				LineMessagingClient client3 = LineMessagingClient.builder(channelToken).build();
-				TextMessage textMessage3 = new TextMessage("Your request has been deleted.");
-				PushMessage pushMessage3 = new PushMessage(userId, textMessage3);
-				BotApiResponse botApiResponse3;
+				textMessage = new TextMessage("Your request has been deleted.");
 				try {
-					botApiResponse3 = client3.pushMessage(pushMessage3).get();
+					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 					return json;
 				}
-				System.out.println(botApiResponse3);
-
 			}
 
 			break;
@@ -401,57 +377,31 @@ public class BotController {
 
 			if (customerMessage.equals("Decision history")) {
 
-				//
-				// List<CarouselColumn> carouselColumnList = new ArrayList<>();
-				// List<CarouselColumn> carouselColumnListFinal = new ArrayList<>();
-				// List<Request> requests = requestRepository.findAll();
-				//
-				// int finished = 0;
-				// for (Request req : requests) {
-				// if (userId != null && userId.equals(req.getToUser().getUserId())
-				// && (req.getStatus().equals("pending") || (req.getStatus().equals("passed"))))
-				// {
-				// logger.info("carousel *************************");
-				// carouselColumn = new CarouselColumn(
-				// "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png",
-				// "Request title: " + req.getTitle(),
-				// "FROM: " + userInformationRepository.findOne(req.getFromUser()).getUserName()
-				// + "\nDETAIL: " + req.getDetail(),
-				// Arrays.asList(new MessageAction("Approve", "Approve request" +
-				// req.getRequestId()),
-				// new MessageAction("Disapprove", "Disapprove request" + req.getRequestId())));
-				//
-				// carouselColumnList.add(carouselColumn);
-				// logger.info("carousel list***************" + carouselColumnList.size());
-				//
-				// } else {
-				// finished++;
-				// System.out.println("carouselColumnList " + carouselColumnList.size());
-				// carouselColumnListFinal.clear();
-				// carouselColumnListFinal.addAll(carouselColumnList);
-				// System.out.println(finished + " finished");
-				//
-				// }
-				// if (finished == 1) {
-				// CarouselTemplate carouselTemplate = new
-				// CarouselTemplate(carouselColumnListFinal);
-				// TemplateMessage templateMessage = new TemplateMessage("Carousel",
-				// carouselTemplate);
-				// PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-				// try {
-				// LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
-				// .execute();
-				// } catch (IOException e) {
-				// e.printStackTrace();
-				// }
-				// logger.info("osakaaaaaaaaaaaaaaaaaaaa");
-				// }
-				// }
+				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
+				
+				List<Request> requests = requestRepository.findPendingRequestByToUser(userId);
+				List<CarouselColumn> listCarouselColumns = new ArrayList<>();
+				int a = requests.size();
+				logger.info("size of requests is =" + requests.size());
 
-				CarouselTemplate carouselTemplate = new CarouselTemplate(collectCarouselColumns());
-				TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
+				for (int i = 0; i < a; i++) {
+
+					listCarouselColumns.add(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
+							"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName(),
+							// + "\nDETAIL: "
+							// + (requests.get(i).getDetail().length() >= 30 ? "too long"
+							// : requests.get(i).getDetail()),
+							Arrays.asList(
+									new MessageAction("Approve", "Approve request " + requests.get(i).getRequestId()),
+									new MessageAction("Disapprove",
+											"Disapprove request " + requests.get(i).getRequestId()))));
+				}
+
+				CarouselTemplate carouselTemplate = new CarouselTemplate(listCarouselColumns);
+				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
 				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-				LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
 				logger.info("osaka :" + customerMessage);
 
 			} else {
@@ -465,9 +415,31 @@ public class BotController {
 
 					long number = parameters.getLong("number");
 					Request r = requestRepository.findOne(number);
-					r.setStatus("approved");
-					requestRepository.save(r);
-					logger.info("approooooooooooooooved");
+					if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
+						r.setStatus("approved");
+						r.setUpdatedAt(convertToTimestamp(timestamp));
+						requestRepository.save(r);
+
+						textMessage = new TextMessage("Request Approved successfully.");
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+							return json;
+						}
+						logger.info("approooooooooooooooved");
+
+					} else {
+
+						textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+							return json;
+						}
+						logger.info("Decision already taken! The request is ****************" + r.getStatus());
+					}
 
 					break;
 
@@ -475,9 +447,31 @@ public class BotController {
 
 					long number1 = parameters.getLong("number");
 					Request r1 = requestRepository.findOne(number1);
-					r1.setStatus("approved");
-					requestRepository.save(r1);
-					logger.info("disapproooooooooooooooved");
+					if (r1.getStatus().equals("pending") || r1.getStatus().equals("passed")) {
+						r1.setStatus("disapproved");
+						r1.setUpdatedAt(convertToTimestamp(timestamp));
+						requestRepository.save(r1);
+
+						textMessage = new TextMessage("Request refused.");
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+							return json;
+						}
+						logger.info("diiiiiiiiisapproooooooooooooooved");
+
+					} else {
+
+						textMessage = new TextMessage("Decision already taken! The request is " + r1.getStatus());
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+							return json;
+						}
+						logger.info("Decision already taken! The request is ****************" + r1.getStatus());
+					}
 
 					break;
 				}
@@ -508,7 +502,7 @@ public class BotController {
 											"00:00")))));
 			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
 			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
+			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
 			logger.info("osaka :" + customerMessage);
 
 			break;
@@ -520,7 +514,7 @@ public class BotController {
 			hm.put("London", "london");
 			typeBRecursiveChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					" boldTitle", " normalTitle", hm, channelToken, userId);
+					" boldTitle", " normalTitle", hm, TOKEN, userId);
 			logger.info("paris :" + customerMessage);
 
 			break;
@@ -531,7 +525,7 @@ public class BotController {
 			hm.put("Tokyo", "tokyo");
 			typeBRecursiveChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					" boldTitle", " normalTitle", hm, channelToken, userId);
+					" boldTitle", " normalTitle", hm, TOKEN, userId);
 			logger.info("see more :", customerMessage);
 
 			break;
@@ -544,8 +538,7 @@ public class BotController {
 			hm.put("London", "london");
 			typeBChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					" boldTitle", " normalTitle", hm, "Next or see more", "Next or see more answer", channelToken,
-					userId);
+					" boldTitle", " normalTitle", hm, "Next or see more", "Next or see more answer", TOKEN, userId);
 			logger.info("London :", customerMessage);
 
 			break;
@@ -554,7 +547,7 @@ public class BotController {
 
 			typeDQuestion(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					channelToken, userId);
+					TOKEN, userId);
 
 			break;
 
@@ -570,38 +563,55 @@ public class BotController {
 
 	}
 
-	private List<CarouselColumn> collectCarouselColumns() {
-
-		String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
-				+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
-
-		List<Request> requests = requestRepository.findPendingRequestByToUser(userId);
-		listOfCarouselColumns = new ArrayList<>();
-		int a = requests.size();
-		logger.info("size of requests is =" + requests.size());
-
-		for (int i = 0; i < a; i++) {
-
-			listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
-					"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName(),
-					// + "\nDETAIL: "
-					// + (requests.get(i).getDetail().length() >= 30 ? "too long"
-					// : requests.get(i).getDetail()),
-					Arrays.asList(buildMessageAction("Approve", "Approve request " + requests.get(i).getRequestId()),
-							buildMessageAction("Disapprove", "Disapprove request " + requests.get(i).getRequestId()))));
-
+	private Timestamp convertToTimestamp(String timestampText) {
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+		Date date = null;
+		try {
+			date = format.parse(timestampText);
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
-		return listOfCarouselColumns;
+		return new Timestamp(date.getTime());
 	}
 
-	private CarouselColumn buildCarouselColumn(String thumbnailImageUrl, String titre, String text,
-			List<Action> actions) {
-		return new CarouselColumn(thumbnailImageUrl, titre, text, actions);
-	}
-
-	private Action buildMessageAction(String label, String text) {
-		return new MessageAction(label, text);
-	}
+	// private List<CarouselColumn> collectCarouselColumns() {
+	// String imageUrl =
+	// "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+	// +
+	// "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
+	// List<Request> requests =
+	// requestRepository.findPendingRequestByToUser(userId);
+	// listOfCarouselColumns = new ArrayList<>();
+	// int a = requests.size();
+	// logger.info("size of requests is =" + requests.size());
+	//
+	// for (int i = 0; i < a; i++) {
+	//
+	// listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: " +
+	// requests.get(i).getTitle(),
+	// "FROM:" +
+	// userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName(),
+	// // + "\nDETAIL: "
+	// // + (requests.get(i).getDetail().length() >= 30 ? "too long"
+	// // : requests.get(i).getDetail()),
+	// Arrays.asList(buildMessageAction("Approve", "Approve request " +
+	// requests.get(i).getRequestId()),
+	// buildMessageAction("Disapprove", "Disapprove request " +
+	// requests.get(i).getRequestId()))));
+	//
+	// }
+	// return listOfCarouselColumns;
+	// }
+	//
+	// private CarouselColumn buildCarouselColumn(String thumbnailImageUrl, String
+	// titre, String text,
+	// List<Action> actions) {
+	// return new CarouselColumn(thumbnailImageUrl, titre, text, actions);
+	// }
+	//
+	// private Action buildMessageAction(String label, String text) {
+	// return new MessageAction(label, text);
+	// }
 
 	@EventMapping
 	public void handlePostbackEvent(PostbackEvent event) {
@@ -612,7 +622,7 @@ public class BotController {
 
 	private void handleTextContent(String replyToken, Event event, TextMessageContent content) throws Exception {
 		String text = content.getText();
-		String channelToken = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
+		String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
 		logger.info("Got text message from {}: {}" + replyToken + text);
 		switch (text) {
 		case "paris": {
@@ -621,7 +631,7 @@ public class BotController {
 
 				typeDQuestion(
 						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-						channelToken, userId);
+						TOKEN, userId);
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
@@ -684,7 +694,7 @@ public class BotController {
 	 * TypeC template
 	 * 
 	 * @param userId
-	 * @param channelToken
+	 * @param TOKEN
 	 * @param msgTemplate
 	 * @param msgFirstAnswer
 	 * @param msgSecondAnswer
@@ -692,14 +702,14 @@ public class BotController {
 	 * @throws IOException
 	 */
 	public void typeCQuestion(String msgTemplate, String msgFirstAnswer, String msgFirstAnswerToSend,
-			String msgSecondAnswer, String msgSecondAnswerToSend, String titleTemplate, String channelToken,
-			String userId) throws IOException {
+			String msgSecondAnswer, String msgSecondAnswerToSend, String titleTemplate, String TOKEN, String userId)
+			throws IOException {
 		ConfirmTemplate confirmTemplate = new ConfirmTemplate(msgTemplate,
 				new MessageAction(msgFirstAnswer, msgFirstAnswerToSend),
 				new MessageAction(msgSecondAnswer, msgSecondAnswerToSend));
 		TemplateMessage templateMessage = new TemplateMessage(titleTemplate, confirmTemplate);
 		PushMessage pushMessage = new PushMessage(userId, templateMessage);
-		LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage).execute();
+		LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 
 	}
 
@@ -707,7 +717,7 @@ public class BotController {
 	 * TypeB template
 	 * 
 	 * @param userId
-	 * @param channelToken
+	 * @param TOKEN
 	 * @param imageURL
 	 * @param boldTitle
 	 * @param normalTitle
@@ -716,19 +726,19 @@ public class BotController {
 	 * @throws IOException
 	 */
 	public void typeBQuestion(String imageURL, String boldTitle, String normalTitle, String buttonHint,
-			String messageToSend, String channelToken, String userId) throws IOException {
+			String messageToSend, String TOKEN, String userId) throws IOException {
 		ButtonsTemplate buttonsTemplate = new ButtonsTemplate(imageURL, boldTitle, normalTitle, Arrays.asList(
 				new URIAction("Go to line.me", "https://line.me"), new MessageAction(buttonHint, messageToSend)));
 		TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
 		PushMessage pushMessage = new PushMessage(userId, templateMessage);
-		LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage).execute();
+		LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 	}
 
 	/**
 	 * TypeB template
 	 * 
 	 * @param userId
-	 * @param channelToken
+	 * @param TOKEN
 	 * @param imageURL
 	 * @param boldTitle
 	 * @param normalTitle
@@ -738,7 +748,7 @@ public class BotController {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void typeBChoices(String imageURL, String boldTitle, String normalTitle, LinkedHashMap<String, String> hm,
-			String nextOrSeeMore, String nextOrSeeMoreAnswer, String channelToken, String userId) throws IOException {
+			String nextOrSeeMore, String nextOrSeeMoreAnswer, String TOKEN, String userId) throws IOException {
 		List<Action> messageActions = new ArrayList<>();
 		for (Map.Entry m : hm.entrySet()) {
 			MessageAction ma = new MessageAction(m.getKey().toString(), m.getValue().toString());
@@ -749,14 +759,14 @@ public class BotController {
 
 		TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
 		PushMessage pushMessage = new PushMessage(userId, templateMessage);
-		LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage).execute();
+		LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 	}
 
 	/**
 	 * TypeD template Date-Calendar
 	 * 
 	 * @param userId
-	 * @param channelToken
+	 * @param TOKEN
 	 * @param imageURL
 	 * @param boldTitle
 	 * @param normalTitle
@@ -764,7 +774,7 @@ public class BotController {
 	 * @param messageToSend
 	 * @throws IOException
 	 */
-	public void typeDQuestion(String imageUrl, String channelToken, String userId) throws IOException {
+	public void typeDQuestion(String imageUrl, String TOKEN, String userId) throws IOException {
 		logger.info("CALENDAAAAAAAAAAAARRRR");
 		DatetimePickerAction date = new DatetimePickerAction("Date", "action=sel", "date");
 		CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
@@ -774,14 +784,14 @@ public class BotController {
 		ReplyMessage pushMessage1 = new ReplyMessage(userId, templateMessage1);
 		logger.info("push message is \n " + pushMessage1);
 		logger.info(templateMessage1.getTemplate().toString());
-		LineMessagingServiceBuilder.create(channelToken).build().replyMessage(pushMessage1);
+		LineMessagingServiceBuilder.create(TOKEN).build().replyMessage(pushMessage1);
 		logger.info("response is \n " + Arrays.toString(pushMessage1.getMessages().toArray()));
 
-		// LineMessagingClient.builder(channelToken).build().replyMessage(pushMessage1);
+		// LineMessagingClient.builder(TOKEN).build().replyMessage(pushMessage1);
 	}
 
 	public void typeBRecursiveChoices(String imageURL, String boldTitle, String normalTitle, Map<String, String> hm,
-			String channelToken, String userId) throws IOException {
+			String TOKEN, String userId) throws IOException {
 		List<Action> messageActions = new ArrayList<>();
 		hm.size();
 		if (hm.size() <= 4) {
@@ -794,7 +804,7 @@ public class BotController {
 
 			TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
 			PushMessage pushMessage = new PushMessage(userId, templateMessage);
-			LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage).execute();
+			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 
 		}
 	}
@@ -825,7 +835,7 @@ public class BotController {
 	}
 
 	private void checkLineFunction(@RequestBody Map<String, Object> obj) throws JSONException, IOException {
-		String channelToken = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
+		String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmCjlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
 
 		JSONObject jsonResult = new JSONObject(obj);
 		JSONObject rsl = jsonResult.getJSONObject("originalRequest");
@@ -869,7 +879,7 @@ public class BotController {
 				 * case "a": typeBChoices(
 				 * "https://cdn2.iconfinder.com/data/icons/employment-business/256/Job_Search-512.png",
 				 * "boldTitle ", " normalTitle", hm, "nextOrSeeMore", "nextOrSeeMoreAnswer",
-				 * channelToken, userId); break;
+				 * TOKEN, userId); break;
 				 */
 				case "b":
 
@@ -885,7 +895,7 @@ public class BotController {
 							nextOrSeeMoreAnswer, idEvent);
 					if (bQuestion.getIdEvent() == eventHelper.getIdEvent())
 						typeBChoices(bQuestion.getImageURL(), bQuestion.getBoldTitle(), bQuestion.getNormalTitle(), hm,
-								bQuestion.getNextOrSeeMore(), bQuestion.getNextOrSeeMoreAnswer(), channelToken, userId);
+								bQuestion.getNextOrSeeMore(), bQuestion.getNextOrSeeMoreAnswer(), TOKEN, userId);
 					break;
 				case "c":
 					CQuestion cQuestion = new CQuestion(msgTemplate, msgFirstAnswer, msgSecondAnswer, titleTemplate,
@@ -894,8 +904,7 @@ public class BotController {
 
 						typeCQuestion(cQuestion.getMsgTemplate(), cQuestion.getMsgFirstAnswer(),
 								cQuestion.getMsgFirstAnswerToSend(), cQuestion.getMsgSecondAnswer(),
-								cQuestion.getMsgSecondAnswerToSend(), cQuestion.getTitleTemplate(), channelToken,
-								userId);
+								cQuestion.getMsgSecondAnswerToSend(), cQuestion.getTitleTemplate(), TOKEN, userId);
 					break;
 
 				case "e":
@@ -903,7 +912,7 @@ public class BotController {
 					break;
 				case "d":
 					typeDQuestion("https://cdn2.iconfinder.com/data/icons/employment-business/256/Job_Search-512.png",
-							channelToken, userId);
+							TOKEN, userId);
 					break;
 				case "f":
 					sendAlertViaSlack(userId, timestamp, customerMessage);
