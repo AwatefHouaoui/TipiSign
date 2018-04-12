@@ -365,16 +365,17 @@ public class BotController {
 					return json;
 				}
 
+				String toUserId = toUser.getUserName();
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
 				hm.put("Approve", "Approve request " + request.getRequestId());
 				hm.put("Disapprove", "Disapprove request " + request.getRequestId());
 
-				typeBRecursiveChoices(imageUrl, "Request title: " + request.getTitle(), "FROM:"
-						+ userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + request.getDetail(),
-						hm, TOKEN, request.getToUser().getUserId());
-				logger.info("request sent to:" + request.getToUser().getUserName());
+				typeBRecursiveChoices(imageUrl, "Request title: " + title, "FROM:"
+						+ userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + detail,
+						hm, TOKEN, toUserId);
+				logger.info("request sent to:" );
 
 			} else {
 
