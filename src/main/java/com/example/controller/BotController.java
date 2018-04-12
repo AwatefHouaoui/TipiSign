@@ -134,7 +134,7 @@ public class BotController {
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("status ************" + lineProgress.getStatusLine());
-		logger.info("timestamp*********" + jsonResult);
+		logger.info("JSONObject**************" + jsonResult);
 
 		switch (intentName.toLowerCase()) {
 
@@ -356,6 +356,18 @@ public class BotController {
 				request.setUpdatedAt(convertToTimestamp(timestamp));
 				requestRepository.save(request);
 
+				String toUserId = toUser.getUserId();
+				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
+
+				hm.put("Approve", "Approve request ");
+				hm.put("Disapprove", "Disapprove request ");
+
+				typeBRecursiveChoices(imageUrl, "Request title: " + title,
+						"FROM:" + userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + detail, hm,
+						TOKEN, toUserId);
+				logger.info("request sent to:" + toUser.getUserName());
+
 				textMessage = new TextMessage("Your request has been sent successfully.");
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
@@ -364,19 +376,6 @@ public class BotController {
 					e.printStackTrace();
 					return json;
 				}
-
-				String toUserId = toUser.getUserId();
-				logger.info("request sent toUSer: ************" + toUserId);
-				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
-						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
-
-				hm.put("Approve", "Approve request ");
-				hm.put("Disapprove", "Disapprove request ");
-
-				typeBRecursiveChoices(imageUrl, "Request title: " + title, "FROM:"
-						+ userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + detail,
-						hm, TOKEN, toUserId);
-				logger.info("request sent to:" );
 
 			} else {
 
