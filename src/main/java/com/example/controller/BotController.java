@@ -360,8 +360,8 @@ public class BotController {
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
-				hm.put("Approve", "Approve request ");
-				hm.put("Disapprove", "Disapprove request ");
+				hm.put("Approve", "Approve request " + request.getRequestId());
+				hm.put("Disapprove", "Disapprove request " + request.getRequestId());
 
 				typeBRecursiveChoices(imageUrl, "Request title: " + title,
 						"FROM:" + userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + detail, hm,
