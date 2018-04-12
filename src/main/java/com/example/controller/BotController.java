@@ -366,6 +366,7 @@ public class BotController {
 				}
 
 				String toUserId = toUser.getUserId();
+				logger.info("request sent toUSer: ************" + toUserId);
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
