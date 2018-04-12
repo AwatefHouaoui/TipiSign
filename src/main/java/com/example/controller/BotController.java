@@ -399,73 +399,60 @@ public class BotController {
 		case "history":
 
 			if (customerMessage.equals("Decision history")) {
-//
-//				List<CarouselColumn> carouselColumnList = new ArrayList<>();
-//				List<CarouselColumn> carouselColumnListFinal = new ArrayList<>();
-//				List<Request> requests = requestRepository.findAll();
-//
-//				int finished = 0;
-//				for (Request req : requests) {
-//					if (userId != null && userId.equals(req.getToUser().getUserId())
-//							&& (req.getStatus().equals("pending") || (req.getStatus().equals("passed")))) {
-//						logger.info("carousel *************************");
-//						carouselColumn = new CarouselColumn(
-//								"https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png",
-//								"Request title: " + req.getTitle(),
-//								"FROM: " + userInformationRepository.findOne(req.getFromUser()).getUserName()
-//										+ "\nDETAIL: " + req.getDetail(),
-//								Arrays.asList(new MessageAction("Approve", "Approve request" + req.getRequestId()),
-//										new MessageAction("Disapprove", "Disapprove request" + req.getRequestId())));
-//
-//						carouselColumnList.add(carouselColumn);
-//						logger.info("carousel list***************" + carouselColumnList.size());
-//
-//					} else {
-//						finished++;
-//						System.out.println("carouselColumnList " + carouselColumnList.size());
-//						carouselColumnListFinal.clear();
-//						carouselColumnListFinal.addAll(carouselColumnList);
-//						System.out.println(finished + " finished");
-//
-//					}
-//					if (finished == 1) {
-//						CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumnListFinal);
-//						TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-//						PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
-//						try {
-//							LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
-//									.execute();
-//						} catch (IOException e) {
-//							e.printStackTrace();
-//						}
-//						logger.info("osakaaaaaaaaaaaaaaaaaaaa");
-//					}
-//				}
-				
+				//
+				// List<CarouselColumn> carouselColumnList = new ArrayList<>();
+				// List<CarouselColumn> carouselColumnListFinal = new ArrayList<>();
+				// List<Request> requests = requestRepository.findAll();
+				//
+				// int finished = 0;
+				// for (Request req : requests) {
+				// if (userId != null && userId.equals(req.getToUser().getUserId())
+				// && (req.getStatus().equals("pending") || (req.getStatus().equals("passed"))))
+				// {
+				// logger.info("carousel *************************");
+				// carouselColumn = new CarouselColumn(
+				// "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png",
+				// "Request title: " + req.getTitle(),
+				// "FROM: " + userInformationRepository.findOne(req.getFromUser()).getUserName()
+				// + "\nDETAIL: " + req.getDetail(),
+				// Arrays.asList(new MessageAction("Approve", "Approve request" +
+				// req.getRequestId()),
+				// new MessageAction("Disapprove", "Disapprove request" + req.getRequestId())));
+				//
+				// carouselColumnList.add(carouselColumn);
+				// logger.info("carousel list***************" + carouselColumnList.size());
+				//
+				// } else {
+				// finished++;
+				// System.out.println("carouselColumnList " + carouselColumnList.size());
+				// carouselColumnListFinal.clear();
+				// carouselColumnListFinal.addAll(carouselColumnList);
+				// System.out.println(finished + " finished");
+				//
+				// }
+				// if (finished == 1) {
+				// CarouselTemplate carouselTemplate = new
+				// CarouselTemplate(carouselColumnListFinal);
+				// TemplateMessage templateMessage = new TemplateMessage("Carousel",
+				// carouselTemplate);
+				// PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+				// try {
+				// LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1)
+				// .execute();
+				// } catch (IOException e) {
+				// e.printStackTrace();
+				// }
+				// logger.info("osakaaaaaaaaaaaaaaaaaaaa");
+				// }
+				// }
+
 				String imageUrl = "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; // createUri("/static/buttons/1040.jpg");
-				CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
-						new CarouselColumn(imageUrl, "hoge", "fuga",
-								Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
-										new URIAction("Go to line.me", "https://line.me"),
-										new PostbackAction("Say hello1", "hello こんにちは"))),
-						new CarouselColumn(imageUrl, "hoge", "fuga",
-								Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
-										new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
-										new MessageAction("Say message", "Rice=米"))),
-						new CarouselColumn(imageUrl, "Datetime Picker", "Please select a date, time or datetime",
-								Arrays.asList(
-										new DatetimePickerAction("Datetime", "action=sel", "datetime", "2017-06-18T06:15",
-												"2100-12-31T23:59", "1900-01-01T00:00"),
-										new DatetimePickerAction("Date", "action=sel&only=date", "date", "2017-06-18",
-												"2100-12-31", "1900-01-01"),
-										new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15", "23:59",
-												"00:00")))));
+				CarouselTemplate carouselTemplate = new CarouselTemplate(collectCarouselColumns());
 				TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
 				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
 				LineMessagingServiceBuilder.create(channelToken).build().pushMessage(pushMessage1).execute();
 				logger.info("osaka :" + customerMessage);
 
-				
 			} else {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
@@ -578,6 +565,26 @@ public class BotController {
 
 		return json;
 
+	}
+
+	private List<CarouselColumn> collectCarouselColumns() {
+		String imageUrl = "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; // createUri("/static/buttons/1040.jpg");
+
+		return Arrays.asList(
+				new CarouselColumn(imageUrl, "hoge", "fuga",
+						Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
+								new URIAction("Go to line.me", "https://line.me"),
+								new PostbackAction("Say hello1", "hello こんにちは"))),
+				new CarouselColumn(imageUrl, "hoge", "fuga",
+						Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
+								new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
+								new MessageAction("Say message", "Rice=米"))),
+				new CarouselColumn(imageUrl, "Datetime Picker", "Please select a date, time or datetime", Arrays.asList(
+						new DatetimePickerAction("Datetime", "action=sel", "datetime", "2017-06-18T06:15",
+								"2100-12-31T23:59", "1900-01-01T00:00"),
+						new DatetimePickerAction("Date", "action=sel&only=date", "date", "2017-06-18", "2100-12-31",
+								"1900-01-01"),
+						new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15", "23:59", "00:00"))));
 	}
 
 	@EventMapping
