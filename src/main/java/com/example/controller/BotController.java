@@ -576,8 +576,10 @@ public class BotController {
 		logger.info("size of requests is =" + requests.size());
 		for (int i = 0; i < 3; i++) {
 			listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
-					"FROM:"+userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName()+"\nDETAIL: ", Arrays.asList(buildMessageAction("Approve", "Approve request"),
-							buildMessageAction("Disapprove", "Disapprove request"))));
+					"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName()
+							+ "\nDETAIL: " + requests.get(i).getDetail(),
+					Arrays.asList(buildMessageAction("Approve", "Approve request" + requests.get(i).getRequestId()),
+							buildMessageAction("Disapprove", "Disapprove request" + requests.get(i).getRequestId()))));
 
 		}
 
