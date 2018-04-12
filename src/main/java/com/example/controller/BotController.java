@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,6 +65,7 @@ import retrofit2.Response;
 @RestController
 public class BotController {
 	Logger logger = LoggerFactory.getLogger(BotController.class);
+
 	public static final String TOKEN = "OBna57cOodEGIIqhcSEjjpkjT0AUOl/AZNumYYcxT+H5T3ep6VRSXOOf5pyIRICy5QQ1ytWFUv1Ol5+1Pb2wOWk5+44idmC"
 			+ "jlP6vancpqEmWHw9YZHZ0/2H4qn1jCl3AZ88XIo2WkFPylumplMuSlAdB04t89/1O/w1cDnyilFU=";
 
@@ -114,7 +114,6 @@ public class BotController {
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
 		String resolvedQuery = result.getString("resolvedQuery");
-		// String action = result.getString("action");
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
 		JSONObject parameters = result.getJSONObject("parameters");
@@ -129,7 +128,6 @@ public class BotController {
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("status ************" + lineProgress.getStatusLine());
-		logger.info("timestamp*********" + timestamp);
 		logger.info("timestamp*********" + jsonResult);
 
 		switch (intentName.toLowerCase()) {
@@ -195,6 +193,7 @@ public class BotController {
 			logger.info("Request ***********" + resolvedQuery);
 
 			break;
+
 		case "default fallback intent":
 
 			lineProgress.setUserLine(userInformationRepository.getOne(userId));
@@ -456,10 +455,12 @@ public class BotController {
 				logger.info("osaka :" + customerMessage);
 
 			} else {
+
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
 
 				switch (part1) {
+
 				case "Approve":
 
 					long number = parameters.getLong("number");
@@ -487,7 +488,7 @@ public class BotController {
 
 		case "carousel":
 
-			String imageUrl = "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; // createUri("/static/buttons/1040.jpg");
+			String imageUrl = createUri("/static/buttons/1040.jpg");
 			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
 					new CarouselColumn(imageUrl, "hoge", "fuga",
 							Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
@@ -570,21 +571,26 @@ public class BotController {
 	}
 
 	private List<CarouselColumn> collectCarouselColumns() {
-		String imageUrl = "https://image.ibb.co/eSTgEx/Capture_d_cran_de_2018_03_09_12_50_03.png"; // createUri("/static/buttons/1040.jpg");
-		List<Request> requests = requestRepository.findAll();
+
+		String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+				+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
+
+		List<Request> requests = requestRepository.findPendingRequestByToUser(userId);
 		listOfCarouselColumns = new ArrayList<>();
+		int a = requests.size();
 		logger.info("size of requests is =" + requests.size());
-		for (int i = 0; i < 3; i++) {
+
+		for (int i = 0; i < a; i++) {
+
 			listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
-					"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName()
-							+ "\nDETAIL: "
-							+ (requests.get(i).getDetail().length() >= 30? "7abibi areb"
-									: requests.get(i).getDetail()),
-					Arrays.asList(buildMessageAction("Approve", "Approve request" + requests.get(i).getRequestId()),
-							buildMessageAction("Disapprove", "Disapprove request" + requests.get(i).getRequestId()))));
+					"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName(),
+					// + "\nDETAIL: "
+					// + (requests.get(i).getDetail().length() >= 30 ? "too long"
+					// : requests.get(i).getDetail()),
+					Arrays.asList(buildMessageAction("Approve", "Approve request " + requests.get(i).getRequestId()),
+							buildMessageAction("Disapprove", "Disapprove request " + requests.get(i).getRequestId()))));
 
 		}
-
 		return listOfCarouselColumns;
 	}
 

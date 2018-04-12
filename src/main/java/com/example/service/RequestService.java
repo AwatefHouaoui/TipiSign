@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class RequestService {
 	@Autowired
 	private RequestMetier requestMetier;
-
 
 	@RequestMapping(value = "/Request", method = RequestMethod.POST)
 	public Request saveRequest(@RequestBody Request r) {
@@ -23,6 +23,11 @@ public class RequestService {
 	@RequestMapping(value = "/getRequest", method = RequestMethod.GET)
 	public List<Request> listRequest() {
 		return requestMetier.listRequest();
+	}
+
+	@RequestMapping(value = "/getRequestsById", method = RequestMethod.GET)
+	public List<Request> findPendingRequestByToUser(@RequestParam(name = "userId") String userId) {
+		return requestMetier.findPendingRequestByToUser(userId);
 	}
 
 }
