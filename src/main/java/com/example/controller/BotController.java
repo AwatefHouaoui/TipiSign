@@ -578,7 +578,7 @@ public class BotController {
 			listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
 					"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName()
 							+ "\nDETAIL: "
-							+ (requests.get(i).getDetail().length() >= 60 ? "7abibi areb"
+							+ (requests.get(i).getDetail().length() >= 30? "7abibi areb"
 									: requests.get(i).getDetail()),
 					Arrays.asList(buildMessageAction("Approve", "Approve request" + requests.get(i).getRequestId()),
 							buildMessageAction("Disapprove", "Disapprove request" + requests.get(i).getRequestId()))));
