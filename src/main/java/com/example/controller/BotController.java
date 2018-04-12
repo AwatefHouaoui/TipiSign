@@ -129,7 +129,6 @@ public class BotController {
 		JSONObject parameters = result.getJSONObject("parameters");
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
-		pushMessage = new PushMessage(userId, textMessage);
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
@@ -152,6 +151,7 @@ public class BotController {
 			if (customerMessage.equals("English")) {
 
 				textMessage = new TextMessage("Now, I am speaking English");
+				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -164,6 +164,7 @@ public class BotController {
 			else {
 
 				textMessage = new TextMessage("じゃ、日本語で話しますね。");
+				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -178,6 +179,7 @@ public class BotController {
 		case "request":
 
 			textMessage = new TextMessage("Receiver name :");
+			pushMessage = new PushMessage(userId, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
 			} catch (InterruptedException | ExecutionException e) {
@@ -234,6 +236,7 @@ public class BotController {
 						lineProgressRepository.save(lineProgress);
 
 						textMessage = new TextMessage("Request Title :");
+						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -250,6 +253,7 @@ public class BotController {
 						logger.info("receiver has noooooooot been chosen" + customerMessage);
 
 						textMessage = new TextMessage("Try Again, receiver name :");
+						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -271,6 +275,7 @@ public class BotController {
 				logger.info("Request Titled " + customerMessage);
 
 				textMessage = new TextMessage("Request Detail :");
+				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -351,6 +356,7 @@ public class BotController {
 				requestRepository.save(request);
 
 				textMessage = new TextMessage("Your request has been sent successfully.");
+				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -363,6 +369,7 @@ public class BotController {
 				lineProgressRepository.delete(lineProgress);
 
 				textMessage = new TextMessage("Your request has been deleted.");
+				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -421,6 +428,7 @@ public class BotController {
 						requestRepository.save(r);
 
 						textMessage = new TextMessage("Request Approved successfully.");
+						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -432,6 +440,7 @@ public class BotController {
 					} else {
 
 						textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
+						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -453,6 +462,7 @@ public class BotController {
 						requestRepository.save(r1);
 
 						textMessage = new TextMessage("Request refused.");
+						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -464,6 +474,7 @@ public class BotController {
 					} else {
 
 						textMessage = new TextMessage("Decision already taken! The request is " + r1.getStatus());
+						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
