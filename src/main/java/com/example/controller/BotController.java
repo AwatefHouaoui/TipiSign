@@ -469,10 +469,10 @@ public class BotController {
 										+ " has APPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
 										+ "\n \nDetail: " + r.getDetail().toUpperCase());
 						PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
-//						textMessage = new TextMessage("Request Approved successfully.");
-//						pushMessage = new PushMessage(userId, textMessage);
+						textMessage = new TextMessage("Request Approved successfully.");
+						pushMessage = new PushMessage(userId, textMessage);
 						try {
-//							botApiResponse = client.pushMessage(pushMessage).get();
+							botApiResponse = client.pushMessage(pushMessage).get();
 							botApiResponse = client.pushMessage(pushMessage1).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
