@@ -405,17 +405,50 @@ public class BotController {
 				int a = requests.size();
 				logger.info("size of requests is =" + requests.size());
 
-				for (int i = 0; i < a; i++) {
+				if (a == 0) {
 
-					listCarouselColumns.add(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
-							"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName(),
-							// + "\nDETAIL: "
-							// + (requests.get(i).getDetail().length() >= 30 ? "too long"
-							// : requests.get(i).getDetail()),
-							Arrays.asList(
-									new MessageAction("Approve", "Approve request " + requests.get(i).getRequestId()),
-									new MessageAction("Disapprove",
-											"Disapprove request " + requests.get(i).getRequestId()))));
+					textMessage = new TextMessage("You haven't any requests.");
+					pushMessage = new PushMessage(userId, textMessage);
+					try {
+						botApiResponse = client.pushMessage(pushMessage).get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+						return json;
+					}
+				} else {
+					if (a < 11) {
+						for (int i = 0; i < a; i++) {
+
+							listCarouselColumns
+									.add(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
+											"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser())
+													.getUserName(),
+											// + "\nDETAIL: "
+											// + (requests.get(i).getDetail().length() >= 30 ? "too long"
+											// : requests.get(i).getDetail()),
+											Arrays.asList(
+													new MessageAction("Approve",
+															"Approve request " + requests.get(i).getRequestId()),
+													new MessageAction("Disapprove",
+															"Disapprove request " + requests.get(i).getRequestId()))));
+						}
+					} else {
+						for (int i = 0; i < 10; i++) {
+
+							listCarouselColumns
+									.add(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
+											"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser())
+													.getUserName(),
+											// + "\nDETAIL: "
+											// + (requests.get(i).getDetail().length() >= 30 ? "too long"
+											// : requests.get(i).getDetail()),
+											Arrays.asList(
+													new MessageAction("Approve",
+															"Approve request " + requests.get(i).getRequestId()),
+													new MessageAction("Disapprove",
+															"Disapprove request " + requests.get(i).getRequestId()))));
+						}
+					}
 				}
 
 				CarouselTemplate carouselTemplate = new CarouselTemplate(listCarouselColumns);
