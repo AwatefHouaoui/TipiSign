@@ -464,12 +464,6 @@ public class BotController {
 						r.setUpdatedAt(convertToTimestamp(timestamp));
 						requestRepository.save(r);
 
-						typeBRecursiveChoices(null, null,
-								userInformationRepository.findOne(userId).getUserName().toUpperCase()
-										+ " has approved your request. \nTitle: " + r.getTitle().toUpperCase()
-										+ "\nDetail: " + r.getDetail().toUpperCase(),
-								null, TOKEN, r.getToUser().getUserId());
-
 						textMessage = new TextMessage("Request Approved successfully.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
@@ -487,12 +481,6 @@ public class BotController {
 						r.setUpdatedAt(convertToTimestamp(timestamp));
 						requestRepository.save(r);
 
-						typeBRecursiveChoices(null, null,
-								userInformationRepository.findOne(userId).getUserName().toUpperCase()
-										+ " has approved your request. \nTitle: " + r.getTitle().toUpperCase()
-										+ "\nDetail: " + r.getDetail().toUpperCase(),
-								null, TOKEN, r.getToUser().getUserId());
-
 						textMessage = new TextMessage("Request refused.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
@@ -504,6 +492,17 @@ public class BotController {
 
 						break;
 					}
+
+					textMessage = new TextMessage(userInformationRepository.findOne(userId).getUserName().toUpperCase()
+							+ " has approved your request. \nTitle: " + r.getTitle().toUpperCase() + "\nDetail: "
+							+ r.getDetail().toUpperCase());
+					pushMessage = new PushMessage(r.getToUser().getUserId(), textMessage);
+					try {
+						botApiResponse = client.pushMessage(pushMessage).get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					}
+
 				} else {
 
 					textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
