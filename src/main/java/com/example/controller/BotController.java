@@ -473,6 +473,10 @@ public class BotController {
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
+						try {
 							botApiResponse = client.pushMessage(pushMessage1).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
