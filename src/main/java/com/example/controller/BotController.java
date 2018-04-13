@@ -469,10 +469,10 @@ public class BotController {
 										+ " has approved your request. \nTitle: " + r.getTitle().toUpperCase()
 										+ "\nDetail: " + r.getDetail().toUpperCase());
 						PushMessage pushMessage1 = new PushMessage(r.getToUser().getUserId(), textMessage1);
-						textMessage = new TextMessage("Request Approved successfully.");
-						pushMessage = new PushMessage(userId, textMessage);
+//						textMessage = new TextMessage("Request Approved successfully.");
+//						pushMessage = new PushMessage(userId, textMessage);
 						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
+//							botApiResponse = client.pushMessage(pushMessage).get();
 							botApiResponse = client.pushMessage(pushMessage1).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
@@ -492,10 +492,10 @@ public class BotController {
 										+ " has disapproved your request. \nTitle: " + r.getTitle().toUpperCase()
 										+ "\nDetail: " + r.getDetail().toUpperCase());
 						PushMessage pushMessage2 = new PushMessage(r.getToUser().getUserId(), textMessage2);
-						textMessage = new TextMessage("Request refused.");
-						pushMessage = new PushMessage(userId, textMessage);
+//						textMessage = new TextMessage("Request refused.");
+//						pushMessage = new PushMessage(userId, textMessage);
 						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
+							// botApiResponse = client.pushMessage(pushMessage).get();
 							botApiResponse = client.pushMessage(pushMessage2).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
