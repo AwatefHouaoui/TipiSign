@@ -452,9 +452,20 @@ public class BotController {
 
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
-
 				long number = parameters.getLong("number");
 				Request r = requestRepository.findOne(number);
+
+				TextMessage textMessage1 = new TextMessage(
+						userInformationRepository.findOne(userId).getUserName().toUpperCase() + " has "
+								+ part1.toUpperCase() + " your request.\n \nTitle: " + r.getTitle().toUpperCase()
+								+ "\n \nDetail: " + r.getDetail().toUpperCase());
+				PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
+				try {
+					botApiResponse = client.pushMessage(pushMessage1).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+
 				if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
 
 					switch (part1) {
@@ -464,20 +475,10 @@ public class BotController {
 						r.setUpdatedAt(convertToTimestamp(timestamp));
 						requestRepository.save(r);
 
-						TextMessage textMessage1 = new TextMessage(
-								userInformationRepository.findOne(userId).getUserName().toUpperCase()
-										+ " has APPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
-										+ "\n \nDetail: " + r.getDetail().toUpperCase());
-						PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
 						textMessage = new TextMessage("Request Approved successfully.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						}
-						try {
-							botApiResponse = client.pushMessage(pushMessage1).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
 						}
@@ -491,16 +492,10 @@ public class BotController {
 						r.setUpdatedAt(convertToTimestamp(timestamp));
 						requestRepository.save(r);
 
-						TextMessage textMessage2 = new TextMessage(
-								userInformationRepository.findOne(userId).getUserName().toUpperCase()
-										+ " has DISAPPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
-										+ "\n \nDetail: " + r.getDetail().toUpperCase());
-						PushMessage pushMessage2 = new PushMessage(r.getFromUser(), textMessage2);
-//						textMessage = new TextMessage("Request refused.");
-//						pushMessage = new PushMessage(userId, textMessage);
+						textMessage = new TextMessage("Request refused.");
+						pushMessage = new PushMessage(userId, textMessage);
 						try {
-							// botApiResponse = client.pushMessage(pushMessage).get();
-							botApiResponse = client.pushMessage(pushMessage2).get();
+							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
 						}
