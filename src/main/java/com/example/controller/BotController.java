@@ -462,28 +462,20 @@ public class BotController {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
 
-				switch (part1) {
+				long number = parameters.getLong("number");
+				Request r = requestRepository.findOne(number);
+				if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
 
-				case "Approve":
+					switch (part1) {
+					case "Approve":
 
-					long number = parameters.getLong("number");
-					Request r = requestRepository.findOne(number);
-					if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
 						r.setStatus("approved");
 						r.setUpdatedAt(convertToTimestamp(timestamp));
 						requestRepository.save(r);
 
-						LineMessagingClient client1 = LineMessagingClient.builder(TOKEN).build();
-						TextMessage textMessage1 = new TextMessage(
-								userInformationRepository.findOne(userId).getUserName()
-										+ " has approved your request. \nTitle: " + r.getTitle() + "\nDetail: "
-										+ r.getDetail());
-						PushMessage pushMessage1 = new PushMessage(r.getToUser().getUserId(), textMessage1);
-
 						textMessage = new TextMessage("Request Approved successfully.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
-							botApiResponse1 = client1.pushMessage(pushMessage1).get();
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
@@ -491,29 +483,13 @@ public class BotController {
 						}
 						logger.info("approooooooooooooooved");
 
-					} else {
+						break;
 
-						textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
-						pushMessage = new PushMessage(userId, textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-							return json;
-						}
-						logger.info("Decision already taken! The request is ****************" + r.getStatus());
-					}
+					case "Disapprove":
 
-					break;
-
-				case "Disapprove":
-
-					long number1 = parameters.getLong("number");
-					Request r1 = requestRepository.findOne(number1);
-					if (r1.getStatus().equals("pending") || r1.getStatus().equals("passed")) {
-						r1.setStatus("disapproved");
-						r1.setUpdatedAt(convertToTimestamp(timestamp));
-						requestRepository.save(r1);
+						r.setStatus("disapproved");
+						r.setUpdatedAt(convertToTimestamp(timestamp));
+						requestRepository.save(r);
 
 						textMessage = new TextMessage("Request refused.");
 						pushMessage = new PushMessage(userId, textMessage);
@@ -525,20 +501,30 @@ public class BotController {
 						}
 						logger.info("diiiiiiiiisapproooooooooooooooved");
 
-					} else {
-
-						textMessage = new TextMessage("Decision already taken! The request is " + r1.getStatus());
-						pushMessage = new PushMessage(userId, textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-							return json;
-						}
-						logger.info("Decision already taken! The request is ****************" + r1.getStatus());
+						break;
 					}
+				} else {
 
-					break;
+					textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
+					pushMessage = new PushMessage(userId, textMessage);
+					try {
+						botApiResponse = client.pushMessage(pushMessage).get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+						return json;
+					}
+					logger.info("Decision already taken! The request is ****************" + r.getStatus());
+				}
+
+				textMessage = new TextMessage(userInformationRepository.findOne(userId).getUserName().toUpperCase()
+						+ " has approved your request. \nTitle: " + r.getTitle().toUpperCase() + "\nDetail: "
+						+ r.getDetail().toUpperCase());
+				pushMessage = new PushMessage(r.getToUser().getUserId(), textMessage);
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					return json;
 				}
 
 			}
