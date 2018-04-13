@@ -455,16 +455,16 @@ public class BotController {
 				long number = parameters.getLong("number");
 				Request r = requestRepository.findOne(number);
 
-				TextMessage textMessage1 = new TextMessage(
-						userInformationRepository.findOne(userId).getUserName().toUpperCase() + " has "
-								+ part1.toUpperCase() + " your request.\n \nTitle: " + r.getTitle().toUpperCase()
-								+ "\n \nDetail: " + r.getDetail().toUpperCase());
-				PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
-				try {
-					botApiResponse = client.pushMessage(pushMessage1).get();
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-				}
+//				TextMessage textMessage1 = new TextMessage(
+//						userInformationRepository.findOne(userId).getUserName().toUpperCase() + " has "
+//								+ part1.toUpperCase() + " your request.\n \nTitle: " + r.getTitle().toUpperCase()
+//								+ "\n \nDetail: " + r.getDetail().toUpperCase());
+//				PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
+//				try {
+//					botApiResponse = client.pushMessage(pushMessage1).get();
+//				} catch (InterruptedException | ExecutionException e) {
+//					e.printStackTrace();
+//				}
 
 				if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
 
