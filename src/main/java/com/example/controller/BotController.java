@@ -468,7 +468,7 @@ public class BotController {
 								userInformationRepository.findOne(userId).getUserName().toUpperCase()
 										+ " has approved your request. \nTitle: " + r.getTitle().toUpperCase()
 										+ "\nDetail: " + r.getDetail().toUpperCase());
-						PushMessage pushMessage1 = new PushMessage(r.getToUser().getUserId(), textMessage1);
+						PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
 //						textMessage = new TextMessage("Request Approved successfully.");
 //						pushMessage = new PushMessage(userId, textMessage);
 						try {
@@ -491,7 +491,7 @@ public class BotController {
 								userInformationRepository.findOne(userId).getUserName().toUpperCase()
 										+ " has disapproved your request. \nTitle: " + r.getTitle().toUpperCase()
 										+ "\nDetail: " + r.getDetail().toUpperCase());
-						PushMessage pushMessage2 = new PushMessage(r.getToUser().getUserId(), textMessage2);
+						PushMessage pushMessage2 = new PushMessage(r.getFromUser(), textMessage2);
 //						textMessage = new TextMessage("Request refused.");
 //						pushMessage = new PushMessage(userId, textMessage);
 						try {
