@@ -194,6 +194,12 @@ public class BotController {
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
 
+			if (customerMessage.contains("cancel")) {
+				lineProgress.setStatusLine("Default");
+				lineProgressRepository.save(lineProgress);
+				System.out.println("status*********" + lineProgress.getStatusLine());
+			}
+			
 			switch (lineProgress.getStatusLine()) {
 
 			case "Default":
@@ -300,6 +306,7 @@ public class BotController {
 				break;
 			}
 
+			
 			break;
 
 		case "authority":
@@ -328,9 +335,9 @@ public class BotController {
 			}
 
 			typeCQuestion(
-					"Do you want to send the request? \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
-							+ "\nDETAIL: " + detail + "\nAUTHORITY: " + authority,
-					"Send", "Send", "Cancel", "Cancel", "Confirm", TOKEN, userId);
+					"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\n \nTITLE: " + title
+							+ "\n \nDETAIL: " + detail + "\n \nAUTHORITY: " + authority,
+					"Send", "Send", "Delete", "Delete", "Confirm", TOKEN, userId);
 
 			break;
 
@@ -455,17 +462,6 @@ public class BotController {
 				long number = parameters.getLong("number");
 				Request r = requestRepository.findOne(number);
 
-//				TextMessage textMessage1 = new TextMessage(
-//						userInformationRepository.findOne(userId).getUserName().toUpperCase() + " has "
-//								+ part1.toUpperCase() + " your request.\n \nTitle: " + r.getTitle().toUpperCase()
-//								+ "\n \nDetail: " + r.getDetail().toUpperCase());
-//				PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
-//				try {
-//					botApiResponse = client.pushMessage(pushMessage1).get();
-//				} catch (InterruptedException | ExecutionException e) {
-//					e.printStackTrace();
-//				}
-
 				if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
 
 					switch (part1) {
@@ -502,6 +498,17 @@ public class BotController {
 						logger.info("diiiiiiiiisapproooooooooooooooved");
 
 						break;
+					}
+
+					TextMessage textMessage1 = new TextMessage(
+							userInformationRepository.findOne(userId).getUserName().toUpperCase() + " has "
+									+ part1.toUpperCase() + " your request.\n \nTitle: " + r.getTitle().toUpperCase()
+									+ "\n \nDetail: " + r.getDetail().toUpperCase());
+					PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
+					try {
+						botApiResponse = client.pushMessage(pushMessage1).get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
 					}
 
 				} else {
@@ -613,45 +620,6 @@ public class BotController {
 		}
 		return new Timestamp(date.getTime());
 	}
-
-	// private List<CarouselColumn> collectCarouselColumns() {
-	// String imageUrl =
-	// "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
-	// +
-	// "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
-	// List<Request> requests =
-	// requestRepository.findPendingRequestByToUser(userId);
-	// listOfCarouselColumns = new ArrayList<>();
-	// int a = requests.size();
-	// logger.info("size of requests is =" + requests.size());
-	//
-	// for (int i = 0; i < a; i++) {
-	//
-	// listOfCarouselColumns.add(buildCarouselColumn(imageUrl, "Request title: " +
-	// requests.get(i).getTitle(),
-	// "FROM:" +
-	// userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName(),
-	// // + "\nDETAIL: "
-	// // + (requests.get(i).getDetail().length() >= 30 ? "too long"
-	// // : requests.get(i).getDetail()),
-	// Arrays.asList(buildMessageAction("Approve", "Approve request " +
-	// requests.get(i).getRequestId()),
-	// buildMessageAction("Disapprove", "Disapprove request " +
-	// requests.get(i).getRequestId()))));
-	//
-	// }
-	// return listOfCarouselColumns;
-	// }
-	//
-	// private CarouselColumn buildCarouselColumn(String thumbnailImageUrl, String
-	// titre, String text,
-	// List<Action> actions) {
-	// return new CarouselColumn(thumbnailImageUrl, titre, text, actions);
-	// }
-	//
-	// private Action buildMessageAction(String label, String text) {
-	// return new MessageAction(label, text);
-	// }
 
 	@EventMapping
 	public void handlePostbackEvent(PostbackEvent event) {
