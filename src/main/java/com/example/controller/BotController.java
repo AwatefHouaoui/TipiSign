@@ -89,7 +89,7 @@ public class BotController {
 	LineMessagingClient client = LineMessagingClient.builder(TOKEN).build();
 	TextMessage textMessage;
 	PushMessage pushMessage;
-	BotApiResponse botApiResponse, botApiResponse1;
+	BotApiResponse botApiResponse;
 
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
@@ -157,7 +157,6 @@ public class BotController {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					return json;
 				}
 				logger.info("Langauge ***********" + resolvedQuery);
 			}
@@ -170,7 +169,6 @@ public class BotController {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					return json;
 				}
 				logger.info("Langauge ***********" + resolvedQuery);
 			}
@@ -185,7 +183,6 @@ public class BotController {
 				botApiResponse = client.pushMessage(pushMessage).get();
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
-				return json;
 			}
 			logger.info("Request ***********" + resolvedQuery);
 
@@ -242,7 +239,6 @@ public class BotController {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
-							return json;
 						}
 						logger.info("receiver has been chosen" + customerMessage);
 
@@ -259,7 +255,6 @@ public class BotController {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
-							return json;
 						}
 					}
 				}
@@ -281,7 +276,6 @@ public class BotController {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					return json;
 				}
 
 				break;
@@ -374,7 +368,6 @@ public class BotController {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					return json;
 				}
 
 			} else {
@@ -387,7 +380,6 @@ public class BotController {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					return json;
 				}
 			}
 
@@ -413,7 +405,6 @@ public class BotController {
 						botApiResponse = client.pushMessage(pushMessage).get();
 					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
-						return json;
 					}
 				} else {
 					if (a < 11) {
@@ -479,7 +470,6 @@ public class BotController {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
-							return json;
 						}
 						logger.info("approooooooooooooooved");
 
@@ -497,7 +487,6 @@ public class BotController {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
-							return json;
 						}
 						logger.info("diiiiiiiiisapproooooooooooooooved");
 
@@ -511,20 +500,19 @@ public class BotController {
 						botApiResponse = client.pushMessage(pushMessage).get();
 					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
-						return json;
 					}
 					logger.info("Decision already taken! The request is ****************" + r.getStatus());
 				}
 
+				String toUserId = r.getToUser().getUserId();
 				textMessage = new TextMessage(userInformationRepository.findOne(userId).getUserName().toUpperCase()
 						+ " has approved your request. \nTitle: " + r.getTitle().toUpperCase() + "\nDetail: "
 						+ r.getDetail().toUpperCase());
-				pushMessage = new PushMessage(r.getToUser().getUserId(), textMessage);
+				pushMessage = new PushMessage(toUserId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					return json;
 				}
 
 			}
