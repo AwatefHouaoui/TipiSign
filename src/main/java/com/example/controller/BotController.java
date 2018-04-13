@@ -505,16 +505,6 @@ public class BotController {
 						break;
 					}
 
-					textMessage = new TextMessage(userInformationRepository.findOne(userId).getUserName().toUpperCase()
-							+ " has approved your request. \nTitle: " + r.getTitle().toUpperCase() + "\nDetail: "
-							+ r.getDetail().toUpperCase());
-					pushMessage = new PushMessage(r.getToUser().getUserId(), textMessage);
-					try {
-						botApiResponse = client.pushMessage(pushMessage).get();
-					} catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
-					}
-
 				} else {
 
 					textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
