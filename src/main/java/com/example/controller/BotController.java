@@ -89,7 +89,7 @@ public class BotController {
 	LineMessagingClient client = LineMessagingClient.builder(TOKEN).build();
 	TextMessage textMessage;
 	PushMessage pushMessage;
-	BotApiResponse botApiResponse;
+	BotApiResponse botApiResponse, botApiResponse1;
 
 	@EventMapping
 	public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
@@ -473,9 +473,17 @@ public class BotController {
 						r.setUpdatedAt(convertToTimestamp(timestamp));
 						requestRepository.save(r);
 
+						LineMessagingClient client1 = LineMessagingClient.builder(TOKEN).build();
+						TextMessage textMessage1 = new TextMessage(
+								userInformationRepository.findOne(userId).getUserName()
+										+ " has approved your request. \nTitle: " + r.getTitle() + "\nDetail: "
+										+ r.getDetail());
+						PushMessage pushMessage1 = new PushMessage(r.getToUser().getUserId(), textMessage1);
+
 						textMessage = new TextMessage("Request Approved successfully.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
+							botApiResponse1 = client1.pushMessage(pushMessage1).get();
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
