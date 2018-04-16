@@ -202,15 +202,30 @@ public class BotController {
 						.getContent();
 				int a = user.size();
 
-				for (int i = 0; i < a; i++) {
-					hm.put(user.get(i).getUserName(), user.get(i).getUserName());
+				if (a == 0) {
+
+					System.out.println("status*********" + lineProgress.getStatusLine());
+					logger.info("receiver has noooooooot been chosen" + customerMessage);
+
+					textMessage = new TextMessage("I didn't get that, Try again.");
+					pushMessage = new PushMessage(userId, textMessage);
+					try {
+						botApiResponse = client.pushMessage(pushMessage).get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					}
+
+				} else {
+
+					for (int i = 0; i < a; i++) {
+						hm.put(user.get(i).getUserName(), user.get(i).getUserName());
+					}
+					typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
+
+					lineProgress.setStatusLine("receiverchosen");
+					lineProgressRepository.save(lineProgress);
+					System.out.println("status*********" + lineProgress.getStatusLine());
 				}
-
-				typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
-
-				lineProgress.setStatusLine("receiverchosen");
-				lineProgressRepository.save(lineProgress);
-				System.out.println("status*********" + lineProgress.getStatusLine());
 
 				break;
 
@@ -242,20 +257,6 @@ public class BotController {
 						}
 						logger.info("receiver has been chosen" + customerMessage);
 
-					} else {
-
-						lineProgress.setStatusLine("Default");
-						lineProgressRepository.save(lineProgress);
-						System.out.println("status*********" + lineProgress.getStatusLine());
-						logger.info("receiver has noooooooot been chosen" + customerMessage);
-
-						textMessage = new TextMessage("Try Again, receiver name :");
-						pushMessage = new PushMessage(userId, textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						}
 					}
 				}
 
