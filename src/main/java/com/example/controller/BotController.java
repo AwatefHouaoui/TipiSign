@@ -193,13 +193,13 @@ public class BotController {
 			lineProgress.setUserLine(userInformationRepository.getOne(userId));
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
+			//
+			// if (customerMessage.contains("cancel")) {
+			// lineProgress.setStatusLine("Default");
+			// lineProgressRepository.save(lineProgress);
+			// System.out.println("status*********" + lineProgress.getStatusLine());
+			// }
 
-			if (customerMessage.contains("cancel")) {
-				lineProgress.setStatusLine("Default");
-				lineProgressRepository.save(lineProgress);
-				System.out.println("status*********" + lineProgress.getStatusLine());
-			}
-			
 			switch (lineProgress.getStatusLine()) {
 
 			case "Default":
@@ -306,7 +306,6 @@ public class BotController {
 				break;
 			}
 
-			
 			break;
 
 		case "authority":
@@ -470,14 +469,6 @@ public class BotController {
 						r.setStatus("approved");
 						r.setUpdatedAt(convertToTimestamp(timestamp));
 						requestRepository.save(r);
-
-						textMessage = new TextMessage("Request Approved successfully.");
-						pushMessage = new PushMessage(userId, textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						}
 						logger.info("approooooooooooooooved");
 
 						break;
@@ -487,26 +478,17 @@ public class BotController {
 						r.setStatus("disapproved");
 						r.setUpdatedAt(convertToTimestamp(timestamp));
 						requestRepository.save(r);
-
-						textMessage = new TextMessage("Request refused.");
-						pushMessage = new PushMessage(userId, textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						}
 						logger.info("diiiiiiiiisapproooooooooooooooved");
 
 						break;
 					}
 
-					TextMessage textMessage1 = new TextMessage(
-							userInformationRepository.findOne(userId).getUserName().toUpperCase() + " has "
-									+ part1.toUpperCase() + " your request.\n \nTitle: " + r.getTitle().toUpperCase()
-									+ "\n \nDetail: " + r.getDetail().toUpperCase());
-					PushMessage pushMessage1 = new PushMessage(r.getFromUser(), textMessage1);
+					textMessage = new TextMessage(userInformationRepository.findOne(userId).getUserName().toUpperCase()
+							+ " has " + part1.toUpperCase() + " your request.\n \nTitle: " + r.getTitle().toUpperCase()
+							+ "\n \nDetail: " + r.getDetail().toUpperCase());
+					pushMessage = new PushMessage(r.getFromUser(), textMessage);
 					try {
-						botApiResponse = client.pushMessage(pushMessage1).get();
+						botApiResponse = client.pushMessage(pushMessage).get();
 					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
 					}
