@@ -12,7 +12,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 	public List<Request> findPendingRequestByToUser(@Param("x") String userId);
 	
 
-	@Query("select c from Request c where c.fromUser =:x ")
+	@Query("select c from Request c where c.fromUser =:x and (c.status='approved' or c.status='disapproved')")
 	public List<Request> findMyRequests(@Param("x") String userId);
 
 }

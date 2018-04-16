@@ -527,9 +527,11 @@ public class BotController {
 					for (int i = 0; i < a; i++) {
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
-								"Request title: " + requests.get(i).getTitle(), "FROM:" + userInformationRepository
-										.findOne(requests.get(i).getFromUser()).getUserName(),
-								null));
+								"Request title: " + requests.get(i).getTitle(), "To:" + userInformationRepository
+										.findOne(requests.get(i).getToUser().getUserId()).getUserName(),
+										Arrays.asList(
+												new PostbackAction("Request "+requests.get(i).getStatus(),
+														" "))));
 					}
 				} else {
 					for (int i = 0; i < 10; i++) {
@@ -537,7 +539,9 @@ public class BotController {
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
 								"Request title: " + requests.get(i).getTitle(), "FROM:" + userInformationRepository
 										.findOne(requests.get(i).getFromUser()).getUserName(),
-								null));
+										Arrays.asList(
+												new PostbackAction("Request "+requests.get(i).getStatus(),
+														" "))));
 					}
 				}
 			}
