@@ -408,7 +408,7 @@ public class BotController {
 						e.printStackTrace();
 					}
 				} else {
-					if (a < 11) {
+					if (a < 10) {
 						for (int i = 0; i < a; i++) {
 
 							listCarouselColumns
