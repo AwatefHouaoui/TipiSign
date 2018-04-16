@@ -193,12 +193,6 @@ public class BotController {
 			lineProgress.setUserLine(userInformationRepository.getOne(userId));
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
-			//
-			// if (customerMessage.contains("cancel")) {
-			// lineProgress.setStatusLine("Default");
-			// lineProgressRepository.save(lineProgress);
-			// System.out.println("status*********" + lineProgress.getStatusLine());
-			// }
 
 			switch (lineProgress.getStatusLine()) {
 
@@ -484,7 +478,7 @@ public class BotController {
 					}
 
 					textMessage = new TextMessage(userInformationRepository.findOne(userId).getUserName().toUpperCase()
-							+ " has " + part1.toUpperCase() + " your request.\n \nTitle: " + r.getTitle().toUpperCase()
+							+ " has " + part1.toUpperCase() + "D your request.\n \nTitle: " + r.getTitle().toUpperCase()
 							+ "\n \nDetail: " + r.getDetail().toUpperCase());
 					pushMessage = new PushMessage(r.getFromUser(), textMessage);
 					try {
