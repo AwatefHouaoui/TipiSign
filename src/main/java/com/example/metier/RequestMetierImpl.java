@@ -27,4 +27,9 @@ public class RequestMetierImpl implements RequestMetier {
 		return requestRepository.findPendingRequestByToUser(userId);
 	}
 
+	@Override
+	public List<Request> findMyRequests(String userId) {
+		return requestRepository.findMyRequests(userId);
+	}
+
 }

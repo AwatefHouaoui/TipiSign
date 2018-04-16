@@ -30,4 +30,12 @@ public class RequestService {
 		return requestMetier.findPendingRequestByToUser(userId);
 	}
 
+	@RequestMapping(value = "/getMyRequests", method = RequestMethod.GET)
+	public List<Request> findMyRequests(@RequestParam(name = "userId") String userId) {
+		return requestMetier.findMyRequests(userId);
+	}
+	
+	
+	
+
 }

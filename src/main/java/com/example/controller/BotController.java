@@ -107,7 +107,7 @@ public class BotController {
 	LineProgress lineProgress = new LineProgress();
 	CarouselColumn carouselColumn;
 	String userId;
-	List<CarouselColumn> listOfCarouselColumns;
+	List<CarouselColumn> listCarouselColumns;
 	Request request;
 
 	@ResponseBody
@@ -394,13 +394,13 @@ public class BotController {
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
 				List<Request> requests = requestRepository.findPendingRequestByToUser(userId);
-				List<CarouselColumn> listCarouselColumns = new ArrayList<>();
+				listCarouselColumns = new ArrayList<>();
 				int a = requests.size();
 				logger.info("size of requests is =" + requests.size());
 
 				if (a == 0) {
 
-					textMessage = new TextMessage("You haven't any requests.");
+					textMessage = new TextMessage("You haven't received any requests yet.");
 					pushMessage = new PushMessage(userId, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
@@ -504,19 +504,65 @@ public class BotController {
 
 			break;
 
+		case "decision":
+
+			String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+					+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
+
+			List<Request> requests = requestRepository.findMyRequests(userId);
+			listCarouselColumns = new ArrayList<>();
+			int a = requests.size();
+
+			if (a == 0) {
+
+				textMessage = new TextMessage("You haven't sent any requests yet.");
+				pushMessage = new PushMessage(userId, textMessage);
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+			} else {
+				if (a < 10) {
+					for (int i = 0; i < a; i++) {
+
+						listCarouselColumns.add(new CarouselColumn(imageUrl,
+								"Request title: " + requests.get(i).getTitle(), "FROM:" + userInformationRepository
+										.findOne(requests.get(i).getFromUser()).getUserName(),
+								null));
+					}
+				} else {
+					for (int i = 0; i < 10; i++) {
+
+						listCarouselColumns.add(new CarouselColumn(imageUrl,
+								"Request title: " + requests.get(i).getTitle(), "FROM:" + userInformationRepository
+										.findOne(requests.get(i).getFromUser()).getUserName(),
+								null));
+					}
+				}
+			}
+
+			CarouselTemplate carouselTemplate1 = new CarouselTemplate(listCarouselColumns);
+			TemplateMessage templateMessage2 = new TemplateMessage("Carousel", carouselTemplate1);
+			PushMessage pushMessage2 = new PushMessage(userId, templateMessage2);
+			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage2).execute();
+			logger.info("osaka :" + customerMessage);
+
+			break;
+
 		case "carousel":
 
-			String imageUrl = createUri("/static/buttons/1040.jpg");
+			String imageUrl1 = createUri("/static/buttons/1040.jpg");
 			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
-					new CarouselColumn(imageUrl, "hoge", "fuga",
+					new CarouselColumn(imageUrl1, "hoge", "fuga",
 							Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
 									new URIAction("Go to line.me", "https://line.me"),
 									new PostbackAction("Say hello1", "hello こんにちは"))),
-					new CarouselColumn(imageUrl, "hoge", "fuga",
+					new CarouselColumn(imageUrl1, "hoge", "fuga",
 							Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
 									new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
 									new MessageAction("Say message", "Rice=米"))),
-					new CarouselColumn(imageUrl, "Datetime Picker", "Please select a date, time or datetime",
+					new CarouselColumn(imageUrl1, "Datetime Picker", "Please select a date, time or datetime",
 							Arrays.asList(
 									new DatetimePickerAction("Datetime", "action=sel", "datetime", "2017-06-18T06:15",
 											"2100-12-31T23:59", "1900-01-01T00:00"),

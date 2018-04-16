@@ -9,5 +9,7 @@ public interface RequestMetier {
 	public List<Request> listRequest();
 
 	public List<Request> findPendingRequestByToUser(String userId);
+	
+	public List<Request> findMyRequests(String userId);
 
 }
