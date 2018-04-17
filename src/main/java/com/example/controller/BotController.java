@@ -104,7 +104,7 @@ public class BotController {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	String title, detail, authority, status = null;
+	String title, detail, authority, status = "null";
 	UserInformation toUser;
 	long visibility;
 	LineProgress lineProgress;
