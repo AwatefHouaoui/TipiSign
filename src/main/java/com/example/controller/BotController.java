@@ -527,7 +527,7 @@ public class BotController {
 					for (int i = 0; i < a; i++) {
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
-								"Request title: " + requests.get(i).getTitle(), "To:" + userInformationRepository
+								"Request title: " + requests.get(i).getTitle(), "TO: " + userInformationRepository
 										.findOne(requests.get(i).getToUser().getUserId()).getUserName(),
 										Arrays.asList(
 												new PostbackAction("Request "+requests.get(i).getStatus(),
@@ -537,7 +537,7 @@ public class BotController {
 					for (int i = 0; i < 10; i++) {
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
-								"Request title: " + requests.get(i).getTitle(), "FROM:" + userInformationRepository
+								"Request title: " + requests.get(i).getTitle(), "TO: " + userInformationRepository
 										.findOne(requests.get(i).getFromUser()).getUserName(),
 										Arrays.asList(
 												new PostbackAction("Request "+requests.get(i).getStatus(),
