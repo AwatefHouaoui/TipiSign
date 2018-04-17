@@ -104,7 +104,7 @@ public class BotController {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	String title, detail, authority;
+	String title, detail, authority, status = null;
 	UserInformation toUser;
 	long visibility;
 	LineProgress lineProgress;
@@ -137,6 +137,7 @@ public class BotController {
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("JSONObject**************" + jsonResult);
+		logger.info("staaaaatuuuuuuuus**************" + status);
 
 		switch (intentName.toLowerCase()) {
 
@@ -181,6 +182,7 @@ public class BotController {
 
 			lineProgress = new LineProgress();
 			lineProgress.setUserLine(userInformationRepository.getOne(userId));
+			status = lineProgress.getStatusLine();
 
 			textMessage = new TextMessage("Receiver name :");
 			pushMessage = new PushMessage(userId, textMessage);
@@ -198,7 +200,7 @@ public class BotController {
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
 
-			switch (lineProgress.getStatusLine()) {
+			switch (status) {
 
 			case "Default":
 
@@ -228,6 +230,7 @@ public class BotController {
 
 					lineProgress.setStatusLine("receiverchosen");
 					lineProgressRepository.save(lineProgress);
+					status = lineProgress.getStatusLine();
 					System.out.println("status*********" + lineProgress.getStatusLine());
 				}
 
@@ -251,6 +254,7 @@ public class BotController {
 
 						lineProgress.setStatusLine("Requesttitled");
 						lineProgressRepository.save(lineProgress);
+						status = lineProgress.getStatusLine();
 
 						textMessage = new TextMessage("Request Title :");
 						pushMessage = new PushMessage(userId, textMessage);
@@ -272,6 +276,7 @@ public class BotController {
 
 				lineProgress.setStatusLine("RequestDetailed");
 				lineProgressRepository.save(lineProgress);
+				status = lineProgress.getStatusLine();
 				System.out.println("status*********" + lineProgress.getStatusLine());
 				logger.info("Request Titled " + customerMessage);
 
@@ -291,6 +296,7 @@ public class BotController {
 
 				lineProgress.setStatusLine("Finish");
 				lineProgressRepository.save(lineProgress);
+				status = lineProgress.getStatusLine();
 				System.out.println("status*********" + lineProgress.getStatusLine());
 				logger.info("Request detailed", customerMessage);
 
