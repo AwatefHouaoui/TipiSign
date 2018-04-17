@@ -55,7 +55,6 @@ import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.PostbackEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
-import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TemplateMessage;
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.template.ButtonsTemplate;
@@ -212,7 +211,7 @@ public class BotController {
 					System.out.println("status*********" + lineProgress.getStatusLine());
 					logger.info("receiver has noooooooot been chosen" + customerMessage);
 
-					textMessage = new TextMessage("Try again, receiver name");
+					textMessage = new TextMessage("Try again, receiver name: ");
 					pushMessage = new PushMessage(userId, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
@@ -290,7 +289,7 @@ public class BotController {
 
 				detail = resolvedQuery;
 
-				lineProgress.setStatusLine("Default");
+				lineProgress.setStatusLine("Finish");
 				lineProgressRepository.save(lineProgress);
 				System.out.println("status*********" + lineProgress.getStatusLine());
 				logger.info("Request detailed", customerMessage);
@@ -307,14 +306,14 @@ public class BotController {
 
 			default:
 
-				textMessage = new TextMessage("I didn't get that, Try again.");
+				textMessage = new TextMessage("I didn't get that! if you have a request, tell me :)");
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
-				
+
 				break;
 			}
 
@@ -376,7 +375,7 @@ public class BotController {
 				hm.put("Disapprove", "Disapprove request " + request.getRequestId());
 
 				typeBRecursiveChoices(imageUrl, "Request title: " + title,
-						"FROM:" + userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + detail, hm,
+						"FROM: " + userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + detail, hm,
 						TOKEN, toUserId);
 				logger.info("request sent to:" + toUser.getUserName());
 
