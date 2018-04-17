@@ -22,6 +22,7 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -54,6 +55,7 @@ import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.PostbackEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
+import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TemplateMessage;
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.template.ButtonsTemplate;
@@ -85,6 +87,8 @@ public class BotController {
 	LineProgressRepository lineProgressRepository;
 	@Autowired
 	AuthorityRepository authorityRepository;
+	@Autowired
+	MessageSource messageSource;
 
 	LineMessagingClient client = LineMessagingClient.builder(TOKEN).build();
 	TextMessage textMessage;
@@ -104,7 +108,7 @@ public class BotController {
 	String title, detail, authority;
 	UserInformation toUser;
 	long visibility;
-	LineProgress lineProgress = new LineProgress();
+	LineProgress lineProgress;
 	CarouselColumn carouselColumn;
 	String userId;
 	List<CarouselColumn> listCarouselColumns;
@@ -133,7 +137,6 @@ public class BotController {
 
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
-		logger.info("status ************" + lineProgress.getStatusLine());
 		logger.info("JSONObject**************" + jsonResult);
 
 		switch (intentName.toLowerCase()) {
@@ -177,6 +180,9 @@ public class BotController {
 
 		case "request":
 
+			lineProgress = new LineProgress();
+			lineProgress.setUserLine(userInformationRepository.getOne(userId));
+
 			textMessage = new TextMessage("Receiver name :");
 			pushMessage = new PushMessage(userId, textMessage);
 			try {
@@ -190,7 +196,6 @@ public class BotController {
 
 		case "default fallback intent":
 
-			lineProgress.setUserLine(userInformationRepository.getOne(userId));
 			customerMessage = customerMessage.toLowerCase();
 			logger.info("customer Message in lower case : " + customerMessage);
 
@@ -207,7 +212,7 @@ public class BotController {
 					System.out.println("status*********" + lineProgress.getStatusLine());
 					logger.info("receiver has noooooooot been chosen" + customerMessage);
 
-					textMessage = new TextMessage("I didn't get that, Try again.");
+					textMessage = new TextMessage("Try again, receiver name");
 					pushMessage = new PushMessage(userId, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
@@ -298,6 +303,18 @@ public class BotController {
 				typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
 				logger.info("Choose request authority :" + customerMessage);
 
+				break;
+
+			default:
+
+				textMessage = new TextMessage("I didn't get that, Try again.");
+				pushMessage = new PushMessage(userId, textMessage);
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+				
 				break;
 			}
 
@@ -527,21 +544,18 @@ public class BotController {
 					for (int i = 0; i < a; i++) {
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
-								"Request title: " + requests.get(i).getTitle(), "TO: " + userInformationRepository
-										.findOne(requests.get(i).getToUser().getUserId()).getUserName(),
-										Arrays.asList(
-												new PostbackAction("Request "+requests.get(i).getStatus(),
-														" "))));
+								"Request title: " + requests.get(i).getTitle(),
+								"TO: " + userInformationRepository.findOne(requests.get(i).getToUser().getUserId())
+										.getUserName(),
+								Arrays.asList(new PostbackAction("Request " + requests.get(i).getStatus(), " "))));
 					}
 				} else {
 					for (int i = 0; i < 10; i++) {
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
-								"Request title: " + requests.get(i).getTitle(), "TO: " + userInformationRepository
-										.findOne(requests.get(i).getFromUser()).getUserName(),
-										Arrays.asList(
-												new PostbackAction("Request "+requests.get(i).getStatus(),
-														" "))));
+								"Request title: " + requests.get(i).getTitle(),
+								"TO: " + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName(),
+								Arrays.asList(new PostbackAction("Request " + requests.get(i).getStatus(), " "))));
 					}
 				}
 			}

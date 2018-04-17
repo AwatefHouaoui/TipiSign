@@ -7,8 +7,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 
 @SpringBootApplication
@@ -18,7 +21,8 @@ import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 @ComponentScan(basePackages = { "com.example.controller", "com.example.metier", "com.example.service" })
 @EnableJpaRepositories(basePackages = { "com.example.dao" })
 
-public class HrBotApplication {
+public class HrBotApplication extends WebMvcConfigurerAdapter {
+
 	static Path downloadedContentDir;
 
 	public static void main(String[] args) throws IOException {
@@ -26,4 +30,11 @@ public class HrBotApplication {
 		SpringApplication.run(HrBotApplication.class, args);
 	}
 
+	@Bean
+	public ResourceBundleMessageSource messageSource() {
+		ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+		source.setBasename("messages_");
+		source.setUseCodeAsDefaultMessage(true);
+		return source;
+	}
 }
