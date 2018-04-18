@@ -525,11 +525,12 @@ public class BotController {
 
 					case "Show":
 
+						logger.info("shoooooooooooooooooooooooooooooow");
+
 						typeCQuestion(
 								"Title: " + r.getTitle().toUpperCase() + "\n \nFrom: "
 										+ userInformationRepository.findOne(r.getFromUser()).getUserName()
-										+ "\n \nDetail: " + r.getDetail() + "\n \nAuthority: "
-										+ authorityRepository.getOne(visibility).getAuthorityName(),
+										+ "\n \nDetail: " + r.getDetail(),
 								"Approve", "Approve request " + r.getRequestId(), "Disapprove",
 								"Disapprove request " + r.getRequestId(), "Confirm", TOKEN, userId);
 
