@@ -351,8 +351,8 @@ public class BotController {
 			}
 
 			typeCQuestion(
-					"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\n \nTITLE: " + title
-							+ "\n \nDETAIL: " + detail + "\n \nAUTHORITY: " + authority,
+					"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
+							+ "\nDETAIL: " + detail + "\nAUTHORITY: " + authority,
 					"Send", "Send", "Cancel", "Cancel", "Confirm", TOKEN, userId);
 
 			break;
@@ -493,7 +493,7 @@ public class BotController {
 						textMessage = new TextMessage(
 								userInformationRepository.findOne(userId).getUserName().toUpperCase()
 										+ " has APPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
-										+ "\n \nDetail: " + r.getDetail().toUpperCase());
+										+ "\nDetail: " + r.getDetail().toUpperCase());
 						pushMessage = new PushMessage(r.getFromUser(), textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -513,7 +513,7 @@ public class BotController {
 						textMessage = new TextMessage(
 								userInformationRepository.findOne(userId).getUserName().toUpperCase()
 										+ " has DISAPPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
-										+ "\n \nDetail: " + r.getDetail().toUpperCase());
+										+ "\nDetail: " + r.getDetail().toUpperCase());
 						pushMessage = new PushMessage(r.getFromUser(), textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -525,12 +525,13 @@ public class BotController {
 
 					case "Show":
 
-						logger.info("shoooooooooooooooooooooooooooooow");
+						logger.info("shoooooooooooooooooooooooooooooooooow");
 
 						typeCQuestion(
-								"Title: " + r.getTitle().toUpperCase() + "\n \nFrom: "
+								"Title: " + r.getTitle().toUpperCase() + "\nFrom: "
 										+ userInformationRepository.findOne(r.getFromUser()).getUserName()
-										+ "\n \nDetail: " + r.getDetail(),
+										+ "\nDetail: " + r.getDetail() + "\nAuthority: "
+										+ authorityRepository.getOne(visibility).getAuthorityName(),
 								"Approve", "Approve request " + r.getRequestId(), "Disapprove",
 								"Disapprove request " + r.getRequestId(), "Confirm", TOKEN, userId);
 
