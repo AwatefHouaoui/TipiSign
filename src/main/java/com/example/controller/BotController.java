@@ -312,7 +312,7 @@ public class BotController {
 
 			default:
 
-				textMessage = new TextMessage("I didn't get that! if you have a request, tell me :)");
+				textMessage = new TextMessage("I didn't get that! if you want to make a request, tell me.");
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
@@ -353,7 +353,7 @@ public class BotController {
 			typeCQuestion(
 					"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
 							+ "\nDETAIL: " + detail + "\nAUTHORITY: " + authority,
-					"Send", "Send", "Cancel", "Cancel", "Confirm", TOKEN, userId);
+					"Send", "Send", "Delete", "Delete", "Confirm", TOKEN, userId);
 
 			break;
 
@@ -474,80 +474,155 @@ public class BotController {
 				logger.info("osaka :" + customerMessage);
 
 			} else {
+				if (customerMessage.equals("Cancel")) {
 
-				String[] table = customerMessage.split(" ");
-				String part1 = table[0];
-				long number = parameters.getLong("number");
-				Request r = requestRepository.findOne(number);
-
-				if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
-
-					switch (part1) {
-					case "Approve":
-
-						r.setStatus("approved");
-						r.setUpdatedAt(convertToTimestamp(timestamp));
-						requestRepository.save(r);
-						logger.info("approooooooooooooooved");
-
-						textMessage = new TextMessage(
-								userInformationRepository.findOne(userId).getUserName().toUpperCase()
-										+ " has APPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
-										+ "\nDetail: " + r.getDetail().toUpperCase());
-						pushMessage = new PushMessage(r.getFromUser(), textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						}
-
-						break;
-
-					case "Disapprove":
-
-						r.setStatus("disapproved");
-						r.setUpdatedAt(convertToTimestamp(timestamp));
-						requestRepository.save(r);
-						logger.info("diiiiiiiiisapproooooooooooooooved");
-
-						textMessage = new TextMessage(
-								userInformationRepository.findOne(userId).getUserName().toUpperCase()
-										+ " has DISAPPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
-										+ "\nDetail: " + r.getDetail().toUpperCase());
-						pushMessage = new PushMessage(r.getFromUser(), textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						}
-
-						break;
-
-					case "Show":
-
-						logger.info("shoooooooooooooooooooooooooooooooooow");
-
-						typeCQuestion(
-								"Title: " + r.getTitle().toUpperCase() + "\nFrom: "
-										+ userInformationRepository.findOne(r.getFromUser()).getUserName()
-										+ "\nDetail: " + r.getDetail() + "\nAuthority: "
-										+ authorityRepository.getOne(visibility).getAuthorityName(),
-								"Approve", "Approve request " + r.getRequestId(), "Disapprove",
-								"Disapprove request " + r.getRequestId(), "Confirm", TOKEN, userId);
-
-						break;
-					}
-
-				} else {
-
-					textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
+					textMessage = new TextMessage("Decision not yet taken!");
 					pushMessage = new PushMessage(userId, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
 					} catch (InterruptedException | ExecutionException e) {
 						e.printStackTrace();
 					}
-					logger.info("Decision already taken! The request is ****************" + r.getStatus());
+
+				} else {
+
+					String[] table = customerMessage.split(" ");
+					String part1 = table[0];
+					String part2 = table[1];
+					long number = parameters.getLong("number");
+					Request r = requestRepository.findOne(number);
+
+					if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
+
+						switch (part1) {
+						case "Approve":
+
+							typeCQuestion(
+									"Are you sure you want to approve the request of "
+											+ userInformationRepository.findOne(r.getFromUser()).getUserName()
+											+ "\nTitled: " + r.getTitle(),
+									"Yes Approve", "Yes Approve " + r.getRequestId(), "Cancel", "Cancel", "Confirm",
+									TOKEN, userId);
+
+							// r.setStatus("approved");
+							// r.setUpdatedAt(convertToTimestamp(timestamp));
+							// requestRepository.save(r);
+							// logger.info("approooooooooooooooved");
+							//
+							// textMessage = new TextMessage(
+							// userInformationRepository.findOne(userId).getUserName().toUpperCase()
+							// + " has APPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
+							// + "\nDetail: " + r.getDetail().toUpperCase());
+							// pushMessage = new PushMessage(r.getFromUser(), textMessage);
+							// try {
+							// botApiResponse = client.pushMessage(pushMessage).get();
+							// } catch (InterruptedException | ExecutionException e) {
+							// e.printStackTrace();
+							// }
+
+							break;
+
+						case "Disapprove":
+
+							typeCQuestion(
+									"Are you sure you want to disapprove the request of "
+											+ userInformationRepository.findOne(r.getFromUser()).getUserName()
+											+ "\nTitled: " + r.getTitle(),
+									"Yes Disapprove", "Yes Disapprove " + r.getRequestId(), "Cancel", "Cancel",
+									"Confirm", TOKEN, userId);
+
+							// r.setStatus("disapproved");
+							// r.setUpdatedAt(convertToTimestamp(timestamp));
+							// requestRepository.save(r);
+							// logger.info("diiiiiiiiisapproooooooooooooooved");
+							//
+							// textMessage = new TextMessage(
+							// userInformationRepository.findOne(userId).getUserName().toUpperCase()
+							// + " has DISAPPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
+							// + "\nDetail: " + r.getDetail().toUpperCase());
+							// pushMessage = new PushMessage(r.getFromUser(), textMessage);
+							// try {
+							// botApiResponse = client.pushMessage(pushMessage).get();
+							// } catch (InterruptedException | ExecutionException e) {
+							// e.printStackTrace();
+							// }
+
+							break;
+
+						case "Show":
+
+							logger.info("shoooooooooooooooooooooooooooooooooow");
+
+							typeCQuestion(
+									"Title: " + r.getTitle().toUpperCase() + "\nFrom: "
+											+ userInformationRepository.findOne(r.getFromUser()).getUserName()
+											+ "\nDetail: " + r.getDetail() + "\nAuthority: "
+											+ authorityRepository.getOne(visibility).getAuthorityName(),
+									"Approve", "Approve request " + r.getRequestId(), "Disapprove",
+									"Disapprove request " + r.getRequestId(), "Confirm", TOKEN, userId);
+
+							break;
+
+						case "Yes":
+
+							switch (part2) {
+							case "Approve":
+
+								r.setStatus("approved");
+								r.setUpdatedAt(convertToTimestamp(timestamp));
+								requestRepository.save(r);
+								logger.info("approooooooooooooooved");
+
+								textMessage = new TextMessage(
+										userInformationRepository.findOne(userId).getUserName().toUpperCase()
+												+ " has APPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
+												+ "\nDetail: " + r.getDetail().toUpperCase());
+								pushMessage = new PushMessage(r.getFromUser(), textMessage);
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
+
+								break;
+
+							case "Disapprove":
+
+								r.setStatus("disapproved");
+								r.setUpdatedAt(convertToTimestamp(timestamp));
+								requestRepository.save(r);
+								logger.info("diiiiiiiiisapproooooooooooooooved");
+
+								textMessage = new TextMessage(
+										userInformationRepository.findOne(userId).getUserName().toUpperCase()
+												+ " has DISAPPROVED your request.\n \nTitle: "
+												+ r.getTitle().toUpperCase() + "\nDetail: "
+												+ r.getDetail().toUpperCase());
+								pushMessage = new PushMessage(r.getFromUser(), textMessage);
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
+
+								break;
+							}
+
+							break;
+						}
+
+					} else {
+
+						textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
+						pushMessage = new PushMessage(userId, textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
+						logger.info("Decision already taken! The request is ****************" + r.getStatus());
+					}
+
 				}
 
 			}
