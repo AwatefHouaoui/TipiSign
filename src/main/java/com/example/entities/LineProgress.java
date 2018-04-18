@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class LineProgress.
  */

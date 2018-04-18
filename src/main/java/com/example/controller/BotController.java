@@ -372,6 +372,7 @@ public class BotController {
 				request.setCreatedAt(convertToTimestamp(timestamp));
 				request.setUpdatedAt(convertToTimestamp(timestamp));
 				requestRepository.save(request);
+				lineProgressRepository.delete(lineProgress);
 
 				String toUserId = toUser.getUserId();
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
@@ -379,10 +380,10 @@ public class BotController {
 
 				hm.put("Approve", "Approve request " + request.getRequestId());
 				hm.put("Disapprove", "Disapprove request " + request.getRequestId());
+				hm.put("Show detail", "Show detail " + request.getRequestId());
 
 				typeBRecursiveChoices(imageUrl, "Request title: " + title,
-						"FROM: " + userInformationRepository.findOne(userId).getUserName() + "\nDETAIL: " + detail, hm,
-						TOKEN, toUserId);
+						"FROM: " + userInformationRepository.findOne(userId).getUserName(), hm, TOKEN, toUserId);
 				logger.info("request sent to:" + toUser.getUserName());
 
 				textMessage = new TextMessage("Your request has been sent successfully.");
@@ -437,14 +438,13 @@ public class BotController {
 									.add(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
 											"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser())
 													.getUserName(),
-											// + "\nDETAIL: "
-											// + (requests.get(i).getDetail().length() >= 30 ? "too long"
-											// : requests.get(i).getDetail()),
 											Arrays.asList(
 													new MessageAction("Approve",
 															"Approve request " + requests.get(i).getRequestId()),
 													new MessageAction("Disapprove",
-															"Disapprove request " + requests.get(i).getRequestId()))));
+															"Disapprove request " + requests.get(i).getRequestId()),
+													new MessageAction("Show detail",
+															"Show detail " + requests.get(i).getRequestId()))));
 						}
 					} else {
 						for (int i = 0; i < 10; i++) {
@@ -460,7 +460,9 @@ public class BotController {
 													new MessageAction("Approve",
 															"Approve request " + requests.get(i).getRequestId()),
 													new MessageAction("Disapprove",
-															"Disapprove request " + requests.get(i).getRequestId()))));
+															"Disapprove request " + requests.get(i).getRequestId()),
+													new MessageAction("Show detail",
+															"Show detail " + requests.get(i).getRequestId()))));
 						}
 					}
 				}
@@ -488,6 +490,17 @@ public class BotController {
 						requestRepository.save(r);
 						logger.info("approooooooooooooooved");
 
+						textMessage = new TextMessage(
+								userInformationRepository.findOne(userId).getUserName().toUpperCase()
+										+ " has APPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
+										+ "\n \nDetail: " + r.getDetail().toUpperCase());
+						pushMessage = new PushMessage(r.getFromUser(), textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
+
 						break;
 
 					case "Disapprove":
@@ -497,17 +510,30 @@ public class BotController {
 						requestRepository.save(r);
 						logger.info("diiiiiiiiisapproooooooooooooooved");
 
-						break;
-					}
+						textMessage = new TextMessage(
+								userInformationRepository.findOne(userId).getUserName().toUpperCase()
+										+ " has DISAPPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
+										+ "\n \nDetail: " + r.getDetail().toUpperCase());
+						pushMessage = new PushMessage(r.getFromUser(), textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
 
-					textMessage = new TextMessage(userInformationRepository.findOne(userId).getUserName().toUpperCase()
-							+ " has " + part1.toUpperCase() + "D your request.\n \nTitle: " + r.getTitle().toUpperCase()
-							+ "\n \nDetail: " + r.getDetail().toUpperCase());
-					pushMessage = new PushMessage(r.getFromUser(), textMessage);
-					try {
-						botApiResponse = client.pushMessage(pushMessage).get();
-					} catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
+						break;
+
+					case "Show":
+
+						typeCQuestion(
+								"Title: " + r.getTitle().toUpperCase() + "\n \nFrom: "
+										+ userInformationRepository.findOne(r.getFromUser()).getUserName()
+										+ "\n \nDetail: " + r.getDetail() + "\n \nAuthority: "
+										+ authorityRepository.getOne(visibility).getAuthorityName(),
+								"Approve", "Approve request " + r.getRequestId(), "Disapprove",
+								"Disapprove request " + r.getRequestId(), "Confirm", TOKEN, userId);
+
+						break;
 					}
 
 				} else {

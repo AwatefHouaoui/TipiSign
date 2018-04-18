@@ -1,7 +1,7 @@
 	#!/bin/bash
 	clear
-    git flow feature start App_Disapp
+    git flow feature start internationalisation
     git add .
-    git commit -m "App_Disapp"
-    git flow feature finish App_Disapp
+    git commit -m "internationalisation"
+    git flow feature finish internationalisation
     git push origin develop
