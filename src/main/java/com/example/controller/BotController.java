@@ -557,7 +557,7 @@ public class BotController {
 									"Title: " + r.getTitle().toUpperCase() + "\nFrom: "
 											+ userInformationRepository.findOne(r.getFromUser()).getUserName()
 											+ "\nDetail: " + r.getDetail() + "\nAuthority: "
-											+ authorityRepository.getOne(visibility).getAuthorityName(),
+											+ authorityRepository.getOne(r.getVisibility()).getAuthorityName(),
 									"Approve", "Approve request " + r.getRequestId(), "Disapprove",
 									"Disapprove request " + r.getRequestId(), "Confirm", TOKEN, userId);
 
