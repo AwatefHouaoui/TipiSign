@@ -366,10 +366,10 @@ public class BotController {
 						visibility=authority.get(i).getRanking();	
 						authorityId=authority.get(i).getAuthorityId();
 					}
-					else {
-						visibility= authority.get(n-1).getRanking();
-						authorityId= authority.get(n-1).getAuthorityId();
-					}
+//					else {
+//						visibility= authority.get(n-1).getRanking();
+//						authorityId= authority.get(n-1).getAuthorityId();
+//					}
 				}
 
 				lineProgress.setStatusLine("Finished");
