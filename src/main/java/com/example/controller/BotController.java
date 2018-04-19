@@ -474,17 +474,6 @@ public class BotController {
 				logger.info("osaka :" + customerMessage);
 
 			} else {
-				if (customerMessage.equals("Cancel")) {
-
-					textMessage = new TextMessage("Decision not yet taken!");
-					pushMessage = new PushMessage(userId, textMessage);
-					try {
-						botApiResponse = client.pushMessage(pushMessage).get();
-					} catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
-					}
-
-				} else {
 
 					String[] table = customerMessage.split(" ");
 					String part1 = table[0];
@@ -501,7 +490,7 @@ public class BotController {
 									"Are you sure you want to approve the request of "
 											+ userInformationRepository.findOne(r.getFromUser()).getUserName()
 											+ "\nTitled: " + r.getTitle(),
-									"Yes Approve", "Yes Approve " + r.getRequestId(), "Cancel", "Cancel", "Confirm",
+									"Yes Approve", "Yes Approve " + r.getRequestId(), "No Cancel", "No Cancel"  + r.getRequestId(), "Confirm",
 									TOKEN, userId);
 
 							// r.setStatus("approved");
@@ -528,7 +517,7 @@ public class BotController {
 									"Are you sure you want to disapprove the request of "
 											+ userInformationRepository.findOne(r.getFromUser()).getUserName()
 											+ "\nTitled: " + r.getTitle(),
-									"Yes Disapprove", "Yes Disapprove " + r.getRequestId(), "Cancel", "Cancel",
+									"Yes Disapprove", "Yes Disapprove " + r.getRequestId(), "No Cancel", "No Cancel"  + r.getRequestId(),
 									"Confirm", TOKEN, userId);
 
 							// r.setStatus("disapproved");
@@ -609,6 +598,18 @@ public class BotController {
 							}
 
 							break;
+							
+						case "No":
+
+								textMessage = new TextMessage("Decision not yet taken!");
+								pushMessage = new PushMessage(userId, textMessage);
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
+							
+							break;
 						}
 
 					} else {
@@ -624,8 +625,6 @@ public class BotController {
 					}
 
 				}
-
-			}
 
 			break;
 
