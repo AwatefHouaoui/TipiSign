@@ -362,6 +362,7 @@ public class BotController {
 
 				for (int i = 0; i < n; i++) {
 					if (customerMessage.equals(authority.get(i).getAuthorityName().toLowerCase())) {
+						logger.info("authoooooooooooooooooooorityyyyyyyyyy*************" + authority.get(i).getAuthorityName().toLowerCase() );
 						visibility=authority.get(i).getRanking();	
 						authorityId=authority.get(i).getAuthorityId();
 					}
