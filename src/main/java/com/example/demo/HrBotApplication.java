@@ -33,7 +33,7 @@ public class HrBotApplication extends WebMvcConfigurerAdapter {
 	@Bean
 	public ResourceBundleMessageSource messageSource() {
 		ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-		source.setBasename("messages_");
+		source.setBasename("messages");
 		source.setUseCodeAsDefaultMessage(true);
 		return source;
 	}

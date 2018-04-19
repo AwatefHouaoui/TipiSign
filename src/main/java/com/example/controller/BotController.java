@@ -157,14 +157,14 @@ public class BotController {
 			if (customerMessage.equals("English")) {
 				mainUser.setSystemLanguage("English");
 				userInformationRepository.save(mainUser);
-//				textMessage = new TextMessage("Now, I am speaking English");
-//				pushMessage = new PushMessage(userId, textMessage);
-//				try {
-//					botApiResponse = client.pushMessage(pushMessage).get();
-//				} catch (InterruptedException | ExecutionException e) {
-//					e.printStackTrace();
-//				}
-//				logger.info("Langauge ***********" + resolvedQuery);
+				// textMessage = new TextMessage("Now, I am speaking English");
+				// pushMessage = new PushMessage(userId, textMessage);
+				// try {
+				// botApiResponse = client.pushMessage(pushMessage).get();
+				// } catch (InterruptedException | ExecutionException e) {
+				// e.printStackTrace();
+				// }
+				// logger.info("Langauge ***********" + resolvedQuery);
 			} else {
 				mainUser.setSystemLanguage("Japanese");
 				userInformationRepository.save(mainUser);
@@ -177,7 +177,8 @@ public class BotController {
 				// }
 				// logger.info("Langauge ***********" + resolvedQuery);
 			}
-			textMessage = new TextMessage(messageSource.getMessage("language.change", null, new Locale(mainUser.getSystemLanguage())));
+			textMessage = new TextMessage(
+					messageSource.getMessage("language.change", null, new Locale(mainUser.getSystemLanguage())));
 			pushMessage = new PushMessage(userId, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
