@@ -232,18 +232,23 @@ public class BotController {
 					}
 
 				} else {
+					if (a < 4) {
+					
+						for (int i = 0; i < a; i++) {
+							hm.put(user.get(i).getUserName(), user.get(i).getUserName());
+						}
+						hm.put("Not available", "Not available");
+						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
 
-					for (int i = 0; i < 3; i++) {
-						hm.put(user.get(i).getUserName(), user.get(i).getUserName());
+						lineProgress.setStatusLine("receiverchosen");
+						lineProgressRepository.save(lineProgress);
+						status = lineProgress.getStatusLine();
+						System.out.println("status*********" + status);
 					}
-					hm.put("Not available", "Not available");
-					typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
+						
+					}
 
-					lineProgress.setStatusLine("receiverchosen");
-					lineProgressRepository.save(lineProgress);
-					status = lineProgress.getStatusLine();
-					System.out.println("status*********" + status);
-				}
+					
 //				if (customerMessage.equals("see more")) {
 //					
 //				}
