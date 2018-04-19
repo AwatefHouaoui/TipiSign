@@ -145,7 +145,7 @@ public class BotController {
 
 		case "language":
 
-			hm.put("English", "English");
+			hm.put("English", "english");
 			hm.put("日本語", "日本語");
 			typeBRecursiveChoices(null, null, "Please select a language:", hm, TOKEN, userId);
 			logger.info("Choose a Language :" + customerMessage);
@@ -154,8 +154,8 @@ public class BotController {
 
 		case "selected language":
 
-			if (customerMessage.equals("English")) {
-				mainUser.setSystemLanguage("English");
+			if (customerMessage.equals("english")) {
+				mainUser.setSystemLanguage("english");
 				userInformationRepository.save(mainUser);
 				// textMessage = new TextMessage("Now, I am speaking English");
 				// pushMessage = new PushMessage(userId, textMessage);
@@ -166,7 +166,7 @@ public class BotController {
 				// }
 				// logger.info("Langauge ***********" + resolvedQuery);
 			} else {
-				mainUser.setSystemLanguage("Japanese");
+				mainUser.setSystemLanguage("japanese");
 				userInformationRepository.save(mainUser);
 				// textMessage = new TextMessage("じゃ、日本語で話しますね。");
 				// pushMessage = new PushMessage(userId, textMessage);
