@@ -222,7 +222,15 @@ public class BotController {
 					System.out.println("status*********" + lineProgress.getStatusLine());
 					logger.info("receiver has noooooooot been chosen" + customerMessage);
 					if (n==2) {
-						sendAlertViaSlack(userId, timestamp, "User can't find the receiver" +customerMessage);
+						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " +customerMessage);
+						lineProgressRepository.delete(lineProgress);
+						textMessage = new TextMessage("Sorry! We can't find that person. Check with administration!");
+						pushMessage = new PushMessage(userId, textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
 					}
 					textMessage = new TextMessage("Try again, receiver name: ");
 					pushMessage = new PushMessage(userId, textMessage);
@@ -258,7 +266,15 @@ public class BotController {
 					status = lineProgress.getStatusLine();
 					System.out.println("status*********" + lineProgress.getStatusLine());
 					if (n==2) {
-						sendAlertViaSlack(userId, timestamp, "User can't find the receiver" +customerMessage);
+						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " +customerMessage);
+						lineProgressRepository.delete(lineProgress);
+						textMessage = new TextMessage("Sorry! We can't find that person. Check with administration!");
+						pushMessage = new PushMessage(userId, textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
 					}
 					textMessage = new TextMessage("Try again, receiver name: ");
 					pushMessage = new PushMessage(userId, textMessage);
