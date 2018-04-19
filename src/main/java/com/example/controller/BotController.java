@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -108,7 +109,7 @@ public class BotController {
 	String title, detail, status = "null";
 	String userId;
 	long visibility, authorityId;
-	int n;
+	int n, numPage;
 	UserInformation toUser, mainUser;
 	Request request;
 	LineProgress lineProgress;
@@ -232,7 +233,7 @@ public class BotController {
 
 				} else {
 
-					for (int i = 0; i < a; i++) {
+					for (int i = 0; i < 3; i++) {
 						hm.put(user.get(i).getUserName(), user.get(i).getUserName());
 					}
 					hm.put("Not available", "Not available");
@@ -243,6 +244,9 @@ public class BotController {
 					status = lineProgress.getStatusLine();
 					System.out.println("status*********" + status);
 				}
+//				if (customerMessage.equals("see more")) {
+//					
+//				}
 
 				break;
 
@@ -352,7 +356,7 @@ public class BotController {
 			case "RequestAuthorited":
 
 				for (int i = 0; i < n; i++) {
-					if (customerMessage.equals(authority.get(i).getAuthorityName())) {
+					if (customerMessage.equals(authority.get(i).getAuthorityName().toLowerCase())) {
 						visibility=authority.get(i).getRanking();	
 						authorityId=authority.get(i).getAuthorityId();
 					}
