@@ -250,7 +250,7 @@ public class BotController {
 
 			case "receiverchosen":
 
-				if (customerMessage.equals("Not available")) {
+				if (customerMessage.equals("not available")) {
 					
 					n++;
 					lineProgress.setStatusLine("Default");
