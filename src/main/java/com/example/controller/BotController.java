@@ -112,6 +112,7 @@ public class BotController {
 	String userId;
 	List<CarouselColumn> listCarouselColumns;
 	Request request;
+	int n = 0;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -217,9 +218,12 @@ public class BotController {
 
 				if (a == 0) {
 
+					n++;
 					System.out.println("status*********" + lineProgress.getStatusLine());
 					logger.info("receiver has noooooooot been chosen" + customerMessage);
-
+					if (n==2) {
+						sendAlertViaSlack(userId, timestamp, "User can't find the receiver" +customerMessage);
+					}
 					textMessage = new TextMessage("Try again, receiver name: ");
 					pushMessage = new PushMessage(userId, textMessage);
 					try {
@@ -233,7 +237,7 @@ public class BotController {
 					for (int i = 0; i < a; i++) {
 						hm.put(user.get(i).getUserName(), user.get(i).getUserName());
 					}
-					hm.put("N/A","N/A");
+					hm.put("Not available","Not available");
 					typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
 
 					lineProgress.setStatusLine("receiverchosen");
@@ -246,36 +250,56 @@ public class BotController {
 
 			case "receiverchosen":
 
-				user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
-				a = user.size();
+				if (customerMessage.equals("Not available")) {
+					
+					n++;
+					lineProgress.setStatusLine("Default");
+					lineProgressRepository.save(lineProgress);
+					status = lineProgress.getStatusLine();
+					System.out.println("status*********" + lineProgress.getStatusLine());
+					if (n==2) {
+						sendAlertViaSlack(userId, timestamp, "User can't find the receiver" +customerMessage);
+					}
+					textMessage = new TextMessage("Try again, receiver name: ");
+					pushMessage = new PushMessage(userId, textMessage);
+					try {
+						botApiResponse = client.pushMessage(pushMessage).get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					}
+					
+				} else {
+					user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
+					a = user.size();
 
-				for (int i = 0; i < a; i++) {
+					for (int i = 0; i < a; i++) {
 
-					String x = user.get(i).getUserName();
-					logger.info("who is the receiver ****************" + x);
+						String x = user.get(i).getUserName();
+						logger.info("who is the receiver ****************" + x);
 
-					if (customerMessage.equals(x)) {
-						String receiverId = user.get(i).getUserId();
-						UserInformation receiver = userInformationRepository.findOne(receiverId);
-						toUser = receiver;
-						logger.info("the receiver is ++++++++++++ ****************" + toUser);
+						if (customerMessage.equals(x)) {
+							String receiverId = user.get(i).getUserId();
+							UserInformation receiver = userInformationRepository.findOne(receiverId);
+							toUser = receiver;
+							logger.info("the receiver is ++++++++++++ ****************" + toUser);
 
-						lineProgress.setStatusLine("Requesttitled");
-						lineProgressRepository.save(lineProgress);
-						status = lineProgress.getStatusLine();
+							lineProgress.setStatusLine("Requesttitled");
+							lineProgressRepository.save(lineProgress);
+							status = lineProgress.getStatusLine();
 
-						textMessage = new TextMessage("Request Title :");
-						pushMessage = new PushMessage(userId, textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
+							textMessage = new TextMessage("Request Title :");
+							pushMessage = new PushMessage(userId, textMessage);
+							try {
+								botApiResponse = client.pushMessage(pushMessage).get();
+							} catch (InterruptedException | ExecutionException e) {
+								e.printStackTrace();
+							}
+							logger.info("receiver has been chosen" + customerMessage);
+
 						}
-						logger.info("receiver has been chosen" + customerMessage);
-
 					}
 				}
-
+				
 				break;
 
 			case "Requesttitled":
@@ -320,6 +344,7 @@ public class BotController {
 
 			default:
 
+				lineProgressRepository.delete(lineProgress);
 				textMessage = new TextMessage("I didn't get that! if you want to make a request, tell me.");
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
