@@ -517,7 +517,7 @@ public class BotController {
 									"Are you sure you want to disapprove the request of "
 											+ userInformationRepository.findOne(r.getFromUser()).getUserName()
 											+ "\nTitled: " + r.getTitle(),
-									"Yes Disapprove", "Yes Disapprove " + r.getRequestId(), "No Cancel", "No Cancel"  + r.getRequestId(),
+									"Yes Disapprove", "Yes Disapprove " + r.getRequestId(), "No Cancel ", "No Cancel "  + r.getRequestId(),
 									"Confirm", TOKEN, userId);
 
 							// r.setStatus("disapproved");
