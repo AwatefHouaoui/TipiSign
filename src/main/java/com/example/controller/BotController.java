@@ -39,6 +39,7 @@ import com.example.dao.AuthorityRepository;
 import com.example.dao.LineProgressRepository;
 import com.example.dao.RequestRepository;
 import com.example.dao.UserInformationRepository;
+import com.example.entities.Authority;
 import com.example.entities.LineProgress;
 import com.example.entities.Request;
 import com.example.entities.UserInformation;
@@ -104,15 +105,16 @@ public class BotController {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	String title, detail, authority, status = "null";
+	String title, detail, status = "null";
+	String userId;
+	long visibility, authorityId;
+	int n;
 	UserInformation toUser, mainUser;
-	long visibility;
+	Request request;
 	LineProgress lineProgress;
 	CarouselColumn carouselColumn;
-	String userId;
 	List<CarouselColumn> listCarouselColumns;
-	Request request;
-	int n = 0;
+	List<Authority> authority;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -145,7 +147,7 @@ public class BotController {
 
 		case "language":
 
-			hm.put("English", "english");
+			hm.put("English", "English");
 			hm.put("日本語", "日本語");
 			typeBRecursiveChoices(null, null, "Please select a language:", hm, TOKEN, userId);
 			logger.info("Choose a Language :" + customerMessage);
@@ -154,31 +156,15 @@ public class BotController {
 
 		case "selected language":
 
-			if (customerMessage.equals("english")) {
-				mainUser.setSystemLanguage("english");
+			if (customerMessage.equals("English")) {
+				mainUser.setSystemLanguage("English");
 				userInformationRepository.save(mainUser);
-				// textMessage = new TextMessage("Now, I am speaking English");
-				// pushMessage = new PushMessage(userId, textMessage);
-				// try {
-				// botApiResponse = client.pushMessage(pushMessage).get();
-				// } catch (InterruptedException | ExecutionException e) {
-				// e.printStackTrace();
-				// }
-				// logger.info("Langauge ***********" + resolvedQuery);
 			} else {
-				mainUser.setSystemLanguage("japanese");
+				mainUser.setSystemLanguage("Japanese");
 				userInformationRepository.save(mainUser);
-				// textMessage = new TextMessage("じゃ、日本語で話しますね。");
-				// pushMessage = new PushMessage(userId, textMessage);
-				// try {
-				// botApiResponse = client.pushMessage(pushMessage).get();
-				// } catch (InterruptedException | ExecutionException e) {
-				// e.printStackTrace();
-				// }
-				// logger.info("Langauge ***********" + resolvedQuery);
 			}
 			textMessage = new TextMessage(
-					messageSource.getMessage("language.change", null, new Locale(mainUser.getSystemLanguage())));
+					messageSource.getMessage("language.change", null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
 			pushMessage = new PushMessage(userId, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
@@ -192,6 +178,7 @@ public class BotController {
 		case "request":
 
 			lineProgress = new LineProgress();
+			n=0;
 			lineProgress.setUserLine(mainUser);
 			status = lineProgress.getStatusLine();
 
@@ -222,12 +209,12 @@ public class BotController {
 				if (a == 0) {
 
 					n++;
-					System.out.println("status*********" + lineProgress.getStatusLine());
+					System.out.println("status*********" + status);
 					logger.info("receiver has noooooooot been chosen" + customerMessage);
 					if (n == 2) {
 						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
 						lineProgressRepository.delete(lineProgress);
-						textMessage = new TextMessage("Sorry! We can't find that person. Check with administration!");
+						textMessage = new TextMessage("Sorry! We can't find that person. Check with the administration!");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -254,7 +241,7 @@ public class BotController {
 					lineProgress.setStatusLine("receiverchosen");
 					lineProgressRepository.save(lineProgress);
 					status = lineProgress.getStatusLine();
-					System.out.println("status*********" + lineProgress.getStatusLine());
+					System.out.println("status*********" + status);
 				}
 
 				break;
@@ -267,7 +254,7 @@ public class BotController {
 					lineProgress.setStatusLine("Default");
 					lineProgressRepository.save(lineProgress);
 					status = lineProgress.getStatusLine();
-					System.out.println("status*********" + lineProgress.getStatusLine());
+					System.out.println("status*********" + status);
 					if (n == 2) {
 						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
 						lineProgressRepository.delete(lineProgress);
@@ -327,7 +314,7 @@ public class BotController {
 				lineProgress.setStatusLine("RequestDetailed");
 				lineProgressRepository.save(lineProgress);
 				status = lineProgress.getStatusLine();
-				System.out.println("status*********" + lineProgress.getStatusLine());
+				System.out.println("status*********" + status);
 				logger.info("Request Titled " + customerMessage);
 
 				textMessage = new TextMessage("Request Detail :");
@@ -344,19 +331,47 @@ public class BotController {
 
 				detail = resolvedQuery;
 
-				lineProgress.setStatusLine("Finish");
+				lineProgress.setStatusLine("RequestAuthorited");
 				lineProgressRepository.save(lineProgress);
 				status = lineProgress.getStatusLine();
-				System.out.println("status*********" + lineProgress.getStatusLine());
+				System.out.println("status*********" + status);
 				logger.info("Request detailed", customerMessage);
 
-				hm.put("1 : Director", "Director");
-				hm.put("2 : Manager", "Manager");
-				hm.put("3 : Team leader", "Team leader");
-				hm.put("4 : Developer", "Developer");
+				authority = authorityRepository.findAll();
+				n= authority.size();
+				
+				for (int i = 0; i < n; i++) {
+					hm.put(authority.get(i).getAuthorityName(), authority.get(i).getAuthorityName());
+				}
 
 				typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
 				logger.info("Choose request authority :" + customerMessage);
+
+				break;
+				
+			case "RequestAuthorited":
+
+				for (int i = 0; i < n; i++) {
+					if (customerMessage.equals(authority.get(i).getAuthorityName())) {
+						visibility=authority.get(i).getRanking();	
+						authorityId=authority.get(i).getAuthorityId();
+					}
+					else {
+						visibility= authority.get(n-1).getRanking();
+						authorityId= authority.get(n-1).getAuthorityId();
+					}
+				}
+
+				lineProgress.setStatusLine("Finished");
+				lineProgressRepository.save(lineProgress);
+				status = lineProgress.getStatusLine();
+				System.out.println("status*********" + status);
+				logger.info("Request detailed", customerMessage);
+				
+				typeCQuestion(
+						"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
+								+ "\nDETAIL: " + detail + "\nAUTHORITY: " + authorityRepository.findOne(authorityId).getAuthorityName() ,
+						"Send", "Send", "Delete", "Delete", "Confirm", TOKEN, userId);
 
 				break;
 
@@ -373,38 +388,6 @@ public class BotController {
 
 				break;
 			}
-
-			break;
-
-		case "authority":
-
-			switch (customerMessage) {
-
-			case "Director":
-				visibility = 1;
-				authority = customerMessage;
-				break;
-
-			case "Manager":
-				visibility = 2;
-				authority = customerMessage;
-				break;
-
-			case "Team leader":
-				visibility = 3;
-				authority = customerMessage;
-				break;
-
-			case "Developer":
-				visibility = 4;
-				authority = customerMessage;
-				break;
-			}
-
-			typeCQuestion(
-					"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
-							+ "\nDETAIL: " + detail + "\nAUTHORITY: " + authority,
-					"Send", "Send", "Delete", "Delete", "Confirm", TOKEN, userId);
 
 			break;
 
