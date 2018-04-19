@@ -105,7 +105,7 @@ public class BotController {
 	}
 
 	String title, detail, authority, status = "null";
-	UserInformation toUser;
+	UserInformation toUser,mainUser;
 	long visibility;
 	LineProgress lineProgress;
 	CarouselColumn carouselColumn;
@@ -152,8 +152,12 @@ public class BotController {
 
 		case "selected language":
 
+			mainUser = userInformationRepository.findOne(userId);
 			if (customerMessage.equals("English")) {
-
+				
+				mainUser.setSystemLanguage("English");
+				userInformationRepository.save(mainUser);
+				
 				textMessage = new TextMessage("Now, I am speaking English");
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
@@ -166,6 +170,9 @@ public class BotController {
 
 			else {
 
+				mainUser.setSystemLanguage("Japanese");
+				userInformationRepository.save(mainUser);
+				
 				textMessage = new TextMessage("じゃ、日本語で話しますね。");
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
@@ -226,6 +233,7 @@ public class BotController {
 					for (int i = 0; i < a; i++) {
 						hm.put(user.get(i).getUserName(), user.get(i).getUserName());
 					}
+					hm.put("N/A","N/A");
 					typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
 
 					lineProgress.setStatusLine("receiverchosen");
