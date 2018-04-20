@@ -246,9 +246,13 @@ public class BotController {
 						lineProgressRepository.save(lineProgress);
 						status = lineProgress.getStatusLine();
 						System.out.println("status*********" + status);
+					} else {
+						user = userInformationRepository.findUserByName("%" + customerMessage + "%", new PageRequest(numPage, 3))
+								.getContent();
+							
+						}
 					}
 
-				}
 
 				// if (customerMessage.equals("see more")) {
 				//
