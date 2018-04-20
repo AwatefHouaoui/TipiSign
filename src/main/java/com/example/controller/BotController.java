@@ -254,7 +254,7 @@ public class BotController {
 					} else {
 
 						userpage = userInformationRepository.findUserByName("%" + customerMessage + "%",
-								new PageRequest(0, 3));
+								new PageRequest(numPage, 3));
 						t = userpage.getTotalPages();
 						users = userpage.getContent();
 
