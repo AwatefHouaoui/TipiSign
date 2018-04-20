@@ -7,7 +7,5 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.entities.Authority;
 
 public interface AuthorityRepository extends JpaRepository<Authority, Long> {
-	@Query("select a from Authority ")
-	public Page<Authority> findAllAuthority(Pageable pageable);
 
 }

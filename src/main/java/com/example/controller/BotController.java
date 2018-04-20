@@ -45,6 +45,7 @@ import com.example.entities.Authority;
 import com.example.entities.LineProgress;
 import com.example.entities.Request;
 import com.example.entities.UserInformation;
+import com.example.metier.AuthorityMetier;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.bot.model.PushMessage;
@@ -89,6 +90,8 @@ public class BotController {
 	LineProgressRepository lineProgressRepository;
 	@Autowired
 	AuthorityRepository authorityRepository;
+	@Autowired
+	AuthorityMetier authorityMetier;
 	@Autowired
 	MessageSource messageSource;
 
@@ -416,7 +419,7 @@ public class BotController {
 
 				} else {
 
-					authority = authorityRepository.findAllAuthority(new PageRequest(num, 3));
+					authority = authorityMetier.findAllAuthority(new PageRequest(num, 3));
 					n = authority.getTotalPages();
 					authorityCont = authority.getContent();
 
@@ -435,7 +438,7 @@ public class BotController {
 
 				if (customerMessage.equals("see more")) {
 
-					authority = authorityRepository.findAllAuthority(new PageRequest(num, 3));
+					authority = authorityMetier.findAllAuthority(new PageRequest(num, 3));
 					authorityCont = authority.getContent();
 
 					if (num == (n - 1)) {
