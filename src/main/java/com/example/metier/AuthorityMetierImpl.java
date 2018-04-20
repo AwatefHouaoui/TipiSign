@@ -1,12 +1,12 @@
 package com.example.metier;
 
 import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import com.example.dao.AuthorityRepository;
 import com.example.entities.Authority;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Implementation of Authority service
@@ -30,6 +30,11 @@ public class AuthorityMetierImpl implements AuthorityMetier {
 	@Override
 	public List<Authority> listAuthority() {
 		return authorityRepository.findAll();
+	}
+
+	@Override
+	public Page<Authority> findAllAuthority(Pageable pageable) {
+		return authorityRepository.findAll(pageable);
 	}
 
 }

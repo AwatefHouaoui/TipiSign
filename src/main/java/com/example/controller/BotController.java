@@ -110,14 +110,15 @@ public class BotController {
 	String title, detail, name, status = "null";
 	String userId;
 	long visibility, authorityId;
-	int n, numPage, t;
+	int n, numPage, num, t;
 	UserInformation toUser, mainUser;
 	Request request;
 	LineProgress lineProgress;
 	CarouselColumn carouselColumn;
 	List<CarouselColumn> listCarouselColumns;
 	List<UserInformation> users;
-	List<Authority> authority;
+	Page<Authority> authority;
+	List<Authority> authorityCont;
 	Page<UserInformation> userpage;
 
 	@ResponseBody
@@ -272,7 +273,6 @@ public class BotController {
 						lineProgressRepository.save(lineProgress);
 						status = lineProgress.getStatusLine();
 						System.out.println("status*********" + status);
-
 					}
 				}
 
@@ -320,7 +320,7 @@ public class BotController {
 								new PageRequest(numPage, 3));
 						users = userpage.getContent();
 
-						if (numPage==(t-1)) {
+						if (numPage == (t - 1)) {
 
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
 								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
@@ -334,9 +334,7 @@ public class BotController {
 							}
 							hm.put("See More", "See More");
 							numPage++;
-							
 						}
-
 						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
 
 					} else {
@@ -404,40 +402,83 @@ public class BotController {
 				System.out.println("status*********" + status);
 				logger.info("Request detailed", customerMessage);
 
-				authority = authorityRepository.findAll();
-				n = authority.size();
+				authorityCont = authorityRepository.findAll();
+				n = authorityCont.size();
 
-				for (int i = 0; i < n; i++) {
-					hm.put(authority.get(i).getAuthorityName(), authority.get(i).getAuthorityName());
+				if (n < 5) {
+
+					for (int i = 0; i < 4; i++) {
+						hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
+					}
+
+					typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
+					logger.info("Choose request authority :" + customerMessage);
+
+				} else {
+
+					authority = authorityRepository.findAllAuthority(new PageRequest(num, 3));
+					n = authority.getTotalPages();
+					authorityCont = authority.getContent();
+
+					for (int i = 0; i < 3; i++) {
+						hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
+					}
+					hm.put("See More", "See More");
+					num++;
+					typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
+					logger.info("Choose request authority :" + customerMessage);
 				}
-
-				typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
-				logger.info("Choose request authority :" + customerMessage);
 
 				break;
 
 			case "RequestAuthorited":
 
-				for (int i = 0; i < n; i++) {
-					if (customerMessage.equals(authority.get(i).getAuthorityName().toLowerCase())) {
-						logger.info("authoooooooooooooooooooorityyyyyyyyyy*************"
-								+ authority.get(i).getAuthorityName().toLowerCase());
-						visibility = authority.get(i).getRanking();
-						authorityId = authority.get(i).getAuthorityId();
+				if (customerMessage.equals("see more")) {
+
+					authority = authorityRepository.findAllAuthority(new PageRequest(num, 3));
+					authorityCont = authority.getContent();
+
+					if (num == (n - 1)) {
+						for (int i = 0; i < authority.getNumberOfElements(); i++) {
+							hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
+						}
+
+					} else {
+						for (int i = 0; i < 3; i++) {
+							hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
+						}
+						hm.put("See More", "See More");
+						num++;
 					}
+					typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
+					logger.info("Choose request authority :" + customerMessage);
+
+				} else {
+
+					authorityCont = authorityRepository.findAll();
+					n = authorityCont.size();
+
+					for (int i = 0; i < n; i++) {
+						if (customerMessage.equals(authorityCont.get(i).getAuthorityName().toLowerCase())) {
+							logger.info("authoooooooooooooooooooorityyyyyyyyyy*************"
+									+ authorityCont.get(i).getAuthorityName().toLowerCase());
+							visibility = authorityCont.get(i).getRanking();
+							authorityId = authorityCont.get(i).getAuthorityId();
+						}
+					}
+
+					lineProgress.setStatusLine("Finished");
+					lineProgressRepository.save(lineProgress);
+					status = lineProgress.getStatusLine();
+					System.out.println("status*********" + status);
+					logger.info("Request detailed", customerMessage);
+
+					typeCQuestion(
+							"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\nTITLE: "
+									+ title + "\nDETAIL: " + detail + "\nAUTHORITY: "
+									+ authorityRepository.findOne(authorityId).getAuthorityName(),
+							"Send", "Send", "Delete", "Delete", "Confirm", TOKEN, userId);
 				}
-
-				lineProgress.setStatusLine("Finished");
-				lineProgressRepository.save(lineProgress);
-				status = lineProgress.getStatusLine();
-				System.out.println("status*********" + status);
-				logger.info("Request detailed", customerMessage);
-
-				typeCQuestion(
-						"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
-								+ "\nDETAIL: " + detail + "\nAUTHORITY: "
-								+ authorityRepository.findOne(authorityId).getAuthorityName(),
-						"Send", "Send", "Delete", "Delete", "Confirm", TOKEN, userId);
 
 				break;
 
