@@ -164,8 +164,8 @@ public class BotController {
 				mainUser.setSystemLanguage("Japanese");
 				userInformationRepository.save(mainUser);
 			}
-			textMessage = new TextMessage(
-					messageSource.getMessage("language.change", null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
+			textMessage = new TextMessage(messageSource.getMessage("language.change", null,
+					new Locale(mainUser.getSystemLanguage().toLowerCase())));
 			pushMessage = new PushMessage(userId, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
@@ -179,7 +179,7 @@ public class BotController {
 		case "request":
 
 			lineProgress = new LineProgress();
-			n=0;
+			n = 0;
 			lineProgress.setUserLine(mainUser);
 			status = lineProgress.getStatusLine();
 
@@ -214,8 +214,10 @@ public class BotController {
 					logger.info("receiver has noooooooot been chosen" + customerMessage);
 					if (n == 2) {
 						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
+						n = 0;
 						lineProgressRepository.delete(lineProgress);
-						textMessage = new TextMessage("Sorry! We can't find that person. Check with the administration!");
+						textMessage = new TextMessage(
+								"Sorry! We can't find that person. Check with the administration! If you want to make a new request, tell me.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -233,7 +235,7 @@ public class BotController {
 
 				} else {
 					if (a < 4) {
-					
+
 						for (int i = 0; i < a; i++) {
 							hm.put(user.get(i).getUserName(), user.get(i).getUserName());
 						}
@@ -245,13 +247,12 @@ public class BotController {
 						status = lineProgress.getStatusLine();
 						System.out.println("status*********" + status);
 					}
-						
-					}
 
-					
-//				if (customerMessage.equals("see more")) {
-//					
-//				}
+				}
+
+				// if (customerMessage.equals("see more")) {
+				//
+				// }
 
 				break;
 
@@ -266,8 +267,10 @@ public class BotController {
 					System.out.println("status*********" + status);
 					if (n == 2) {
 						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
+						n = 0;
 						lineProgressRepository.delete(lineProgress);
-						textMessage = new TextMessage("Sorry! We can't find that person. Check with administration!");
+						textMessage = new TextMessage(
+								"Sorry! We can't find that person. Check with administration! If you want to make a new request, tell me.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -347,8 +350,8 @@ public class BotController {
 				logger.info("Request detailed", customerMessage);
 
 				authority = authorityRepository.findAll();
-				n= authority.size();
-				
+				n = authority.size();
+
 				for (int i = 0; i < n; i++) {
 					hm.put(authority.get(i).getAuthorityName(), authority.get(i).getAuthorityName());
 				}
@@ -357,19 +360,16 @@ public class BotController {
 				logger.info("Choose request authority :" + customerMessage);
 
 				break;
-				
+
 			case "RequestAuthorited":
 
 				for (int i = 0; i < n; i++) {
 					if (customerMessage.equals(authority.get(i).getAuthorityName().toLowerCase())) {
-						logger.info("authoooooooooooooooooooorityyyyyyyyyy*************" + authority.get(i).getAuthorityName().toLowerCase() );
-						visibility=authority.get(i).getRanking();	
-						authorityId=authority.get(i).getAuthorityId();
+						logger.info("authoooooooooooooooooooorityyyyyyyyyy*************"
+								+ authority.get(i).getAuthorityName().toLowerCase());
+						visibility = authority.get(i).getRanking();
+						authorityId = authority.get(i).getAuthorityId();
 					}
-//					else {
-//						visibility= authority.get(n-1).getRanking();
-//						authorityId= authority.get(n-1).getAuthorityId();
-//					}
 				}
 
 				lineProgress.setStatusLine("Finished");
@@ -377,10 +377,11 @@ public class BotController {
 				status = lineProgress.getStatusLine();
 				System.out.println("status*********" + status);
 				logger.info("Request detailed", customerMessage);
-				
+
 				typeCQuestion(
 						"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\nTITLE: " + title
-								+ "\nDETAIL: " + detail + "\nAUTHORITY: " + authorityRepository.findOne(authorityId).getAuthorityName() ,
+								+ "\nDETAIL: " + detail + "\nAUTHORITY: "
+								+ authorityRepository.findOne(authorityId).getAuthorityName(),
 						"Send", "Send", "Delete", "Delete", "Confirm", TOKEN, userId);
 
 				break;
