@@ -262,7 +262,6 @@ public class BotController {
 							hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 						}
 						hm.put("See More", "See More");
-						numPage++;
 
 						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
 
@@ -312,6 +311,9 @@ public class BotController {
 				} else {
 
 					if (customerMessage.equals("see more")) {
+
+						userpage.nextPageable();
+						users = userpage.getContent();
 
 						if (numPage == (t - 1)) {
 
