@@ -107,7 +107,7 @@ public class BotController {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	String title, detail, status = "null";
+	String title, detail, name, status = "null";
 	String userId;
 	long visibility, authorityId;
 	int n, numPage, t;
@@ -256,12 +256,14 @@ public class BotController {
 						userpage = userInformationRepository.findUserByName("%" + customerMessage + "%",
 								new PageRequest(numPage, 3));
 						t = userpage.getTotalPages();
+						name = customerMessage;
 						users = userpage.getContent();
 
 						for (int i = 0; i < 3; i++) {
 							hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 						}
 						hm.put("See More", "See More");
+						numPage++;
 
 						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
 
@@ -312,23 +314,24 @@ public class BotController {
 
 					if (customerMessage.equals("see more")) {
 
-						userpage.nextPageable();
+						userpage = userInformationRepository.findUserByName("%" + name + "%",
+								new PageRequest(numPage, 3));
 						users = userpage.getContent();
 
-						if (numPage == (t - 1)) {
-
-							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
-								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
-							}
-							hm.put("Not available", "Not available");
-
-						} else {
+						if (userpage.hasNext()) {
 
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
 								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 							}
 							hm.put("See More", "See More");
-							numPage++;
+							
+						} else {
+
+							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
+								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
+							}
+							hm.put("Not available", "Not available");
+							
 						}
 
 						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
