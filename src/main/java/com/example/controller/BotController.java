@@ -227,13 +227,14 @@ public class BotController {
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
 						}
-					}
-					textMessage = new TextMessage("Try again, receiver name: ");
-					pushMessage = new PushMessage(userId, textMessage);
-					try {
-						botApiResponse = client.pushMessage(pushMessage).get();
-					} catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
+					} else {
+						textMessage = new TextMessage("Try again, receiver name: ");
+						pushMessage = new PushMessage(userId, textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
 					}
 
 				} else {
@@ -300,14 +301,15 @@ public class BotController {
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();
 						}
-					}
+					} else {
 
-					textMessage = new TextMessage("Try again, receiver name: ");
-					pushMessage = new PushMessage(userId, textMessage);
-					try {
-						botApiResponse = client.pushMessage(pushMessage).get();
-					} catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
+						textMessage = new TextMessage("Try again, receiver name: ");
+						pushMessage = new PushMessage(userId, textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
 					}
 
 				} else {
@@ -318,19 +320,20 @@ public class BotController {
 								new PageRequest(numPage, 3));
 						users = userpage.getContent();
 
-						if (userpage.hasNext()) {
-
-							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
-								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
-							}
-							hm.put("See More", "See More");
-							
-						} else {
+						if (numPage==(t-1)) {
 
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
 								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 							}
 							hm.put("Not available", "Not available");
+
+						} else {
+
+							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
+								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
+							}
+							hm.put("See More", "See More");
+							numPage++;
 							
 						}
 
