@@ -31,7 +31,7 @@ public class UserInformationService {
 
 	@RequestMapping(value = "/getUser", method = RequestMethod.GET)
 	public Page<UserInformation> findUserByName(@RequestParam(name = "userName") String userName,
-			@RequestParam(name = "numPage", defaultValue="1") int numPage,
+			@RequestParam(name = "numPage", defaultValue="0") int numPage,
 			@RequestParam(name = "size", defaultValue = "3") int size) {
 		return userInformationMetier.findUserByName("%" + userName + "%", new PageRequest(numPage, size));
 	}

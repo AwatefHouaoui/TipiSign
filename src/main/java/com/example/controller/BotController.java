@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -109,13 +110,15 @@ public class BotController {
 	String title, detail, status = "null";
 	String userId;
 	long visibility, authorityId;
-	int n, numPage;
+	int n, numPage, t;
 	UserInformation toUser, mainUser;
 	Request request;
 	LineProgress lineProgress;
 	CarouselColumn carouselColumn;
 	List<CarouselColumn> listCarouselColumns;
+	List<UserInformation> users;
 	List<Authority> authority;
+	Page<UserInformation> userpage;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -216,8 +219,8 @@ public class BotController {
 						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
 						n = 0;
 						lineProgressRepository.delete(lineProgress);
-						textMessage = new TextMessage(
-								"Sorry! We can't find that person. Check with the administration! If you want to make a new request, tell me.");
+						textMessage = new TextMessage("Sorry! We can't find the person you're looking for. "
+								+ "Check with the administration! If you want to make a new request, tell me.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -234,6 +237,7 @@ public class BotController {
 					}
 
 				} else {
+
 					if (a < 4) {
 
 						for (int i = 0; i < a; i++) {
@@ -246,17 +250,29 @@ public class BotController {
 						lineProgressRepository.save(lineProgress);
 						status = lineProgress.getStatusLine();
 						System.out.println("status*********" + status);
+
 					} else {
-						user = userInformationRepository.findUserByName("%" + customerMessage + "%", new PageRequest(numPage, 3))
-								.getContent();
-							
+
+						userpage = userInformationRepository.findUserByName("%" + customerMessage + "%",
+								new PageRequest(0, 3));
+						t = userpage.getTotalPages();
+						users = userpage.getContent();
+
+						for (int i = 0; i < 3; i++) {
+							hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 						}
+						hm.put("See More", "See More");
+						numPage++;
+
+						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
+
+						lineProgress.setStatusLine("receiverchosen");
+						lineProgressRepository.save(lineProgress);
+						status = lineProgress.getStatusLine();
+						System.out.println("status*********" + status);
+
 					}
-
-
-				// if (customerMessage.equals("see more")) {
-				//
-				// }
+				}
 
 				break;
 
@@ -269,12 +285,14 @@ public class BotController {
 					lineProgressRepository.save(lineProgress);
 					status = lineProgress.getStatusLine();
 					System.out.println("status*********" + status);
+
 					if (n == 2) {
+
 						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
 						n = 0;
 						lineProgressRepository.delete(lineProgress);
-						textMessage = new TextMessage(
-								"Sorry! We can't find that person. Check with administration! If you want to make a new request, tell me.");
+						textMessage = new TextMessage("Sorry! We can't find the person you're looking for. "
+								+ "Check with administration! If you want to make a new request, tell me.");
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -282,6 +300,7 @@ public class BotController {
 							e.printStackTrace();
 						}
 					}
+
 					textMessage = new TextMessage("Try again, receiver name: ");
 					pushMessage = new PushMessage(userId, textMessage);
 					try {
@@ -291,32 +310,56 @@ public class BotController {
 					}
 
 				} else {
-					user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
-					a = user.size();
 
-					for (int i = 0; i < a; i++) {
+					if (customerMessage.equals("see more")) {
 
-						String x = user.get(i).getUserName();
-						logger.info("who is the receiver ****************" + x);
+						if (numPage == (t - 1)) {
 
-						if (customerMessage.equals(x)) {
-							String receiverId = user.get(i).getUserId();
-							toUser = userInformationRepository.findOne(receiverId);
-							logger.info("the receiver is ++++++++++++ ****************" + toUser);
-
-							lineProgress.setStatusLine("Requesttitled");
-							lineProgressRepository.save(lineProgress);
-							status = lineProgress.getStatusLine();
-
-							textMessage = new TextMessage("Request Title :");
-							pushMessage = new PushMessage(userId, textMessage);
-							try {
-								botApiResponse = client.pushMessage(pushMessage).get();
-							} catch (InterruptedException | ExecutionException e) {
-								e.printStackTrace();
+							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
+								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 							}
-							logger.info("receiver has been chosen" + customerMessage);
+							hm.put("Not available", "Not available");
 
+						} else {
+
+							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
+								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
+							}
+							hm.put("See More", "See More");
+							numPage++;
+						}
+
+						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
+
+					} else {
+
+						user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
+						a = user.size();
+
+						for (int i = 0; i < a; i++) {
+
+							String x = user.get(i).getUserName();
+							logger.info("who is the receiver ****************" + x);
+
+							if (customerMessage.equals(x)) {
+								String receiverId = user.get(i).getUserId();
+								toUser = userInformationRepository.findOne(receiverId);
+								logger.info("the receiver is ++++++++++++ ****************" + toUser);
+
+								lineProgress.setStatusLine("Requesttitled");
+								lineProgressRepository.save(lineProgress);
+								status = lineProgress.getStatusLine();
+
+								textMessage = new TextMessage("Request Title :");
+								pushMessage = new PushMessage(userId, textMessage);
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
+								logger.info("receiver has been chosen" + customerMessage);
+
+							}
 						}
 					}
 				}
