@@ -157,7 +157,8 @@ public class BotController {
 
 			hm.put("English", "English");
 			hm.put("日本語", "日本語");
-			typeBRecursiveChoices(null, null, "Please select a language:", hm, TOKEN, userId);
+			typeBRecursiveChoices(null, null, messageSource.getMessage("language.select", null,
+					new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
 			logger.info("Choose a Language :" + customerMessage);
 
 			break;
@@ -190,7 +191,8 @@ public class BotController {
 			lineProgress.setUserLine(mainUser);
 			status = lineProgress.getStatusLine();
 
-			textMessage = new TextMessage("Receiver name :");
+			textMessage = new TextMessage(
+					messageSource.getMessage("receiver", null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
 			pushMessage = new PushMessage(userId, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
@@ -223,8 +225,8 @@ public class BotController {
 						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
 						n = 0;
 						lineProgressRepository.delete(lineProgress);
-						textMessage = new TextMessage("Sorry! We can't find the person you're looking for. "
-								+ "Check with the administration! If you want to make a new request, tell me.");
+						textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -232,7 +234,8 @@ public class BotController {
 							e.printStackTrace();
 						}
 					} else {
-						textMessage = new TextMessage("Try again, receiver name: ");
+						textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -248,8 +251,12 @@ public class BotController {
 						for (int i = 0; i < a; i++) {
 							hm.put(user.get(i).getUserName(), user.get(i).getUserName());
 						}
-						hm.put("Not available", "Not available");
-						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
+						hm.put(messageSource.getMessage("receiver.not.available", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								messageSource.getMessage("receiver.not.available", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
+						typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
 
 						lineProgress.setStatusLine("receiverchosen");
 						lineProgressRepository.save(lineProgress);
@@ -267,10 +274,14 @@ public class BotController {
 						for (int i = 0; i < 3; i++) {
 							hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 						}
-						hm.put("See more", "See more");
+						hm.put(messageSource.getMessage("see.more", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								messageSource.getMessage("see.more", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						numPage++;
 
-						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
+						typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
 
 						lineProgress.setStatusLine("receiverchosen");
 						lineProgressRepository.save(lineProgress);
@@ -283,7 +294,8 @@ public class BotController {
 
 			case "receiverchosen":
 
-				if (customerMessage.equals("not available")) {
+				if (customerMessage.equals(messageSource.getMessage("receiver.not.available", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
 					n++;
 					lineProgress.setStatusLine("Default");
@@ -296,8 +308,8 @@ public class BotController {
 						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
 						n = 0;
 						lineProgressRepository.delete(lineProgress);
-						textMessage = new TextMessage("Sorry! We can't find the person you're looking for. "
-								+ "Check with administration! If you want to make a new request, tell me.");
+						textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -306,7 +318,8 @@ public class BotController {
 						}
 					} else {
 
-						textMessage = new TextMessage("Try again, receiver name: ");
+						textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -317,7 +330,8 @@ public class BotController {
 
 				} else {
 
-					if (customerMessage.equals("see more")) {
+					if (customerMessage.equals(messageSource.getMessage("see.more", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
 						userpage = userInformationRepository.findUserByName("%" + name + "%",
 								new PageRequest(numPage, 3));
@@ -328,18 +342,25 @@ public class BotController {
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
 								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 							}
-							
-							hm.put("Not available", "Not available");
-							numPage=0;
+
+							hm.put(messageSource.getMessage("receiver.not.available", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									messageSource.getMessage("receiver.not.available", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())));
+							numPage = 0;
 						} else {
 
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
 								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 							}
-							hm.put("See more", "See more");
+							hm.put(messageSource.getMessage("see.more", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									messageSource.getMessage("see.more", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())));
 							numPage++;
 						}
-						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
+						typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
 
 					} else {
 
@@ -360,7 +381,8 @@ public class BotController {
 								lineProgressRepository.save(lineProgress);
 								status = lineProgress.getStatusLine();
 
-								textMessage = new TextMessage("Request Title :");
+								textMessage = new TextMessage(messageSource.getMessage("title", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
 								pushMessage = new PushMessage(userId, textMessage);
 								try {
 									botApiResponse = client.pushMessage(pushMessage).get();
@@ -386,7 +408,8 @@ public class BotController {
 				System.out.println("status*********" + status);
 				logger.info("Request Titled " + customerMessage);
 
-				textMessage = new TextMessage("Request Detail :");
+				textMessage = new TextMessage(messageSource.getMessage("detail", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())));
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
@@ -415,7 +438,8 @@ public class BotController {
 						hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
 					}
 
-					typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
+					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
 					logger.info("Choose request authority :" + customerMessage);
 
 				} else {
@@ -427,9 +451,13 @@ public class BotController {
 					for (int i = 0; i < 3; i++) {
 						hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
 					}
-					hm.put("See more", "See more");
+					hm.put(messageSource.getMessage("see.more", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							messageSource.getMessage("see.more", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())));
 					num++;
-					typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
+					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
 					logger.info("Choose request authority :" + customerMessage);
 				}
 
@@ -437,7 +465,8 @@ public class BotController {
 
 			case "RequestAuthorited":
 
-				if (customerMessage.equals("see more")) {
+				if (customerMessage.equals(messageSource.getMessage("see.more", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
 					authority = authorityService.findAllAuthority(num, 3);
 					authorityCont = authority.getContent();
@@ -446,16 +475,20 @@ public class BotController {
 						for (int i = 0; i < authority.getNumberOfElements(); i++) {
 							hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
 						}
-						num=0;
+						num = 0;
 
 					} else {
 						for (int i = 0; i < 3; i++) {
 							hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
 						}
-						hm.put("See more", "See more");
+						hm.put(messageSource.getMessage("see.more", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								messageSource.getMessage("see.more", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						num++;
 					}
-					typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
+					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
 					logger.info("Choose request authority :" + customerMessage);
 
 				} else {
@@ -479,10 +512,19 @@ public class BotController {
 					logger.info("Request detailed", customerMessage);
 
 					typeCQuestion(
-							"Do you want to send the request?\n \nRECEIVER: " + toUser.getUserName() + "\nTITLE: "
-									+ title + "\nDETAIL: " + detail + "\nAUTHORITY: "
-									+ authorityRepository.findOne(authorityId).getAuthorityName(),
-							"Send", "Send", "Delete", "Delete", "Confirm", TOKEN, userId);
+							messageSource.getMessage("confirm", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())) + "\n \nRECEIVER: "
+									+ toUser.getUserName() + "\nTITLE: " + title + "\nDETAIL: " + detail
+									+ "\nAUTHORITY: " + authorityRepository.findOne(authorityId).getAuthorityName(),
+							messageSource.getMessage("send", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							messageSource.getMessage("send", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							messageSource.getMessage("delete", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							messageSource.getMessage("delete", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							"Confirm", TOKEN, userId);
 				}
 
 				break;
@@ -490,7 +532,8 @@ public class BotController {
 			default:
 
 				lineProgressRepository.delete(lineProgress);
-				textMessage = new TextMessage("I didn't get that! if you want to make a request, tell me.");
+				textMessage = new TextMessage(messageSource.getMessage("default", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())));
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
@@ -507,7 +550,8 @@ public class BotController {
 
 			logger.info("request decesion**************************" + customerMessage);
 
-			if (customerMessage.equals("Send")) {
+			if (customerMessage.equals(
+					messageSource.getMessage("send", null, new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
 				request = new Request();
 				request.setTitle(title);
@@ -524,15 +568,26 @@ public class BotController {
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
-				hm.put("Approve", "Approve request " + request.getRequestId());
-				hm.put("Disapprove", "Disapprove request " + request.getRequestId());
-				hm.put("Show detail", "Show detail " + request.getRequestId());
+				hm.put(messageSource.getMessage("approve", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())),
+						"Approve request " + request.getRequestId());
+				hm.put(messageSource.getMessage("disapprove", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())),
+						"Disapprove request " + request.getRequestId());
+				hm.put(messageSource.getMessage("show.detail", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())),
+						"Show detail " + request.getRequestId());
 
-				typeBRecursiveChoices(imageUrl, "Request title: " + title, "FROM: " + mainUser.getUserName(), hm, TOKEN,
-						toUserId);
+				typeBRecursiveChoices(imageUrl,
+						messageSource.getMessage("title", null, new Locale(mainUser.getSystemLanguage().toLowerCase()))
+								+ title,
+						messageSource.getMessage("sender", null, new Locale(mainUser.getSystemLanguage().toLowerCase()))
+								+ mainUser.getUserName(),
+						hm, TOKEN, toUserId);
 				logger.info("request sent to:" + toUser.getUserName());
 
-				textMessage = new TextMessage("Your request has been sent successfully.");
+				textMessage = new TextMessage(messageSource.getMessage("request.send", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())));
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
@@ -544,7 +599,8 @@ public class BotController {
 
 				lineProgressRepository.delete(lineProgress);
 
-				textMessage = new TextMessage("Your request has been deleted.");
+				textMessage = new TextMessage(messageSource.getMessage("request.delete", null,
+						new Locale(mainUser.getSystemLanguage().toLowerCase())));
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
@@ -569,7 +625,8 @@ public class BotController {
 
 				if (a == 0) {
 
-					textMessage = new TextMessage("You haven't received any requests yet.");
+					textMessage = new TextMessage(messageSource.getMessage("history.empty", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())));
 					pushMessage = new PushMessage(userId, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
@@ -581,33 +638,60 @@ public class BotController {
 						for (int i = 0; i < a; i++) {
 
 							listCarouselColumns
-									.add(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
-											"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser())
-													.getUserName(),
+									.add(new CarouselColumn(imageUrl,
+											messageSource.getMessage("title", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase()))
+													+ requests.get(i).getTitle(),
+											messageSource.getMessage("sender", null, new Locale(
+													mainUser.getSystemLanguage().toLowerCase()))
+													+ userInformationRepository.findOne(requests.get(i).getFromUser())
+															.getUserName(),
 											Arrays.asList(
-													new MessageAction("Approve",
+													new MessageAction(
+															messageSource.getMessage("approve", null,
+																	new Locale(mainUser.getSystemLanguage()
+																			.toLowerCase())),
 															"Approve request " + requests.get(i).getRequestId()),
-													new MessageAction("Disapprove",
+													new MessageAction(
+															messageSource.getMessage("disapprove", null,
+																	new Locale(mainUser.getSystemLanguage()
+																			.toLowerCase())),
 															"Disapprove request " + requests.get(i).getRequestId()),
-													new MessageAction("Show detail",
+													new MessageAction(
+															messageSource.getMessage("show.detail", null,
+																	new Locale(mainUser.getSystemLanguage()
+																			.toLowerCase())),
 															"Show detail " + requests.get(i).getRequestId()))));
 						}
 					} else {
 						for (int i = 0; i < 10; i++) {
 
 							listCarouselColumns
-									.add(new CarouselColumn(imageUrl, "Request title: " + requests.get(i).getTitle(),
-											"FROM:" + userInformationRepository.findOne(requests.get(i).getFromUser())
-													.getUserName(),
+									.add(new CarouselColumn(imageUrl,
+											messageSource.getMessage("title", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase()))
+													+ requests.get(i).getTitle(),
+											messageSource.getMessage("sender", null, new Locale(mainUser
+													.getSystemLanguage().toLowerCase())) + userInformationRepository
+															.findOne(requests.get(i).getFromUser()).getUserName(),
 											// + "\nDETAIL: "
 											// + (requests.get(i).getDetail().length() >= 30 ? "too long"
 											// : requests.get(i).getDetail()),
 											Arrays.asList(
-													new MessageAction("Approve",
+													new MessageAction(
+															messageSource.getMessage("approve", null,
+																	new Locale(mainUser.getSystemLanguage()
+																			.toLowerCase())),
 															"Approve request " + requests.get(i).getRequestId()),
-													new MessageAction("Disapprove",
+													new MessageAction(
+															messageSource.getMessage("disapprove", null,
+																	new Locale(mainUser.getSystemLanguage()
+																			.toLowerCase())),
 															"Disapprove request " + requests.get(i).getRequestId()),
-													new MessageAction("Show detail",
+													new MessageAction(
+															messageSource.getMessage("show.detail", null,
+																	new Locale(mainUser.getSystemLanguage()
+																			.toLowerCase())),
 															"Show detail " + requests.get(i).getRequestId()))));
 						}
 					}
@@ -634,9 +718,14 @@ public class BotController {
 					case "Approve":
 
 						typeCQuestion(
-								"Are you sure you want to approve the request of "
+								messageSource.getMessage("confirm.approve", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase()))
 										+ userInformationRepository.findOne(r.getFromUser()).getUserName(),
-								"Yes Approve", "Yes Approve " + r.getRequestId(), "No Cancel ",
+								messageSource.getMessage("yes.approve", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								"Yes Approve " + r.getRequestId(),
+								messageSource.getMessage("no.cancel", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								"No Cancel " + r.getRequestId(), "Confirm", TOKEN, userId);
 
 						// r.setStatus("approved");
@@ -660,10 +749,15 @@ public class BotController {
 					case "Disapprove":
 
 						typeCQuestion(
-								"Are you sure you want to disapprove the request of "
+								messageSource.getMessage("confirm.disapprove", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase()))
 										+ userInformationRepository.findOne(r.getFromUser()).getUserName(),
-								"Yes Disapprove", "Yes Disapprove " + r.getRequestId(), "No Cancel ",
-								"No Cancel " + r.getRequestId(), "Confirm", TOKEN, userId);
+								messageSource.getMessage("yes.disapprove", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								"Yes Disapprove " + r.getRequestId(),
+								messageSource.getMessage("no.cancel", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								"No Cancel" + r.getRequestId(), "Confirm", TOKEN, userId);
 
 						// r.setStatus("disapproved");
 						// r.setUpdatedAt(convertToTimestamp(timestamp));
@@ -688,11 +782,23 @@ public class BotController {
 						logger.info("shoooooooooooooooooooooooooooooooooow");
 
 						typeCQuestion(
-								"Title: " + r.getTitle().toUpperCase() + "\nFrom: "
+								messageSource.getMessage("title", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase()))
+										+ r.getTitle().toUpperCase()
+										+ messageSource.getMessage("sender", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase()))
 										+ userInformationRepository.findOne(r.getFromUser()).getUserName()
-										+ "\nDetail: " + r.getDetail() + "\nAuthority: "
+										+ messageSource.getMessage(
+												"detail", null, new Locale(mainUser.getSystemLanguage().toLowerCase()))
+										+ r.getDetail()
+										+ messageSource.getMessage("authority", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase()))
 										+ authorityRepository.getOne(r.getVisibility()).getAuthorityName(),
-								"Approve", "Approve request " + r.getRequestId(), "Disapprove",
+								messageSource.getMessage("approve", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								"Approve request " + r.getRequestId(),
+								messageSource.getMessage("disapprove", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								"Disapprove request " + r.getRequestId(), "Confirm", TOKEN, userId);
 
 						break;
@@ -707,9 +813,11 @@ public class BotController {
 							requestRepository.save(r);
 							logger.info("approooooooooooooooved");
 
-							textMessage = new TextMessage(
-									mainUser.getUserName().toUpperCase() + " has APPROVED your request.\n \nTitle: "
-											+ r.getTitle().toUpperCase() + "\nDetail: " + r.getDetail().toUpperCase());
+							textMessage = new TextMessage(mainUser.getUserName().toUpperCase() + " "
+									+ messageSource.getMessage("approved", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase()))
+									+ "\n \nTitle: " + r.getTitle().toUpperCase() + "\nDetail: "
+									+ r.getDetail().toUpperCase());
 							pushMessage = new PushMessage(r.getFromUser(), textMessage);
 							try {
 								botApiResponse = client.pushMessage(pushMessage).get();
@@ -726,9 +834,11 @@ public class BotController {
 							requestRepository.save(r);
 							logger.info("diiiiiiiiisapproooooooooooooooved");
 
-							textMessage = new TextMessage(
-									mainUser.getUserName().toUpperCase() + " has DISAPPROVED your request.\n \nTitle: "
-											+ r.getTitle().toUpperCase() + "\nDetail: " + r.getDetail().toUpperCase());
+							textMessage = new TextMessage(mainUser.getUserName().toUpperCase()
+									+ messageSource.getMessage("disapproved", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase()))
+									+ "\n \nTitle: " + r.getTitle().toUpperCase() + "\nDetail: "
+									+ r.getDetail().toUpperCase());
 							pushMessage = new PushMessage(r.getFromUser(), textMessage);
 							try {
 								botApiResponse = client.pushMessage(pushMessage).get();
@@ -743,7 +853,8 @@ public class BotController {
 
 					case "No":
 
-						textMessage = new TextMessage("Decision not yet taken!");
+						textMessage = new TextMessage(messageSource.getMessage("decision.not.taken", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						pushMessage = new PushMessage(userId, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
@@ -756,7 +867,8 @@ public class BotController {
 
 				} else {
 
-					textMessage = new TextMessage("Decision already taken! The request is " + r.getStatus());
+					textMessage = new TextMessage(messageSource.getMessage("decision.taken", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())) + r.getStatus());
 					pushMessage = new PushMessage(userId, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
@@ -781,7 +893,10 @@ public class BotController {
 
 			if (a == 0) {
 
-				textMessage = new TextMessage("You haven't sent any requests yet.");
+				textMessage = new TextMessage(messageSource.getMessage(
+						messageSource.getMessage("check.detail", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())),
+						null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
 				pushMessage = new PushMessage(userId, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
