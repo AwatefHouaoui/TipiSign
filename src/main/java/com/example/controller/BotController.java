@@ -70,6 +70,7 @@ import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 import lombok.extern.slf4j.Slf4j;
 import retrofit2.Response;
+import scala.annotation.varargs;
 
 @Slf4j
 @LineMessageHandler
@@ -112,7 +113,7 @@ public class BotController {
 
 	String title, detail, name, status = "null";
 	String userId;
-	long visibility, authorityId;
+	long visibility, authorityId, number;
 	int n, numPage, num, t;
 	UserInformation toUser, mainUser;
 	Request request;
@@ -622,7 +623,8 @@ public class BotController {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
 				String part2 = table[1];
-				long number = parameters.getLong("number");
+				String part3 = parameters.getString("number");
+				number = Long.parseLong(part3);
 				Request r = requestRepository.findOne(number);
 
 				if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
