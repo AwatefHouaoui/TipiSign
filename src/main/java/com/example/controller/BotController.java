@@ -635,9 +635,7 @@ public class BotController {
 								"Are you sure you want to approve the request of "
 										+ userInformationRepository.findOne(r.getFromUser()).getUserName(),
 								"Yes Approve", "Yes Approve " + r.getRequestId(), "No Cancel ",
-								"No Cancel " 
-								//+ r.getRequestId()
-								, "Confirm", TOKEN, userId);
+								"No Cancel " + r.getRequestId(), "Confirm", TOKEN, userId);
 
 						// r.setStatus("approved");
 						// r.setUpdatedAt(convertToTimestamp(timestamp));
@@ -663,9 +661,7 @@ public class BotController {
 								"Are you sure you want to disapprove the request of "
 										+ userInformationRepository.findOne(r.getFromUser()).getUserName(),
 								"Yes Disapprove", "Yes Disapprove " + r.getRequestId(), "No Cancel ",
-								"No Cancel " 
-								//+ r.getRequestId()
-								, "Confirm", TOKEN, userId);
+								"No Cancel " + r.getRequestId(), "Confirm", TOKEN, userId);
 
 						// r.setStatus("disapproved");
 						// r.setUpdatedAt(convertToTimestamp(timestamp));
