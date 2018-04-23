@@ -267,7 +267,7 @@ public class BotController {
 						for (int i = 0; i < 3; i++) {
 							hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 						}
-						hm.put("See More", "See More");
+						hm.put("See more", "See more");
 						numPage++;
 
 						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
@@ -336,7 +336,7 @@ public class BotController {
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
 								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 							}
-							hm.put("See More", "See More");
+							hm.put("See more", "See more");
 							numPage++;
 						}
 						typeBRecursiveChoices(null, null, "Do you mean:", hm, TOKEN, userId);
@@ -427,7 +427,7 @@ public class BotController {
 					for (int i = 0; i < 3; i++) {
 						hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
 					}
-					hm.put("See More", "See More");
+					hm.put("See more", "See more");
 					num++;
 					typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
 					logger.info("Choose request authority :" + customerMessage);
@@ -452,7 +452,7 @@ public class BotController {
 						for (int i = 0; i < 3; i++) {
 							hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
 						}
-						hm.put("See More", "See More");
+						hm.put("See more", "See more");
 						num++;
 					}
 					typeBRecursiveChoices(null, null, "Please select the request authority:", hm, TOKEN, userId);
