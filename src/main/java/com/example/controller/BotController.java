@@ -328,8 +328,9 @@ public class BotController {
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
 								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
 							}
+							
 							hm.put("Not available", "Not available");
-
+							numPage=0;
 						} else {
 
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
@@ -445,6 +446,7 @@ public class BotController {
 						for (int i = 0; i < authority.getNumberOfElements(); i++) {
 							hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
 						}
+						num=0;
 
 					} else {
 						for (int i = 0; i < 3; i++) {
