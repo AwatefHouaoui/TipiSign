@@ -70,7 +70,6 @@ import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 import lombok.extern.slf4j.Slf4j;
 import retrofit2.Response;
-import scala.annotation.varargs;
 
 @Slf4j
 @LineMessageHandler
