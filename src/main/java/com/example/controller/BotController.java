@@ -622,7 +622,7 @@ public class BotController {
 				String[] table = customerMessage.split(" ");
 				String part1 = table[0];
 				String part2 = table[1];
-				String part3 = parameters.getString("number");
+				String part3 = table[2];
 				number = Long.parseLong(part3);
 				Request r = requestRepository.findOne(number);
 
