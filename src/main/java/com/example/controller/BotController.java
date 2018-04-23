@@ -294,7 +294,7 @@ public class BotController {
 
 			case "receiverchosen":
 
-				if (customerMessage.equals(messageSource.getMessage("receiver.not.available", null,
+				if (customerMessage.equals(messageSource.getMessage("receiver.not.available".toLowerCase(), null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
 					n++;
@@ -330,7 +330,7 @@ public class BotController {
 
 				} else {
 
-					if (customerMessage.equals(messageSource.getMessage("see.more", null,
+					if (customerMessage.equals(messageSource.getMessage("see.more".toLowerCase(), null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
 						userpage = userInformationRepository.findUserByName("%" + name + "%",
@@ -465,7 +465,7 @@ public class BotController {
 
 			case "RequestAuthorited":
 
-				if (customerMessage.equals(messageSource.getMessage("see.more", null,
+				if (customerMessage.equals(messageSource.getMessage("see.more".toLowerCase(), null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
 					authority = authorityService.findAllAuthority(num, 3);
