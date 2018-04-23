@@ -9,27 +9,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.example.dao.AuthorityRepository;
 import com.example.entities.Authority;
-import com.example.metier.AuthorityMetier;
 
 @RestController
 public class AuthorityService {
 	@Autowired
-	private AuthorityMetier authorityMetier;
+	private AuthorityRepository authorityRepository;
 
 	@RequestMapping(value = "/Authority", method = RequestMethod.POST)
 	public Authority saveAuthority(@RequestBody Authority a) {
-		return authorityMetier.saveAuthority(a);
+		return authorityRepository.save(a);
 	}
 
 	@RequestMapping(value = "/getAuthority", method = RequestMethod.GET)
 	public List<Authority> listAuthority() {
-		return authorityMetier.listAuthority();
+		return authorityRepository.findAll();
 	}
-	
-	public Page<Authority> findAllAuthority (@RequestParam(name = "num", defaultValue="0") int num,
-			@RequestParam(name = "size", defaultValue = "3") int size){
-		return authorityMetier.findAllAuthority(new PageRequest(num, size));
+
+	public Page<Authority> findAllAuthority(@RequestParam(name = "num", defaultValue = "0") int num,
+			@RequestParam(name = "size", defaultValue = "3") int size) {
+		return authorityRepository.findAll(new PageRequest(num, size));
 	}
 
 }

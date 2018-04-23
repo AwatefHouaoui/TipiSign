@@ -1,7 +1,7 @@
 package com.example.service;
 
+import com.example.dao.UserInformationRepository;
 import com.example.entities.UserInformation;
-import com.example.metier.UserInformationMetier;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,25 +15,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserInformationService {
 	@Autowired
-	private UserInformationMetier userInformationMetier;
+	private UserInformationRepository userInformationRepository;
 
 	@RequestMapping(value = "/UserInfo", method = RequestMethod.POST)
 	public UserInformation saveUserInformation(@RequestBody UserInformation u) {
 		String userName = u.getUserName();
 		u.setUserName(userName.toLowerCase());
-		return userInformationMetier.saveUserInformation(u);
+		return userInformationRepository.save(u);
 	}
 
 	@RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
 	public List<UserInformation> listUserInformation() {
-		return userInformationMetier.listUserInformation();
+		return userInformationRepository.findAll();
 	}
 
 	@RequestMapping(value = "/getUser", method = RequestMethod.GET)
 	public Page<UserInformation> findUserByName(@RequestParam(name = "userName") String userName,
-			@RequestParam(name = "numPage", defaultValue="0") int numPage,
+			@RequestParam(name = "numPage", defaultValue = "0") int numPage,
 			@RequestParam(name = "size", defaultValue = "3") int size) {
-		return userInformationMetier.findUserByName("%" + userName + "%", new PageRequest(numPage, size));
+		return userInformationRepository.findUserByName("%" + userName + "%", new PageRequest(numPage, size));
 	}
 
 }
