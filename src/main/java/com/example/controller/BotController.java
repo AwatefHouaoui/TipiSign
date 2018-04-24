@@ -44,6 +44,7 @@ import com.example.dao.RequestRepository;
 import com.example.dao.UserInformationRepository;
 import com.example.entities.UserRole;
 import com.example.entities.UserToUserRequest;
+import com.example.entities.UserToUserRequestPK;
 import com.example.entities.LineProgress;
 import com.example.entities.Request;
 import com.example.entities.UserInformation;
@@ -568,6 +569,8 @@ public class BotController {
 
 				lineProgressRepository.delete(lineProgress);
 
+				UserToUserRequestPK userPk = new UserToUserRequestPK(idUser, toUser.getIdUser(), request.getIdRequest());
+				userToUserRequest = new UserToUserRequest(userPk);
 				userToUserRequest.setRequest(request);
 				userToUserRequest.setUserFrom(mainUser);
 				userToUserRequest.setUserTo(toUser);

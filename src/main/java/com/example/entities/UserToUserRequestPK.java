@@ -12,6 +12,14 @@ public class UserToUserRequestPK implements Serializable {
 	private String idUserTo;
 	private long idRequest;
 
+	
+	public UserToUserRequestPK(String idUserFrom, String idUserTo, long idRequest) {
+		super();
+		this.idUserFrom = idUserFrom;
+		this.idUserTo = idUserTo;
+		this.idRequest = idRequest;
+	}
+
 	public String getIdUserFrom() {
 		return idUserFrom;
 	}
