@@ -37,15 +37,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import com.example.dao.AuthorityRepository;
+import com.example.dao.UserRoleRepository;
+import com.example.dao.UserToUserRequestRepository;
 import com.example.dao.LineProgressRepository;
 import com.example.dao.RequestRepository;
 import com.example.dao.UserInformationRepository;
-import com.example.entities.Authority;
+import com.example.entities.UserRole;
+import com.example.entities.UserToUserRequest;
 import com.example.entities.LineProgress;
 import com.example.entities.Request;
 import com.example.entities.UserInformation;
-import com.example.service.AuthorityService;
+import com.example.service.UserRoleService;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.bot.model.PushMessage;
@@ -89,11 +91,13 @@ public class BotController {
 	@Autowired
 	LineProgressRepository lineProgressRepository;
 	@Autowired
-	AuthorityRepository authorityRepository;
+	UserRoleRepository userRoleRepository;
 	@Autowired
-	AuthorityService authorityService;
+	UserRoleService userRoleService;
 	@Autowired
 	MessageSource messageSource;
+	@Autowired
+	UserToUserRequestRepository userToUserRequestRepository;
 
 	LineMessagingClient client = LineMessagingClient.builder(TOKEN).build();
 	TextMessage textMessage;
@@ -110,18 +114,19 @@ public class BotController {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	String title, detail, name, status = "null";
-	String userId;
-	long visibility, authorityId, number;
+	String titleRequest, detailRequest, name, status = "null";
+	String idUser;
+	long visibility, roleId, number;
 	int n, numPage, num, t;
 	UserInformation toUser, mainUser;
 	Request request;
+	UserToUserRequest userToUserRequest;
 	LineProgress lineProgress;
 	CarouselColumn carouselColumn;
 	List<CarouselColumn> listCarouselColumns;
 	List<UserInformation> users;
-	Page<Authority> authority;
-	List<Authority> authorityCont;
+	Page<UserRole> userRole;
+	List<UserRole> userRoleCont;
 	Page<UserInformation> userpage;
 
 	@ResponseBody
@@ -134,7 +139,7 @@ public class BotController {
 		JSONObject data = rsl.getJSONObject("data");
 		JSONObject source = data.getJSONObject("source");
 		JSONObject message = data.getJSONObject("message");
-		userId = source.getString("userId");
+		idUser = source.getString("idUser");
 		String customerMessage = message.getString("text");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
@@ -145,7 +150,7 @@ public class BotController {
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
-		mainUser = userInformationRepository.findOne(userId);
+		mainUser = userInformationRepository.findOne(idUser);
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("JSONObject**************" + jsonResult);
@@ -158,7 +163,7 @@ public class BotController {
 			hm.put("English", "English");
 			hm.put("日本語", "日本語");
 			typeBRecursiveChoices(null, null, messageSource.getMessage("language.select", null,
-					new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
+					new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
 			logger.info("Choose a Language :" + customerMessage);
 
 			break;
@@ -174,7 +179,7 @@ public class BotController {
 			}
 			textMessage = new TextMessage(messageSource.getMessage("language.change", null,
 					new Locale(mainUser.getSystemLanguage().toLowerCase())));
-			pushMessage = new PushMessage(userId, textMessage);
+			pushMessage = new PushMessage(idUser, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
 			} catch (InterruptedException | ExecutionException e) {
@@ -193,7 +198,7 @@ public class BotController {
 
 			textMessage = new TextMessage(
 					messageSource.getMessage("receiver", null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
-			pushMessage = new PushMessage(userId, textMessage);
+			pushMessage = new PushMessage(idUser, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
 			} catch (InterruptedException | ExecutionException e) {
@@ -222,12 +227,12 @@ public class BotController {
 					System.out.println("status*********" + status);
 					logger.info("receiver has noooooooot been chosen" + customerMessage);
 					if (n == 2) {
-						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
+						sendAlertViaSlack(idUser, timestamp, "User can't find the receiver " + customerMessage);
 						n = 0;
 						lineProgressRepository.delete(lineProgress);
 						textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())));
-						pushMessage = new PushMessage(userId, textMessage);
+						pushMessage = new PushMessage(idUser, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -236,7 +241,7 @@ public class BotController {
 					} else {
 						textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())));
-						pushMessage = new PushMessage(userId, textMessage);
+						pushMessage = new PushMessage(idUser, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -249,14 +254,14 @@ public class BotController {
 					if (a < 4) {
 
 						for (int i = 0; i < a; i++) {
-							hm.put(user.get(i).getUserName(), user.get(i).getUserName());
+							hm.put(user.get(i).getAccountName(), user.get(i).getAccountName());
 						}
 						hm.put(messageSource.getMessage("receiver.not.available", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								messageSource.getMessage("receiver.not.available", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
-								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
+								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
 
 						lineProgress.setStatusLine("receiverchosen");
 						lineProgressRepository.save(lineProgress);
@@ -272,7 +277,7 @@ public class BotController {
 						users = userpage.getContent();
 
 						for (int i = 0; i < 3; i++) {
-							hm.put(users.get(i).getUserName(), users.get(i).getUserName());
+							hm.put(users.get(i).getAccountName(), users.get(i).getAccountName());
 						}
 						hm.put(messageSource.getMessage("see.more", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())),
@@ -281,7 +286,7 @@ public class BotController {
 						numPage++;
 
 						typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
-								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
+								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
 
 						lineProgress.setStatusLine("receiverchosen");
 						lineProgressRepository.save(lineProgress);
@@ -305,12 +310,12 @@ public class BotController {
 
 					if (n == 2) {
 
-						sendAlertViaSlack(userId, timestamp, "User can't find the receiver " + customerMessage);
+						sendAlertViaSlack(idUser, timestamp, "User can't find the receiver " + customerMessage);
 						n = 0;
 						lineProgressRepository.delete(lineProgress);
 						textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())));
-						pushMessage = new PushMessage(userId, textMessage);
+						pushMessage = new PushMessage(idUser, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -320,7 +325,7 @@ public class BotController {
 
 						textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())));
-						pushMessage = new PushMessage(userId, textMessage);
+						pushMessage = new PushMessage(idUser, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -340,7 +345,7 @@ public class BotController {
 						if (numPage == (t - 1)) {
 
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
-								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
+								hm.put(users.get(i).getAccountName(), users.get(i).getAccountName());
 							}
 
 							hm.put(messageSource.getMessage("receiver.not.available", null,
@@ -351,7 +356,7 @@ public class BotController {
 						} else {
 
 							for (int i = 0; i < userpage.getNumberOfElements(); i++) {
-								hm.put(users.get(i).getUserName(), users.get(i).getUserName());
+								hm.put(users.get(i).getAccountName(), users.get(i).getAccountName());
 							}
 							hm.put(messageSource.getMessage("see.more", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
@@ -360,7 +365,7 @@ public class BotController {
 							numPage++;
 						}
 						typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
-								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
+								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
 
 					} else {
 
@@ -369,11 +374,11 @@ public class BotController {
 
 						for (int i = 0; i < a; i++) {
 
-							String x = user.get(i).getUserName();
+							String x = user.get(i).getAccountName();
 							logger.info("who is the receiver ****************" + x);
 
 							if (customerMessage.equals(x)) {
-								String receiverId = user.get(i).getUserId();
+								String receiverId = user.get(i).getIdUser();
 								toUser = userInformationRepository.findOne(receiverId);
 								logger.info("the receiver is ++++++++++++ ****************" + toUser);
 
@@ -383,7 +388,7 @@ public class BotController {
 
 								textMessage = new TextMessage(messageSource.getMessage("title", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())));
-								pushMessage = new PushMessage(userId, textMessage);
+								pushMessage = new PushMessage(idUser, textMessage);
 								try {
 									botApiResponse = client.pushMessage(pushMessage).get();
 								} catch (InterruptedException | ExecutionException e) {
@@ -400,7 +405,7 @@ public class BotController {
 
 			case "Requesttitled":
 
-				title = resolvedQuery;
+				titleRequest = resolvedQuery;
 
 				lineProgress.setStatusLine("RequestDetailed");
 				lineProgressRepository.save(lineProgress);
@@ -410,7 +415,7 @@ public class BotController {
 
 				textMessage = new TextMessage(messageSource.getMessage("detail", null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())));
-				pushMessage = new PushMessage(userId, textMessage);
+				pushMessage = new PushMessage(idUser, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -421,7 +426,7 @@ public class BotController {
 
 			case "RequestDetailed":
 
-				detail = resolvedQuery;
+				detailRequest = resolvedQuery;
 
 				lineProgress.setStatusLine("RequestAuthorited");
 				lineProgressRepository.save(lineProgress);
@@ -429,36 +434,36 @@ public class BotController {
 				System.out.println("status*********" + status);
 				logger.info("Request detailed", customerMessage);
 
-				authorityCont = authorityRepository.findAll();
-				n = authorityCont.size();
+				userRoleCont = userRoleRepository.findAll();
+				n = userRoleCont.size();
 
 				if (n < 5) {
 
 					for (int i = 0; i < 4; i++) {
-						hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
+						hm.put(userRoleCont.get(i).getRole(), userRoleCont.get(i).getRole());
 					}
 
-					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
-							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
-					logger.info("Choose request authority :" + customerMessage);
+					typeBRecursiveChoices(null, null, messageSource.getMessage("userRole.select", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+					logger.info("Choose request userRole :" + customerMessage);
 
 				} else {
 
-					authority = authorityService.findAllAuthority(num, 3);
-					n = authority.getTotalPages();
-					authorityCont = authority.getContent();
+					userRole = userRoleService.findAllUserRole(num, 3);
+					n = userRole.getTotalPages();
+					userRoleCont = userRole.getContent();
 
 					for (int i = 0; i < 3; i++) {
-						hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
+						hm.put(userRoleCont.get(i).getRole(), userRoleCont.get(i).getRole());
 					}
 					hm.put(messageSource.getMessage("see.more", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())),
 							messageSource.getMessage("see.more", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())));
 					num++;
-					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
-							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
-					logger.info("Choose request authority :" + customerMessage);
+					typeBRecursiveChoices(null, null, messageSource.getMessage("userRole.select", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+					logger.info("Choose request userRole :" + customerMessage);
 				}
 
 				break;
@@ -468,18 +473,18 @@ public class BotController {
 				if (customerMessage.equals(messageSource.getMessage("see.more".toLowerCase(), null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
-					authority = authorityService.findAllAuthority(num, 3);
-					authorityCont = authority.getContent();
+					userRole = userRoleService.findAllUserRole(num, 3);
+					userRoleCont = userRole.getContent();
 
 					if (num == (n - 1)) {
-						for (int i = 0; i < authority.getNumberOfElements(); i++) {
-							hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
+						for (int i = 0; i < userRole.getNumberOfElements(); i++) {
+							hm.put(userRoleCont.get(i).getRole(), userRoleCont.get(i).getRole());
 						}
 						num = 0;
 
 					} else {
 						for (int i = 0; i < 3; i++) {
-							hm.put(authorityCont.get(i).getAuthorityName(), authorityCont.get(i).getAuthorityName());
+							hm.put(userRoleCont.get(i).getRole(), userRoleCont.get(i).getRole());
 						}
 						hm.put(messageSource.getMessage("see.more", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())),
@@ -487,21 +492,21 @@ public class BotController {
 										new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						num++;
 					}
-					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
-							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, userId);
-					logger.info("Choose request authority :" + customerMessage);
+					typeBRecursiveChoices(null, null, messageSource.getMessage("userRole.select", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+					logger.info("Choose request userRole :" + customerMessage);
 
 				} else {
 
-					authorityCont = authorityRepository.findAll();
-					n = authorityCont.size();
+					userRoleCont = userRoleRepository.findAll();
+					n = userRoleCont.size();
 
 					for (int i = 0; i < n; i++) {
-						if (customerMessage.equals(authorityCont.get(i).getAuthorityName().toLowerCase())) {
+						if (customerMessage.equals(userRoleCont.get(i).getRole().toLowerCase())) {
 							logger.info("authoooooooooooooooooooorityyyyyyyyyy*************"
-									+ authorityCont.get(i).getAuthorityName().toLowerCase());
-							visibility = authorityCont.get(i).getRanking();
-							authorityId = authorityCont.get(i).getAuthorityId();
+									+ userRoleCont.get(i).getRole().toLowerCase());
+							visibility = userRoleCont.get(i).getRanking();
+							roleId = userRoleCont.get(i).getRoleId();
 						}
 					}
 
@@ -514,8 +519,8 @@ public class BotController {
 					typeCQuestion(
 							messageSource.getMessage("confirm", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())) + "\n \nRECEIVER: "
-									+ toUser.getUserName() + "\nTITLE: " + title + "\nDETAIL: " + detail
-									+ "\nAUTHORITY: " + authorityRepository.findOne(authorityId).getAuthorityName(),
+									+ toUser.getAccountName() + "\nTITLE: " + titleRequest + "\nDETAIL: "
+									+ detailRequest + "\nAUTHORITY: " + userRoleRepository.findOne(roleId).getRole(),
 							messageSource.getMessage("send", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
 							messageSource.getMessage("send", null,
@@ -524,7 +529,7 @@ public class BotController {
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
 							messageSource.getMessage("delete", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
-							"Confirm", TOKEN, userId);
+							"Confirm", TOKEN, idUser);
 				}
 
 				break;
@@ -534,7 +539,7 @@ public class BotController {
 				lineProgressRepository.delete(lineProgress);
 				textMessage = new TextMessage(messageSource.getMessage("default", null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())));
-				pushMessage = new PushMessage(userId, textMessage);
+				pushMessage = new PushMessage(idUser, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -554,41 +559,45 @@ public class BotController {
 					messageSource.getMessage("send", null, new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
 				request = new Request();
-				request.setTitle(title);
-				request.setDetail(detail);
-				request.setToUser(toUser);
-				request.setFromUser(userId);
+				request.setTitleRequest(titleRequest);
+				request.setDetailRequest(detailRequest);
 				request.setVisibility(visibility);
 				request.setCreatedAt(convertToTimestamp(timestamp));
 				request.setUpdatedAt(convertToTimestamp(timestamp));
 				requestRepository.save(request);
+
 				lineProgressRepository.delete(lineProgress);
 
-				String toUserId = toUser.getUserId();
+				userToUserRequest = new UserToUserRequest();
+				userToUserRequest.setRequest(request);
+				userToUserRequest.setUserFrom(mainUser);
+				userToUserRequest.setUserTo(toUser);
+				userToUserRequestRepository.save(userToUserRequest);
+
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
 				hm.put(messageSource.getMessage("approve", null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())),
-						"Approve request " + request.getRequestId());
+						"Approve request " + request.getIdRequest());
 				hm.put(messageSource.getMessage("disapprove", null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())),
-						"Disapprove request " + request.getRequestId());
+						"Disapprove request " + request.getIdRequest());
 				hm.put(messageSource.getMessage("show.detail", null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())),
-						"Show detail " + request.getRequestId());
+						"Show detail " + request.getIdRequest());
 
 				typeBRecursiveChoices(imageUrl,
 						messageSource.getMessage("title", null, new Locale(mainUser.getSystemLanguage().toLowerCase()))
-								+ title,
+								+ titleRequest,
 						messageSource.getMessage("sender", null, new Locale(mainUser.getSystemLanguage().toLowerCase()))
-								+ mainUser.getUserName(),
-						hm, TOKEN, toUserId);
-				logger.info("request sent to:" + toUser.getUserName());
+								+ mainUser.getAccountName(),
+						hm, TOKEN, toUser.getIdUser());
+				logger.info("request sent to:" + toUser.getAccountName());
 
 				textMessage = new TextMessage(messageSource.getMessage("request.send", null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())));
-				pushMessage = new PushMessage(userId, textMessage);
+				pushMessage = new PushMessage(idUser, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -601,7 +610,7 @@ public class BotController {
 
 				textMessage = new TextMessage(messageSource.getMessage("request.delete", null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())));
-				pushMessage = new PushMessage(userId, textMessage);
+				pushMessage = new PushMessage(idUser, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -618,7 +627,7 @@ public class BotController {
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
-				List<Request> requests = requestRepository.findPendingRequestByToUser(userId);
+				List<UserToUserRequest> requests = userToUserRequestRepository.findPendingRequestByToUser(idUser);
 				listCarouselColumns = new ArrayList<>();
 				int a = requests.size();
 				logger.info("size of requests is =" + requests.size());
@@ -627,7 +636,7 @@ public class BotController {
 
 					textMessage = new TextMessage(messageSource.getMessage("history.empty", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())));
-					pushMessage = new PushMessage(userId, textMessage);
+					pushMessage = new PushMessage(idUser, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
 					} catch (InterruptedException | ExecutionException e) {
@@ -641,27 +650,25 @@ public class BotController {
 									.add(new CarouselColumn(imageUrl,
 											messageSource.getMessage("title", null,
 													new Locale(mainUser.getSystemLanguage().toLowerCase()))
-													+ requests.get(i).getTitle(),
-											messageSource.getMessage("sender", null, new Locale(
-													mainUser.getSystemLanguage().toLowerCase()))
-													+ userInformationRepository.findOne(requests.get(i).getFromUser())
-															.getUserName(),
-											Arrays.asList(
-													new MessageAction(
-															messageSource.getMessage("approve", null,
-																	new Locale(mainUser.getSystemLanguage()
-																			.toLowerCase())),
-															"Approve request " + requests.get(i).getRequestId()),
+													+ requests.get(i).getRequest().getTitleRequest(),
+											messageSource.getMessage("sender", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase()))
+													+ requests.get(i).getUserFrom().getAccountName(),
+											Arrays.asList(new MessageAction(messageSource.getMessage("approve", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase())),
+													"Approve request " + requests.get(i).getRequest().getIdRequest()),
 													new MessageAction(
 															messageSource.getMessage("disapprove", null,
 																	new Locale(mainUser.getSystemLanguage()
 																			.toLowerCase())),
-															"Disapprove request " + requests.get(i).getRequestId()),
+															"Disapprove request "
+																	+ requests.get(i).getRequest().getIdRequest()),
 													new MessageAction(
 															messageSource.getMessage("show.detail", null,
 																	new Locale(mainUser.getSystemLanguage()
 																			.toLowerCase())),
-															"Show detail " + requests.get(i).getRequestId()))));
+															"Show detail "
+																	+ requests.get(i).getRequest().getIdRequest()))));
 						}
 					} else {
 						for (int i = 0; i < 10; i++) {
@@ -670,36 +677,32 @@ public class BotController {
 									.add(new CarouselColumn(imageUrl,
 											messageSource.getMessage("title", null,
 													new Locale(mainUser.getSystemLanguage().toLowerCase()))
-													+ requests.get(i).getTitle(),
-											messageSource.getMessage("sender", null, new Locale(mainUser
-													.getSystemLanguage().toLowerCase())) + userInformationRepository
-															.findOne(requests.get(i).getFromUser()).getUserName(),
-											// + "\nDETAIL: "
-											// + (requests.get(i).getDetail().length() >= 30 ? "too long"
-											// : requests.get(i).getDetail()),
-											Arrays.asList(
-													new MessageAction(
-															messageSource.getMessage("approve", null,
-																	new Locale(mainUser.getSystemLanguage()
-																			.toLowerCase())),
-															"Approve request " + requests.get(i).getRequestId()),
+													+ requests.get(i).getRequest().getTitleRequest(),
+											messageSource.getMessage("sender", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase()))
+													+ requests.get(i).getUserFrom().getAccountName(),
+											Arrays.asList(new MessageAction(messageSource.getMessage("approve", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase())),
+													"Approve request " + requests.get(i).getRequest().getIdRequest()),
 													new MessageAction(
 															messageSource.getMessage("disapprove", null,
 																	new Locale(mainUser.getSystemLanguage()
 																			.toLowerCase())),
-															"Disapprove request " + requests.get(i).getRequestId()),
+															"Disapprove request "
+																	+ requests.get(i).getRequest().getIdRequest()),
 													new MessageAction(
 															messageSource.getMessage("show.detail", null,
 																	new Locale(mainUser.getSystemLanguage()
 																			.toLowerCase())),
-															"Show detail " + requests.get(i).getRequestId()))));
+															"Show detail "
+																	+ requests.get(i).getRequest().getIdRequest()))));
 						}
 					}
 				}
 
 				CarouselTemplate carouselTemplate = new CarouselTemplate(listCarouselColumns);
 				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-				PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+				PushMessage pushMessage1 = new PushMessage(idUser, templateMessage);
 				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
 				logger.info("osaka :" + customerMessage);
 
@@ -711,6 +714,7 @@ public class BotController {
 				String part3 = table[2];
 				number = Long.parseLong(part3);
 				Request r = requestRepository.findOne(number);
+				UserToUserRequest u = userToUserRequestRepository.findOne(r);
 
 				if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
 
@@ -720,13 +724,13 @@ public class BotController {
 						typeCQuestion(
 								messageSource.getMessage("confirm.approve", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ userInformationRepository.findOne(r.getFromUser()).getUserName(),
+										+ u.getUserFrom().getAccountName(),
 								messageSource.getMessage("yes.approve", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								"Yes Approve " + r.getRequestId(),
+								"Yes Approve " + r.getIdRequest(),
 								messageSource.getMessage("no.cancel", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								"No Cancel " + r.getRequestId(), "Confirm", TOKEN, userId);
+								"No Cancel " + r.getIdRequest(), "Confirm", TOKEN, idUser);
 
 						// r.setStatus("approved");
 						// r.setUpdatedAt(convertToTimestamp(timestamp));
@@ -734,7 +738,7 @@ public class BotController {
 						// logger.info("approooooooooooooooved");
 						//
 						// textMessage = new TextMessage(
-						// userInformationRepository.findOne(userId).getUserName().toUpperCase()
+						// userInformationRepository.findOne(idUser).getUserName().toUpperCase()
 						// + " has APPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
 						// + "\nDetail: " + r.getDetail().toUpperCase());
 						// pushMessage = new PushMessage(r.getFromUser(), textMessage);
@@ -751,13 +755,13 @@ public class BotController {
 						typeCQuestion(
 								messageSource.getMessage("confirm.disapprove", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ userInformationRepository.findOne(r.getFromUser()).getUserName(),
+										+ u.getUserFrom().getAccountName(),
 								messageSource.getMessage("yes.disapprove", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								"Yes Disapprove " + r.getRequestId(),
+								"Yes Disapprove " + r.getIdRequest(),
 								messageSource.getMessage("no.cancel", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								"No Cancel" + r.getRequestId(), "Confirm", TOKEN, userId);
+								"No Cancel" + r.getIdRequest(), "Confirm", TOKEN, idUser);
 
 						// r.setStatus("disapproved");
 						// r.setUpdatedAt(convertToTimestamp(timestamp));
@@ -765,7 +769,7 @@ public class BotController {
 						// logger.info("diiiiiiiiisapproooooooooooooooved");
 						//
 						// textMessage = new TextMessage(
-						// userInformationRepository.findOne(userId).getUserName().toUpperCase()
+						// userInformationRepository.findOne(idUser).getUserName().toUpperCase()
 						// + " has DISAPPROVED your request.\n \nTitle: " + r.getTitle().toUpperCase()
 						// + "\nDetail: " + r.getDetail().toUpperCase());
 						// pushMessage = new PushMessage(r.getFromUser(), textMessage);
@@ -784,22 +788,22 @@ public class BotController {
 						typeCQuestion(
 								messageSource.getMessage("title", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ r.getTitle().toUpperCase()
+										+ r.getTitleRequest().toUpperCase()
 										+ messageSource.getMessage("sender", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ userInformationRepository.findOne(r.getFromUser()).getUserName()
-										+ messageSource.getMessage(
-												"detail", null, new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ r.getDetail()
-										+ messageSource.getMessage("authority", null,
+										+ u.getUserFrom().getAccountName()
+										+ messageSource.getMessage("detail", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ authorityRepository.getOne(r.getVisibility()).getAuthorityName(),
+										+ r.getDetailRequest()
+										+ messageSource.getMessage("userRole", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase()))
+										+ userRoleRepository.getOne(r.getVisibility()).getRole(),
 								messageSource.getMessage("approve", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								"Approve request " + r.getRequestId(),
+								"Approve request " + r.getIdRequest(),
 								messageSource.getMessage("disapprove", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								"Disapprove request " + r.getRequestId(), "Confirm", TOKEN, userId);
+								"Disapprove request " + r.getIdRequest(), "Confirm", TOKEN, idUser);
 
 						break;
 
@@ -811,14 +815,15 @@ public class BotController {
 							r.setStatus("approved");
 							r.setUpdatedAt(convertToTimestamp(timestamp));
 							requestRepository.save(r);
+
 							logger.info("approooooooooooooooved");
 
-							textMessage = new TextMessage(mainUser.getUserName().toUpperCase() + " "
+							textMessage = new TextMessage(mainUser.getAccountName().toUpperCase() + " "
 									+ messageSource.getMessage("approved", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase()))
-									+ "\n \nTitle: " + r.getTitle().toUpperCase() + "\nDetail: "
-									+ r.getDetail().toUpperCase());
-							pushMessage = new PushMessage(r.getFromUser(), textMessage);
+									+ "\n \nTitle: " + r.getTitleRequest().toUpperCase() + "\nDetail: "
+									+ r.getDetailRequest().toUpperCase());
+							pushMessage = new PushMessage(u.getUserFrom().getIdUser(), textMessage);
 							try {
 								botApiResponse = client.pushMessage(pushMessage).get();
 							} catch (InterruptedException | ExecutionException e) {
@@ -834,12 +839,12 @@ public class BotController {
 							requestRepository.save(r);
 							logger.info("diiiiiiiiisapproooooooooooooooved");
 
-							textMessage = new TextMessage(mainUser.getUserName().toUpperCase()
+							textMessage = new TextMessage(mainUser.getAccountName().toUpperCase()
 									+ messageSource.getMessage("disapproved", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase()))
-									+ "\n \nTitle: " + r.getTitle().toUpperCase() + "\nDetail: "
-									+ r.getDetail().toUpperCase());
-							pushMessage = new PushMessage(r.getFromUser(), textMessage);
+									+ "\n \nTitle: " + r.getTitleRequest().toUpperCase() + "\nDetail: "
+									+ r.getDetailRequest().toUpperCase());
+							pushMessage = new PushMessage(u.getUserFrom().getIdUser(), textMessage);
 							try {
 								botApiResponse = client.pushMessage(pushMessage).get();
 							} catch (InterruptedException | ExecutionException e) {
@@ -855,7 +860,7 @@ public class BotController {
 
 						textMessage = new TextMessage(messageSource.getMessage("decision.not.taken", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())));
-						pushMessage = new PushMessage(userId, textMessage);
+						pushMessage = new PushMessage(idUser, textMessage);
 						try {
 							botApiResponse = client.pushMessage(pushMessage).get();
 						} catch (InterruptedException | ExecutionException e) {
@@ -869,7 +874,7 @@ public class BotController {
 
 					textMessage = new TextMessage(messageSource.getMessage("decision.taken", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())) + r.getStatus());
-					pushMessage = new PushMessage(userId, textMessage);
+					pushMessage = new PushMessage(idUser, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
 					} catch (InterruptedException | ExecutionException e) {
@@ -887,7 +892,7 @@ public class BotController {
 			String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 					+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
-			List<Request> requests = requestRepository.findMyRequests(userId);
+			List<UserToUserRequest> requests = userToUserRequestRepository.findMyRequests(idUser);
 			listCarouselColumns = new ArrayList<>();
 			int a = requests.size();
 
@@ -897,7 +902,7 @@ public class BotController {
 						messageSource.getMessage("check.detail", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())),
 						null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
-				pushMessage = new PushMessage(userId, textMessage);
+				pushMessage = new PushMessage(idUser, textMessage);
 				try {
 					botApiResponse = client.pushMessage(pushMessage).get();
 				} catch (InterruptedException | ExecutionException e) {
@@ -908,25 +913,26 @@ public class BotController {
 					for (int i = 0; i < a; i++) {
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
-								"Request title: " + requests.get(i).getTitle(),
-								"TO: " + userInformationRepository.findOne(requests.get(i).getToUser().getUserId())
-										.getUserName(),
-								Arrays.asList(new PostbackAction("Request " + requests.get(i).getStatus(), " "))));
+								"Request title: " + requests.get(i).getRequest().getTitleRequest(),
+								"TO: " + requests.get(i).getUserFrom().getAccountName(),
+								Arrays.asList(new PostbackAction("Request " + requests.get(i).getRequest().getStatus(),
+										" "))));
 					}
 				} else {
 					for (int i = 0; i < 10; i++) {
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
-								"Request title: " + requests.get(i).getTitle(),
-								"TO: " + userInformationRepository.findOne(requests.get(i).getFromUser()).getUserName(),
-								Arrays.asList(new PostbackAction("Request " + requests.get(i).getStatus(), " "))));
+								"Request title: " + requests.get(i).getRequest().getTitleRequest(),
+								"TO: " + requests.get(i).getUserFrom().getAccountName(),
+								Arrays.asList(new PostbackAction("Request " + requests.get(i).getRequest().getStatus(),
+										" "))));
 					}
 				}
 			}
 
 			CarouselTemplate carouselTemplate1 = new CarouselTemplate(listCarouselColumns);
 			TemplateMessage templateMessage2 = new TemplateMessage("Carousel", carouselTemplate1);
-			PushMessage pushMessage2 = new PushMessage(userId, templateMessage2);
+			PushMessage pushMessage2 = new PushMessage(idUser, templateMessage2);
 			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage2).execute();
 			logger.info("osaka :" + customerMessage);
 
@@ -953,7 +959,7 @@ public class BotController {
 									new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15", "23:59",
 											"00:00")))));
 			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
-			PushMessage pushMessage1 = new PushMessage(userId, templateMessage);
+			PushMessage pushMessage1 = new PushMessage(idUser, templateMessage);
 			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
 			logger.info("osaka :" + customerMessage);
 
@@ -966,7 +972,7 @@ public class BotController {
 			hm.put("London", "london");
 			typeBRecursiveChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					" boldTitle", " normalTitle", hm, TOKEN, userId);
+					" boldTitle", " normalTitle", hm, TOKEN, idUser);
 			logger.info("paris :" + customerMessage);
 
 			break;
@@ -977,7 +983,7 @@ public class BotController {
 			hm.put("Tokyo", "tokyo");
 			typeBRecursiveChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					" boldTitle", " normalTitle", hm, TOKEN, userId);
+					" boldTitle", " normalTitle", hm, TOKEN, idUser);
 			logger.info("see more :", customerMessage);
 
 			break;
@@ -990,7 +996,7 @@ public class BotController {
 			hm.put("London", "london");
 			typeBChoices(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					" boldTitle", " normalTitle", hm, "Next or see more", "Next or see more answer", TOKEN, userId);
+					" boldTitle", " normalTitle", hm, "Next or see more", "Next or see more answer", TOKEN, idUser);
 			logger.info("London :", customerMessage);
 
 			break;
@@ -999,13 +1005,13 @@ public class BotController {
 
 			typeDQuestion(
 					"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-					TOKEN, userId);
+					TOKEN, idUser);
 
 			break;
 
 		default:
 
-			sendAlertViaSlack(userId, timestamp, customerMessage);
+			sendAlertViaSlack(idUser, timestamp, customerMessage);
 			logger.info("slack :" + customerMessage);
 
 			break;
@@ -1039,12 +1045,12 @@ public class BotController {
 		logger.info("Got text message from {}: {}" + replyToken + text);
 		switch (text) {
 		case "paris": {
-			String userId = event.getSource().getUserId();
-			if (userId != null) {
+			String idUser = (String) event.getSource().getUserId();
+			if (idUser != null) {
 
 				typeDQuestion(
 						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-						TOKEN, userId);
+						TOKEN, idUser);
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
@@ -1066,7 +1072,7 @@ public class BotController {
 	/**
 	 * Method for send carousel template message to use
 	 * 
-	 * @param userId
+	 * @param idUser
 	 * @param lChannelAccessToken
 	 * @param nameSatff1
 	 * @param nameSatff2
@@ -1074,7 +1080,7 @@ public class BotController {
 	 * @param poster2_url
 	 * @throws IOException
 	 */
-	private void carouselForUser(String userId, String lChannelAccessToken, java.util.List<String> randomLinks)
+	private void carouselForUser(String idUser, String lChannelAccessToken, java.util.List<String> randomLinks)
 			throws IOException {
 
 		java.util.List<CarouselColumn> columns = new ArrayList<>();
@@ -1092,7 +1098,7 @@ public class BotController {
 		CarouselTemplate carouselTemplate = new CarouselTemplate(columns);
 
 		TemplateMessage templateMessage = new TemplateMessage("Your search result", carouselTemplate);
-		PushMessage pushMessage = new PushMessage(userId, templateMessage);
+		PushMessage pushMessage = new PushMessage(idUser, templateMessage);
 		try {
 			Response<BotApiResponse> response = LineMessagingServiceBuilder.create(lChannelAccessToken).build()
 					.pushMessage(pushMessage).execute();
@@ -1106,7 +1112,7 @@ public class BotController {
 	/**
 	 * TypeC template
 	 * 
-	 * @param userId
+	 * @param idUser
 	 * @param TOKEN
 	 * @param msgTemplate
 	 * @param msgFirstAnswer
@@ -1115,13 +1121,13 @@ public class BotController {
 	 * @throws IOException
 	 */
 	public void typeCQuestion(String msgTemplate, String msgFirstAnswer, String msgFirstAnswerToSend,
-			String msgSecondAnswer, String msgSecondAnswerToSend, String titleTemplate, String TOKEN, String userId)
+			String msgSecondAnswer, String msgSecondAnswerToSend, String titleTemplate, String TOKEN, String idUser)
 			throws IOException {
 		ConfirmTemplate confirmTemplate = new ConfirmTemplate(msgTemplate,
 				new MessageAction(msgFirstAnswer, msgFirstAnswerToSend),
 				new MessageAction(msgSecondAnswer, msgSecondAnswerToSend));
 		TemplateMessage templateMessage = new TemplateMessage(titleTemplate, confirmTemplate);
-		PushMessage pushMessage = new PushMessage(userId, templateMessage);
+		PushMessage pushMessage = new PushMessage(idUser, templateMessage);
 		LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 
 	}
@@ -1129,7 +1135,7 @@ public class BotController {
 	/**
 	 * TypeB template
 	 * 
-	 * @param userId
+	 * @param idUser
 	 * @param TOKEN
 	 * @param imageURL
 	 * @param boldTitle
@@ -1139,18 +1145,18 @@ public class BotController {
 	 * @throws IOException
 	 */
 	public void typeBQuestion(String imageURL, String boldTitle, String normalTitle, String buttonHint,
-			String messageToSend, String TOKEN, String userId) throws IOException {
+			String messageToSend, String TOKEN, String idUser) throws IOException {
 		ButtonsTemplate buttonsTemplate = new ButtonsTemplate(imageURL, boldTitle, normalTitle, Arrays.asList(
 				new URIAction("Go to line.me", "https://line.me"), new MessageAction(buttonHint, messageToSend)));
 		TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
-		PushMessage pushMessage = new PushMessage(userId, templateMessage);
+		PushMessage pushMessage = new PushMessage(idUser, templateMessage);
 		LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 	}
 
 	/**
 	 * TypeB template
 	 * 
-	 * @param userId
+	 * @param idUser
 	 * @param TOKEN
 	 * @param imageURL
 	 * @param boldTitle
@@ -1161,7 +1167,7 @@ public class BotController {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void typeBChoices(String imageURL, String boldTitle, String normalTitle, LinkedHashMap<String, String> hm,
-			String nextOrSeeMore, String nextOrSeeMoreAnswer, String TOKEN, String userId) throws IOException {
+			String nextOrSeeMore, String nextOrSeeMoreAnswer, String TOKEN, String idUser) throws IOException {
 		List<Action> messageActions = new ArrayList<>();
 		for (Map.Entry m : hm.entrySet()) {
 			MessageAction ma = new MessageAction(m.getKey().toString(), m.getValue().toString());
@@ -1171,14 +1177,14 @@ public class BotController {
 		ButtonsTemplate buttonsTemplate = new ButtonsTemplate(imageURL, boldTitle, normalTitle, messageActions);
 
 		TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
-		PushMessage pushMessage = new PushMessage(userId, templateMessage);
+		PushMessage pushMessage = new PushMessage(idUser, templateMessage);
 		LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 	}
 
 	/**
 	 * TypeD template Date-Calendar
 	 * 
-	 * @param userId
+	 * @param idUser
 	 * @param TOKEN
 	 * @param imageURL
 	 * @param boldTitle
@@ -1187,14 +1193,14 @@ public class BotController {
 	 * @param messageToSend
 	 * @throws IOException
 	 */
-	public void typeDQuestion(String imageUrl, String TOKEN, String userId) throws IOException {
+	public void typeDQuestion(String imageUrl, String TOKEN, String idUser) throws IOException {
 		logger.info("CALENDAAAAAAAAAAAARRRR");
 		DatetimePickerAction date = new DatetimePickerAction("Date", "action=sel", "date");
 		CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
 				new CarouselColumn("https://cdn2.iconfinder.com/data/icons/employment-business/256/Job_Search-512.png",
 						"Datetime Picker", "Please select a date, time or datetime", Arrays.asList(date))));
 		TemplateMessage templateMessage1 = new TemplateMessage("date time picker", carouselTemplate);
-		ReplyMessage pushMessage1 = new ReplyMessage(userId, templateMessage1);
+		ReplyMessage pushMessage1 = new ReplyMessage(idUser, templateMessage1);
 		logger.info("push message is \n " + pushMessage1);
 		logger.info(templateMessage1.getTemplate().toString());
 		LineMessagingServiceBuilder.create(TOKEN).build().replyMessage(pushMessage1);
@@ -1204,7 +1210,7 @@ public class BotController {
 	}
 
 	public void typeBRecursiveChoices(String imageURL, String boldTitle, String normalTitle, Map<String, String> hm,
-			String TOKEN, String userId) throws IOException {
+			String TOKEN, String idUser) throws IOException {
 		List<Action> messageActions = new ArrayList<>();
 		hm.size();
 		if (hm.size() <= 4) {
@@ -1216,7 +1222,7 @@ public class BotController {
 			ButtonsTemplate buttonsTemplate = new ButtonsTemplate(imageURL, boldTitle, normalTitle, messageActions);
 
 			TemplateMessage templateMessage = new TemplateMessage("New Request", buttonsTemplate);
-			PushMessage pushMessage = new PushMessage(userId, templateMessage);
+			PushMessage pushMessage = new PushMessage(idUser, templateMessage);
 			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 
 		}
@@ -1224,7 +1230,7 @@ public class BotController {
 
 	/**
 	 * @author Aymanov
-	 * @param userId
+	 * @param idUser
 	 *            : user line ID
 	 * @param timestamp:
 	 *            message timestamp
@@ -1234,11 +1240,11 @@ public class BotController {
 	 *            method to send unknown messages to slack channel
 	 * @throws JSONException
 	 */
-	private void sendAlertViaSlack(String userId, String timestamp, String customerMessage) throws JSONException {
+	private void sendAlertViaSlack(String idUser, String timestamp, String customerMessage) throws JSONException {
 		String uri = "https://hooks.slack.com/services/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";
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
-		String input = "userId:" + userId + " \n time: " + timestamp + " \n text: " + customerMessage + "";
+		String input = "idUser:" + idUser + " \n time: " + timestamp + " \n text: " + customerMessage + "";
 		JSONObject jsonSlack = new JSONObject();
 		jsonSlack.put("text", input);
 		HttpHeaders headers = new HttpHeaders();
@@ -1255,7 +1261,7 @@ public class BotController {
 		JSONObject data = rsl.getJSONObject("data");
 		JSONObject source = data.getJSONObject("source");
 		JSONObject message = data.getJSONObject("message");
-		String userId = source.getString("userId");
+		String idUser = source.getString("idUser");
 		String customerMessage = message.getString("text");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
@@ -1292,7 +1298,7 @@ public class BotController {
 				 * case "a": typeBChoices(
 				 * "https://cdn2.iconfinder.com/data/icons/employment-business/256/Job_Search-512.png",
 				 * "boldTitle ", " normalTitle", hm, "nextOrSeeMore", "nextOrSeeMoreAnswer",
-				 * TOKEN, userId); break;
+				 * TOKEN, idUser); break;
 				 */
 				case "b":
 
@@ -1308,7 +1314,7 @@ public class BotController {
 							nextOrSeeMoreAnswer, idEvent);
 					if (bQuestion.getIdEvent() == eventHelper.getIdEvent())
 						typeBChoices(bQuestion.getImageURL(), bQuestion.getBoldTitle(), bQuestion.getNormalTitle(), hm,
-								bQuestion.getNextOrSeeMore(), bQuestion.getNextOrSeeMoreAnswer(), TOKEN, userId);
+								bQuestion.getNextOrSeeMore(), bQuestion.getNextOrSeeMoreAnswer(), TOKEN, idUser);
 					break;
 				case "c":
 					CQuestion cQuestion = new CQuestion(msgTemplate, msgFirstAnswer, msgSecondAnswer, titleTemplate,
@@ -1317,7 +1323,7 @@ public class BotController {
 
 						typeCQuestion(cQuestion.getMsgTemplate(), cQuestion.getMsgFirstAnswer(),
 								cQuestion.getMsgFirstAnswerToSend(), cQuestion.getMsgSecondAnswer(),
-								cQuestion.getMsgSecondAnswerToSend(), cQuestion.getTitleTemplate(), TOKEN, userId);
+								cQuestion.getMsgSecondAnswerToSend(), cQuestion.getTitleTemplate(), TOKEN, idUser);
 					break;
 
 				case "e":
@@ -1325,10 +1331,10 @@ public class BotController {
 					break;
 				case "d":
 					typeDQuestion("https://cdn2.iconfinder.com/data/icons/employment-business/256/Job_Search-512.png",
-							TOKEN, userId);
+							TOKEN, idUser);
 					break;
 				case "f":
-					sendAlertViaSlack(userId, timestamp, customerMessage);
+					sendAlertViaSlack(idUser, timestamp, customerMessage);
 					break;
 				default:
 					break;

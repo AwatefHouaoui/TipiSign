@@ -3,627 +3,199 @@ package com.example.entities;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-
-/**
- * The Class UserInformation.
- */
 @Entity
 public class UserInformation implements Serializable {
-	
-	/** The Constant serialVersionUID. */
+
 	private static final long serialVersionUID = 1L;
 
-	/** The user id. */
 	@Id
-	private String userId;
-	
-	/** The user name. */
-	private String userName;
-	
-	/** The status. */
+	private String idUser;
+	private String accountName;
 	private String status;
-	
-	/** The email. */
 	private String email;
-	
-	/** The email verification. */
-	private boolean emailVerification;
-	
-	/** The password. */
+	private boolean emailVerified;
 	private String password;
-	
-	/** The created at. */
 	private Timestamp createdAt;
-	
-	/** The last login. */
 	private Timestamp lastLogin;
-	
-	/** The system language. */
 	private String systemLanguage = "English";
-	
-	/** The initial setting. */
 	private boolean initialSetting = true;
-	
-	/** The authority. */
-	@OneToOne
-	@JoinColumn(name = "authority")
-	@JsonIgnoreProperties({ "authorityName", "ranking" })
-	private Authority authority;
-	
-	/** The line progress. */
+
+	@ManyToOne
+	@JoinColumn(name = "userRole")
+	@JsonIgnoreProperties({ "role", "ranking" })
+	private UserRole userRole;
+
 	@OneToMany(mappedBy = "userLine")
 	private Collection<LineProgress> lineProgresses;
-	
-	/** The Requests. */
+
 	@OneToMany(mappedBy = "toUser")
 	private Collection<Request> Requests;
-	
-	/** The companies. */
-	@ManyToMany(mappedBy = "users")
-	private Collection<Company> companies;
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Instantiates a new user information.
-	 */
+	@OneToMany(mappedBy = "userFrom")
+	private Collection<UserToUserRequest> fromUsers;
+
+	@OneToMany(mappedBy = "userTo")
+	private Collection<UserToUserRequest> toUsers;
+
+	// @ManyToMany(mappedBy = "users")
+	// private Collection<Company> companies;
+
 	public UserInformation() {
 		super();
 	}
 
-	
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Instantiates a new user information.
-	 * @param userId the user id
-	 * @param userName the user name
-	 * @param authority the authority
-	 */
-	public UserInformation(String userId, String userName, Authority authority) {
+	public UserInformation(String idUser, String accountName, UserRole userRole) {
 		super();
-		this.userId = userId;
-		this.userName = userName;
-		this.authority = authority;
+		this.idUser = idUser;
+		this.accountName = accountName;
+		this.userRole = userRole;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the user id.
-	 * @return the user id
-	 */
-	public String getUserId() {
-		return userId;
+	public String getIdUser() {
+		return idUser;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the user id.
-	 * @param userId the new user id
-	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setIdUser(String idUser) {
+		this.idUser = idUser;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the account name.
-	 * @return the account name
-	 */
-	public String getUserName() {
-		return userName;
+	public String getAccountName() {
+		return accountName;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the account name.
-	 * @param userName the new user name
-	 */
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the status.
-	 * @return the status
-	 */
 	public String getStatus() {
 		return status;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the status.
-	 * @param status the new status
-	 */
 	public void setStatus(String status) {
 		this.status = status;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the email.
-	 * @return the email
-	 */
 	public String getEmail() {
 		return email;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the email.
-	 * @param email the new email
-	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Checks if is email verification.
-	 * @return true, if is email verification
-	 */
-	public boolean isEmailVerification() {
-		return emailVerification;
+	public boolean getEmailVerified() {
+		return emailVerified;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the email verification.
-	 * @param emailVerification the new email verification
-	 */
-	public void setEmailVerification(boolean emailVerification) {
-		this.emailVerification = emailVerification;
+	public void setEmailVerified(boolean emailVerified) {
+		this.emailVerified = emailVerified;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the password.
-	 * @return the password
-	 */
 	public String getPassword() {
 		return password;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the password.
-	 * @param password the new password
-	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the created at.
-	 * @return the created at
-	 */
 	public Timestamp getCreatedAt() {
 		return createdAt;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the created at.
-	 * @param createdAt the new created at
-	 */
 	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the last login.
-	 * @return the last login
-	 */
 	public Timestamp getLastLogin() {
 		return lastLogin;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the last login.
-	 * @param lastLogin the new last login
-	 */
 	public void setLastLogin(Timestamp lastLogin) {
 		this.lastLogin = lastLogin;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the system language.
-	 * @return the system language
-	 */
 	public String getSystemLanguage() {
 		return systemLanguage;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the system language.
-	 * @param systemLanguage the new system language
-	 */
 	public void setSystemLanguage(String systemLanguage) {
 		this.systemLanguage = systemLanguage;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Checks if is initial setting.
-	 * @return true, if is initial setting
-	 */
 	public boolean isInitialSetting() {
 		return initialSetting;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the initial setting.
-	 * @param initialSetting the new initial setting
-	 */
 	public void setInitialSetting(boolean initialSetting) {
 		this.initialSetting = initialSetting;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the authority.
-	 * @return the authority
-	 */
-	public Authority getAuthority() {
-		return authority;
+	public UserRole getUserRole() {
+		return userRole;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the authority.
-	 * @param authority the new authority
-	 */
-	public void setAuthority(Authority authority) {
-		this.authority = authority;
+	public void setUserRole(UserRole userRole) {
+		this.userRole = userRole;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the requests.
-	 * @return the requests
-	 */
 	@JsonIgnore
 	public Collection<Request> getRequests() {
 		return Requests;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the requests.
-	 * @param requests the new requests
-	 */
 	@JsonSetter
 	public void setRequests(Collection<Request> requests) {
 		Requests = requests;
 	}
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the companies.
-	 * @return the companies
-	 */
-	public Collection<Company> getCompanies() {
-		return companies;
-	}
+	// public Collection<Company> getCompanies() {
+	// return companies;
+	// }
+	//
+	// public void setCompanies(Collection<Company> companies) {
+	// this.companies = companies;
+	// }
 
-	/**
-	 * Copyright (c) 2018 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the companies.
-	 * @param companies the new companies
-	 */
-	public void setCompanies(Collection<Company> companies) {
-		this.companies = companies;
-	}
-
-
-	/**
-	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Gets the line progress.
-	 * @return the line progress
-	 */
 	@JsonIgnore
 	public Collection<LineProgress> getLineProgresses() {
 		return lineProgresses;
 	}
 
-
-	/**
-	 * Copyright (c) 2016 by HRDatabank. All rights reserved.
-	 *
-	 * @author awatef
-	 * 
-	 * Using JRE: 1.8
-	 * 
-	 * Project Name: TipiSign
-	 * 
-	 * Class Name: UserInformation.java
-	 * 
-	 * Sets the line progress.
-	 * @param lineProgress the new line progress
-	 */
 	@JsonSetter
 	public void setLineProgresses(Collection<LineProgress> lineProgresses) {
 		this.lineProgresses = lineProgresses;
 	}
 
-	
-}
+	@JsonIgnore
+	public Collection<UserToUserRequest> getFromUsers() {
+		return fromUsers;
+	}
 
+	@JsonSetter
+	public void setFromUsers(Collection<UserToUserRequest> fromUsers) {
+		this.fromUsers = fromUsers;
+	}
+
+	@JsonIgnore
+	public Collection<UserToUserRequest> getToUsers() {
+		return toUsers;
+	}
+
+	@JsonSetter
+	public void setToUsers(Collection<UserToUserRequest> toUsers) {
+		this.toUsers = toUsers;
+	}
+
+}

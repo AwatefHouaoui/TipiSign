@@ -19,8 +19,8 @@ public class UserInformationService {
 
 	@RequestMapping(value = "/UserInfo", method = RequestMethod.POST)
 	public UserInformation saveUserInformation(@RequestBody UserInformation u) {
-		String userName = u.getUserName();
-		u.setUserName(userName.toLowerCase());
+		String userName = u.getAccountName();
+		u.setAccountName(userName.toLowerCase());
 		return userInformationRepository.save(u);
 	}
 
@@ -30,10 +30,10 @@ public class UserInformationService {
 	}
 
 	@RequestMapping(value = "/getUser", method = RequestMethod.GET)
-	public Page<UserInformation> findUserByName(@RequestParam(name = "userName") String userName,
+	public Page<UserInformation> findUserByName(@RequestParam(name = "accountName") String accountName,
 			@RequestParam(name = "numPage", defaultValue = "0") int numPage,
 			@RequestParam(name = "size", defaultValue = "3") int size) {
-		return userInformationRepository.findUserByName("%" + userName + "%", new PageRequest(numPage, size));
+		return userInformationRepository.findUserByName("%" + accountName + "%", new PageRequest(numPage, size));
 	}
 
 }

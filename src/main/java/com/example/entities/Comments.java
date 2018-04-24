@@ -15,9 +15,10 @@ public class Comments implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long commentId;
+	private long idComment;
 	private String detail;
 	private Date createdAt;
+
 	@ManyToOne
 	@JoinColumn(name = "RequestId")
 	private Request request;
@@ -26,18 +27,18 @@ public class Comments implements Serializable {
 		super();
 	}
 
-	public Comments(long commentId, Date createdAt) {
+	public Comments(long idComment, Date createdAt) {
 		super();
-		this.commentId = commentId;
+		this.idComment = idComment;
 		this.createdAt = createdAt;
 	}
 
-	public long getCommentId() {
-		return commentId;
+	public long getIdComment() {
+		return idComment;
 	}
 
-	public void setCommentId(long commentId) {
-		this.commentId = commentId;
+	public void setIdComment(long idComment) {
+		this.idComment = idComment;
 	}
 
 	public String getDetail() {

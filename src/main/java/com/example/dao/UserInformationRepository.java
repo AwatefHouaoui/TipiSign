@@ -10,7 +10,7 @@ import com.example.entities.UserInformation;
 
 @Repository
 public interface UserInformationRepository extends JpaRepository<UserInformation, String> {
-	@Query("select c from UserInformation c where c.userName like :x")
+	@Query("select c from UserInformation c where c.accountName like :x")
 	public Page<UserInformation> findUserByName(@Param("x") String userName, Pageable pageable);
 
 }

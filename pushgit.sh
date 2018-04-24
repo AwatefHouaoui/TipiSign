@@ -1,7 +1,7 @@
 	#!/bin/bash
 	clear
-    git flow feature start see.more.function
+    git flow feature start new.project
     git add .
-    git commit -m "see.more.function"
-    git flow feature finish see.more.function
+    git commit -m "new.project"
+    git flow feature finish new.project
     git push origin develop
