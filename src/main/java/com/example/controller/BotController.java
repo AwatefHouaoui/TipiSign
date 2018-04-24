@@ -568,7 +568,6 @@ public class BotController {
 
 				lineProgressRepository.delete(lineProgress);
 
-				userToUserRequest = new UserToUserRequest();
 				userToUserRequest.setRequest(request);
 				userToUserRequest.setUserFrom(mainUser);
 				userToUserRequest.setUserTo(toUser);
