@@ -139,7 +139,7 @@ public class BotController {
 		JSONObject data = rsl.getJSONObject("data");
 		JSONObject source = data.getJSONObject("source");
 		JSONObject message = data.getJSONObject("message");
-		idUser = source.getString("idUser");
+		idUser = source.getString("userId");
 		String customerMessage = message.getString("text");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
@@ -1261,7 +1261,7 @@ public class BotController {
 		JSONObject data = rsl.getJSONObject("data");
 		JSONObject source = data.getJSONObject("source");
 		JSONObject message = data.getJSONObject("message");
-		String idUser = source.getString("idUser");
+		String idUser = source.getString("userId");
 		String customerMessage = message.getString("text");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
