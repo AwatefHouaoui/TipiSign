@@ -22,6 +22,7 @@ public class UserInformationService {
 	public UserInformation saveUserInformation(@RequestBody UserInformation u) {
 		String accountName = u.getAccountName();
 		u.setAccountName(accountName.toLowerCase());
+		u.setCreatedAt();
 		return userInformationRepository.save(u);
 	}
 
