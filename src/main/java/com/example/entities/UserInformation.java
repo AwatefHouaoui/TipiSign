@@ -3,7 +3,6 @@ package com.example.entities;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -112,8 +111,8 @@ public class UserInformation implements Serializable {
 		return createdAt;
 	}
 
-	public void setCreatedAt() {
-		this.createdAt = (Timestamp) new Date();
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public Timestamp getLastLogin() {
