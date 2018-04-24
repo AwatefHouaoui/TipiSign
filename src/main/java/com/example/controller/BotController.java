@@ -1045,7 +1045,7 @@ public class BotController {
 		logger.info("Got text message from {}: {}" + replyToken + text);
 		switch (text) {
 		case "paris": {
-			String idUser = (String) event.getSource().getUserId();
+			String idUser = event.getSource().getUserId();
 			if (idUser != null) {
 
 				typeDQuestion(
