@@ -39,9 +39,6 @@ public class UserInformation implements Serializable {
 	@OneToMany(mappedBy = "userLine")
 	private Collection<LineProgress> lineProgresses;
 
-	@OneToMany(mappedBy = "toUser")
-	private Collection<Request> Requests;
-
 	@OneToMany(mappedBy = "userFrom")
 	private Collection<UserToUserRequest> fromUsers;
 
@@ -148,16 +145,6 @@ public class UserInformation implements Serializable {
 
 	public void setUserRole(UserRole userRole) {
 		this.userRole = userRole;
-	}
-
-	@JsonIgnore
-	public Collection<Request> getRequests() {
-		return Requests;
-	}
-
-	@JsonSetter
-	public void setRequests(Collection<Request> requests) {
-		Requests = requests;
 	}
 
 	// public Collection<Company> getCompanies() {

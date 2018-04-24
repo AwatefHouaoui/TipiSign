@@ -9,10 +9,10 @@ import com.example.entities.UserToUserRequest;
 
 public interface UserToUserRequestRepository extends JpaRepository<UserToUserRequest, Serializable>{
 
-	@Query("select c from UserToUserRequest c where c.userTo.idUser =:x and (c.Request.status='pending' or c.Request.status='passed')")
+	@Query("select c from UserToUserRequest c where c.userTo.idUser = :x and (c.request.status='pending' or c.request.status='passed')")
 	public List<UserToUserRequest> findPendingRequestByToUser(@Param("x") String idUser);
 	
-	@Query("select c from UserToUserRequest c where c.userFrom.idUser =:x and (c.Request.status='approved' or c.Request.status='disapproved')")
+	@Query("select c from UserToUserRequest c where c.userFrom.idUser =:x and (c.request.status='approved' or c.request.status='disapproved')")
 	public List<UserToUserRequest> findMyRequests(@Param("x") String idUser);
 
 }
