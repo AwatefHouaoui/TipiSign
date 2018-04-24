@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.dao.UserInformationRepository;
 import com.example.entities.UserInformation;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,8 +20,8 @@ public class UserInformationService {
 
 	@RequestMapping(value = "/UserInfo", method = RequestMethod.POST)
 	public UserInformation saveUserInformation(@RequestBody UserInformation u) {
-		String userName = u.getAccountName();
-		u.setAccountName(userName.toLowerCase());
+		String accountName = u.getAccountName();
+		u.setAccountName(accountName.toLowerCase());
 		return userInformationRepository.save(u);
 	}
 
