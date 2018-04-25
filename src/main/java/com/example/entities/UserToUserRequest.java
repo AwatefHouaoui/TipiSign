@@ -16,6 +16,10 @@ public class UserToUserRequest implements Serializable {
 	private UserInformation userFrom;
 	private UserInformation userTo;
 
+	public UserToUserRequest() {
+		super();
+	}
+
 	@EmbeddedId
 	public UserToUserRequestPK getUserToUserRequestPK() {
 		return userToUserRequestPK;
