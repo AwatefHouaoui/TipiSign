@@ -14,5 +14,8 @@ public interface UserToUserRequestRepository extends JpaRepository<UserToUserReq
 	
 	@Query("select c from UserToUserRequest c where c.userFrom.idUser =:x and (c.request.status='approved' or c.request.status='disapproved')")
 	public List<UserToUserRequest> findMyRequests(@Param("x") String idUser);
+	
+	@Query("select c from UserToUserRequest c where c.request.idRequest =:x ")
+	public UserToUserRequest findRequest(@Param("x") long idRequest);
 
 }

@@ -719,7 +719,7 @@ public class BotController {
 				String part3 = table[2];
 				number = Long.parseLong(part3);
 				Request r = requestRepository.findOne(number);
-				UserToUserRequest u = userToUserRequestRepository.findOne(r);
+				UserToUserRequest u = userToUserRequestRepository.findRequest(number);
 
 				if (r.getStatus().equals("pending") || r.getStatus().equals("passed")) {
 
