@@ -889,8 +889,8 @@ public class BotController {
 
 				} else {
 
-					textMessage = new TextMessage(messageSource.getMessage("decision.taken", null,
-							new Locale(mainUser.getSystemLanguage().toLowerCase())) + r.getStatus());
+					textMessage = new TextMessage(messageSource.getMessage("decision.taken",
+							new Object[] { r.getStatus().toUpperCase() }, new Locale(mainUser.getSystemLanguage().toLowerCase())));
 					pushMessage = new PushMessage(idUser, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
