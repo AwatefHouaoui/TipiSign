@@ -565,7 +565,7 @@ public class BotController {
 
 			logger.info("request decesion**************************" + customerMessage);
 
-			if (customerMessage.contains("Send") || customerMessage.contains("送信")) {
+			if (customerMessage.equals("Send") || customerMessage.equals("送信")) {
 
 				request = new Request();
 				request.setTitleRequest(titleRequest);
