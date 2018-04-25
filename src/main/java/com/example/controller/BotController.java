@@ -739,9 +739,8 @@ public class BotController {
 					case "Approve":
 
 						typeCQuestion(
-								messageSource.getMessage("confirm.approve", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ u.getUserFrom().getAccountName(),
+								messageSource.getMessage("confirm.approve", new Object[] { u.getUserFrom().getAccountName() },
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								messageSource.getMessage("yes.approve", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								"Yes Approve " + r.getIdRequest(),
@@ -770,9 +769,8 @@ public class BotController {
 					case "Disapprove":
 
 						typeCQuestion(
-								messageSource.getMessage("confirm.disapprove", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ u.getUserFrom().getAccountName(),
+								messageSource.getMessage("confirm.disapprove", new Object[] { u.getUserFrom().getAccountName() },
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								messageSource.getMessage("yes.disapprove", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								"Yes Disapprove " + r.getIdRequest(),
