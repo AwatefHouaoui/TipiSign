@@ -778,7 +778,7 @@ public class BotController {
 								"Yes Disapprove " + r.getIdRequest(),
 								messageSource.getMessage("no.cancel", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								"No Cancel" + r.getIdRequest(), "Confirm", TOKEN, idUser);
+								"No Cancel " + r.getIdRequest(), "Confirm", TOKEN, idUser);
 
 						// r.setStatus("disapproved");
 						// r.setUpdatedAt(convertToTimestamp(timestamp));
