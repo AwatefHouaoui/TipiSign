@@ -300,8 +300,7 @@ public class BotController {
 
 			case "receiverchosen":
 
-				if (customerMessage.equals(messageSource.getMessage("receiver.not.available".toLowerCase(), null,
-						new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
+				if (customerMessage.equals("not available") || customerMessage.equals("該当なし")) {
 
 					n++;
 					lineProgress.setStatusLine("Default");
@@ -336,8 +335,7 @@ public class BotController {
 
 				} else {
 
-					if (customerMessage.equals(messageSource.getMessage("see.more".toLowerCase(), null,
-							new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
+					if (customerMessage.equals("see more") || customerMessage.equals("もっと見る")) {
 
 						userpage = userInformationRepository.findUserByName("%" + name + "%",
 								new PageRequest(numPage, 3));
@@ -533,12 +531,15 @@ public class BotController {
 									+ messageSource.getMessage("userRole", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase()))
 									+ userRoleRepository.findOne(roleId).getRole(),
-							messageSource
-									.getMessage("send", null, new Locale(mainUser.getSystemLanguage().toLowerCase())),
-							"Send",
+							messageSource.getMessage("send", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							messageSource.getMessage("send", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
 							messageSource.getMessage("delete", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
-							"Delete", "Confirm", TOKEN, idUser);
+							messageSource.getMessage("delete", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							"Confirm", TOKEN, idUser);
 				}
 
 				break;
@@ -564,8 +565,7 @@ public class BotController {
 
 			logger.info("request decesion**************************" + customerMessage);
 
-			if (customerMessage.equals(
-					messageSource.getMessage("send", null, new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
+			if (customerMessage.contains("Send") || customerMessage.contains("送信")) {
 
 				request = new Request();
 				request.setTitleRequest(titleRequest);
