@@ -565,14 +565,18 @@ public class BotController {
 				request.setVisibility(visibility);
 				request.setCreatedAt(convertToTimestamp(timestamp));
 				request.setUpdatedAt(convertToTimestamp(timestamp));
-				requestRepository.save(request);
+				requestRepository.saveAndFlush(request);
+				
+				System.out.println("requeeeeest ID *********************" + request.getIdRequest());
 
 				lineProgressRepository.delete(lineProgress);
 
-				userToUserRequest = new UserToUserRequest(new UserToUserRequestPK(idUser, toUser.getIdUser(), request.getIdRequest()));
+				userToUserRequest = new UserToUserRequest();
+				UserToUserRequestPK userPk = new UserToUserRequestPK(idUser, toUser.getIdUser(), request.getIdRequest());
 				userToUserRequest.setRequest(request);
 				userToUserRequest.setUserFrom(mainUser);
 				userToUserRequest.setUserTo(toUser);
+				userToUserRequest.setUserToUserRequestPK(userPk);
 				userToUserRequestRepository.save(userToUserRequest);
 
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"

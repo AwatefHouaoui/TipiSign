@@ -25,11 +25,6 @@ public class UserToUserRequest implements Serializable {
 		this.userToUserRequestPK = userToUserRequestPK;
 	}
 
-	public UserToUserRequest(UserToUserRequestPK userToUserRequestPK) {
-		super();
-		this.userToUserRequestPK = userToUserRequestPK;
-	}
-
 	@ManyToOne
 	@JoinColumn(name = "idRequest", referencedColumnName = "idRequest", insertable = false, updatable = false)
 	public Request getRequest() {
