@@ -3,14 +3,12 @@ package com.example.entities;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
 @Entity
 public class Request implements Serializable {
@@ -117,12 +115,10 @@ public class Request implements Serializable {
 		this.comments = comments;
 	}
 
-	@JsonIgnore
 	public Collection<UserToUserRequest> getFromAndToUsers() {
 		return fromAndToUsers;
 	}
 
-	@JsonSetter
 	public void setFromAndToUsers(Collection<UserToUserRequest> fromAndToUsers) {
 		this.fromAndToUsers = fromAndToUsers;
 	}

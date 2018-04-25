@@ -7,6 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 @Entity
 public class UserToUserRequest implements Serializable {
 
@@ -32,10 +35,12 @@ public class UserToUserRequest implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "idRequest", referencedColumnName = "idRequest", insertable = false, updatable = false)
+	@JsonIgnore
 	public Request getRequest() {
 		return request;
 	}
 
+	@JsonSetter
 	public void setRequest(Request request) {
 		this.request = request;
 	}
