@@ -519,9 +519,20 @@ public class BotController {
 
 					typeCQuestion(
 							messageSource.getMessage("confirm", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())) + "\n \nRECEIVER: "
-									+ toUser.getAccountName() + "\nTITLE: " + titleRequest + "\nDETAIL: "
-									+ detailRequest + "\nAUTHORITY: " + userRoleRepository.findOne(roleId).getRole(),
+									new Locale(mainUser.getSystemLanguage().toLowerCase()))
+									+ "\n \n"
+									+ messageSource.getMessage("receiver", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase()))
+									+ toUser.getAccountName() + "\n"
+									+ messageSource.getMessage("title", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase()))
+									+ titleRequest + "\n"
+									+ messageSource.getMessage("detail", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase()))
+									+ detailRequest + "\n"
+									+ messageSource.getMessage("authority", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase()))
+									+ userRoleRepository.findOne(roleId).getRole(),
 							messageSource.getMessage("send", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
 							messageSource.getMessage("send", null,
@@ -566,13 +577,14 @@ public class BotController {
 				request.setCreatedAt(convertToTimestamp(timestamp));
 				request.setUpdatedAt(convertToTimestamp(timestamp));
 				requestRepository.saveAndFlush(request);
-				
+
 				System.out.println("requeeeeest ID *********************" + request.getIdRequest());
 
 				lineProgressRepository.delete(lineProgress);
 
 				userToUserRequest = new UserToUserRequest();
-				UserToUserRequestPK userPk = new UserToUserRequestPK(idUser, toUser.getIdUser(), request.getIdRequest());
+				UserToUserRequestPK userPk = new UserToUserRequestPK(idUser, toUser.getIdUser(),
+						request.getIdRequest());
 				userToUserRequest.setRequest(request);
 				userToUserRequest.setUserFrom(mainUser);
 				userToUserRequest.setUserTo(toUser);
@@ -793,13 +805,13 @@ public class BotController {
 						typeCQuestion(
 								messageSource.getMessage("title", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ r.getTitleRequest().toUpperCase()
+										+ r.getTitleRequest().toUpperCase() + "\n"
 										+ messageSource.getMessage("sender", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ u.getUserFrom().getAccountName()
+										+ u.getUserFrom().getAccountName() + "\n"
 										+ messageSource.getMessage("detail", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ r.getDetailRequest()
+										+ r.getDetailRequest() + "\n"
 										+ messageSource.getMessage("userRole", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase()))
 										+ userRoleRepository.getOne(r.getVisibility()).getRole(),
