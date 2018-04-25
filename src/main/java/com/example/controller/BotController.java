@@ -530,7 +530,7 @@ public class BotController {
 									+ messageSource.getMessage("detail", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase()))
 									+ detailRequest + "\n"
-									+ messageSource.getMessage("authority", null,
+									+ messageSource.getMessage("userRole", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase()))
 									+ userRoleRepository.findOne(roleId).getRole(),
 							messageSource.getMessage("send", null,
@@ -835,10 +835,10 @@ public class BotController {
 
 							logger.info("approooooooooooooooved");
 
-							textMessage = new TextMessage(mainUser.getAccountName().toUpperCase() + " "
-									+ messageSource.getMessage("approved", null,
-											new Locale(mainUser.getSystemLanguage().toLowerCase()))
-									+ "\n \nTitle: " + r.getTitleRequest().toUpperCase() + "\nDetail: "
+							textMessage = new TextMessage(messageSource.getMessage("approved",
+									new Object[] { mainUser.getAccountName().toUpperCase() },
+									new Locale(mainUser.getSystemLanguage().toLowerCase())) + "\n \nTitle: "
+									+ r.getTitleRequest().toUpperCase() + "\nDetail: "
 									+ r.getDetailRequest().toUpperCase());
 							pushMessage = new PushMessage(u.getUserFrom().getIdUser(), textMessage);
 							try {
@@ -856,10 +856,10 @@ public class BotController {
 							requestRepository.save(r);
 							logger.info("diiiiiiiiisapproooooooooooooooved");
 
-							textMessage = new TextMessage(mainUser.getAccountName().toUpperCase()
-									+ messageSource.getMessage("disapproved", null,
-											new Locale(mainUser.getSystemLanguage().toLowerCase()))
-									+ "\n \nTitle: " + r.getTitleRequest().toUpperCase() + "\nDetail: "
+							textMessage = new TextMessage(messageSource.getMessage("disapproved",
+									new Object[] { mainUser.getAccountName().toUpperCase() },
+									new Locale(mainUser.getSystemLanguage().toLowerCase())) + "\n \nTitle: "
+									+ r.getTitleRequest().toUpperCase() + "\nDetail: "
 									+ r.getDetailRequest().toUpperCase());
 							pushMessage = new PushMessage(u.getUserFrom().getIdUser(), textMessage);
 							try {
