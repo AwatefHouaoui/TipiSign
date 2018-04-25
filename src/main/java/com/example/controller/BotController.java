@@ -533,15 +533,12 @@ public class BotController {
 									+ messageSource.getMessage("userRole", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase()))
 									+ userRoleRepository.findOne(roleId).getRole(),
-							messageSource.getMessage("send", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())),
-							messageSource.getMessage("send", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							messageSource
+									.getMessage("send", null, new Locale(mainUser.getSystemLanguage().toLowerCase())),
+							"Send",
 							messageSource.getMessage("delete", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
-							messageSource.getMessage("delete", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())),
-							"Confirm", TOKEN, idUser);
+							"Delete", "Confirm", TOKEN, idUser);
 				}
 
 				break;
@@ -739,7 +736,8 @@ public class BotController {
 					case "Approve":
 
 						typeCQuestion(
-								messageSource.getMessage("confirm.approve", new Object[] { u.getUserFrom().getAccountName() },
+								messageSource.getMessage("confirm.approve",
+										new Object[] { u.getUserFrom().getAccountName() },
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								messageSource.getMessage("yes.approve", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
@@ -769,7 +767,8 @@ public class BotController {
 					case "Disapprove":
 
 						typeCQuestion(
-								messageSource.getMessage("confirm.disapprove", new Object[] { u.getUserFrom().getAccountName() },
+								messageSource.getMessage("confirm.disapprove",
+										new Object[] { u.getUserFrom().getAccountName() },
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								messageSource.getMessage("yes.disapprove", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
@@ -887,8 +886,9 @@ public class BotController {
 
 				} else {
 
-					textMessage = new TextMessage(messageSource.getMessage("decision.taken",
-							new Object[] { r.getStatus().toUpperCase() }, new Locale(mainUser.getSystemLanguage().toLowerCase())));
+					textMessage = new TextMessage(
+							messageSource.getMessage("decision.taken", new Object[] { r.getStatus().toUpperCase() },
+									new Locale(mainUser.getSystemLanguage().toLowerCase())));
 					pushMessage = new PushMessage(idUser, textMessage);
 					try {
 						botApiResponse = client.pushMessage(pushMessage).get();
