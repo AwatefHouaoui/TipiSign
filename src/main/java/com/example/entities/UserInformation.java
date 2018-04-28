@@ -32,9 +32,9 @@ public class UserInformation implements Serializable {
 	private boolean initialSetting = true;
 
 	@ManyToOne
-	@JoinColumn(name = "userRole")
+	@JoinColumn(name = "authority")
 	@JsonIgnoreProperties({ "role", "ranking" })
-	private UserRole userRole;
+	private Authority authority;
 
 	@OneToMany(mappedBy = "userLine")
 	private Collection<LineProgress> lineProgresses;
@@ -52,11 +52,11 @@ public class UserInformation implements Serializable {
 		super();
 	}
 
-	public UserInformation(String idUser, String accountName, UserRole userRole) {
+	public UserInformation(String idUser, String accountName, Authority authority) {
 		super();
 		this.idUser = idUser;
 		this.accountName = accountName;
-		this.userRole = userRole;
+		this.authority = authority;
 	}
 
 	public String getIdUser() {
@@ -139,12 +139,12 @@ public class UserInformation implements Serializable {
 		this.initialSetting = initialSetting;
 	}
 
-	public UserRole getUserRole() {
-		return userRole;
+	public Authority getUserRole() {
+		return authority;
 	}
 
-	public void setUserRole(UserRole userRole) {
-		this.userRole = userRole;
+	public void setUserRole(Authority authority) {
+		this.authority = authority;
 	}
 
 	// public Collection<Company> getCompanies() {

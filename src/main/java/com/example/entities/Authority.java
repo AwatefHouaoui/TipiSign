@@ -13,43 +13,43 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 @Entity
-public class UserRole implements Serializable {
+public class Authority implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long roleId;
-	private String role;
+	private long authorityId;
+	private String authority;
 	private long ranking;
 
-	@OneToMany(mappedBy = "userRole")
+	@OneToMany(mappedBy = "authority")
 	private Collection<UserInformation> users;
 
-	public UserRole() {
+	public Authority() {
 		super();
 	}
 
-	public UserRole(long roleId, String role, long ranking) {
+	public Authority(long authorityId, String authority, long ranking) {
 		super();
-		this.roleId = roleId;
-		this.role = role;
+		this.authorityId = authorityId;
+		this.authority = authority;
 		this.ranking = ranking;
 	}
 
-	public long getRoleId() {
-		return roleId;
+	public long getAuthorityId() {
+		return authorityId;
 	}
 
-	public void setRoleId(long roleId) {
-		this.roleId = roleId;
+	public void setAuthorityId(long authorityId) {
+		this.authorityId = authorityId;
 	}
 
-	public String getRole() {
-		return role;
+	public String getAuthority() {
+		return authority;
 	}
 
-	public void setRole(String role) {
-		this.role = role;
+	public void setAuthority(String authority) {
+		this.authority = authority;
 	}
 
 	public long getRanking() {

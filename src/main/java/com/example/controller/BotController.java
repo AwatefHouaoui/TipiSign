@@ -37,18 +37,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import com.example.dao.UserRoleRepository;
+import com.example.dao.AuthorityRepository;
 import com.example.dao.UserToUserRequestRepository;
 import com.example.dao.LineProgressRepository;
 import com.example.dao.RequestRepository;
 import com.example.dao.UserInformationRepository;
-import com.example.entities.UserRole;
+import com.example.entities.Authority;
 import com.example.entities.UserToUserRequest;
 import com.example.entities.UserToUserRequestPK;
 import com.example.entities.LineProgress;
 import com.example.entities.Request;
 import com.example.entities.UserInformation;
-import com.example.service.UserRoleService;
+import com.example.service.AuthorityService;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.bot.model.PushMessage;
@@ -92,9 +92,9 @@ public class BotController {
 	@Autowired
 	LineProgressRepository lineProgressRepository;
 	@Autowired
-	UserRoleRepository userRoleRepository;
+	AuthorityRepository authorityRepository;
 	@Autowired
-	UserRoleService userRoleService;
+	AuthorityService authorityService;
 	@Autowired
 	MessageSource messageSource;
 	@Autowired
@@ -126,8 +126,8 @@ public class BotController {
 	CarouselColumn carouselColumn;
 	List<CarouselColumn> listCarouselColumns;
 	List<UserInformation> users;
-	Page<UserRole> userRole;
-	List<UserRole> userRoleCont;
+	Page<Authority> authority;
+	List<Authority> authorityCont;
 	Page<UserInformation> userpage;
 
 	@ResponseBody
@@ -433,36 +433,36 @@ public class BotController {
 				System.out.println("status*********" + status);
 				logger.info("Request detailed", customerMessage);
 
-				userRoleCont = userRoleRepository.findAll();
-				n = userRoleCont.size();
+				authorityCont = authorityRepository.findAll();
+				n = authorityCont.size();
 
 				if (n < 5) {
 
 					for (int i = 0; i < 4; i++) {
-						hm.put(userRoleCont.get(i).getRole(), userRoleCont.get(i).getRole());
+						hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
 					}
 
-					typeBRecursiveChoices(null, null, messageSource.getMessage("userRole.select", null,
+					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
-					logger.info("Choose request userRole :" + customerMessage);
+					logger.info("Choose request authority :" + customerMessage);
 
 				} else {
 
-					userRole = userRoleService.findAllUserRole(num, 3);
-					n = userRole.getTotalPages();
-					userRoleCont = userRole.getContent();
+					authority = authorityService.findAllAuthority(num, 3);
+					n = authority.getTotalPages();
+					authorityCont = authority.getContent();
 
 					for (int i = 0; i < 3; i++) {
-						hm.put(userRoleCont.get(i).getRole(), userRoleCont.get(i).getRole());
+						hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
 					}
 					hm.put(messageSource.getMessage("see.more", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())),
 							messageSource.getMessage("see.more", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())));
 					num++;
-					typeBRecursiveChoices(null, null, messageSource.getMessage("userRole.select", null,
+					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
-					logger.info("Choose request userRole :" + customerMessage);
+					logger.info("Choose request authority :" + customerMessage);
 				}
 
 				break;
@@ -472,18 +472,18 @@ public class BotController {
 				if (customerMessage.equals(messageSource.getMessage("see.more".toLowerCase(), null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())))) {
 
-					userRole = userRoleService.findAllUserRole(num, 3);
-					userRoleCont = userRole.getContent();
+					authority = authorityService.findAllAuthority(num, 3);
+					authorityCont = authority.getContent();
 
 					if (num == (n - 1)) {
-						for (int i = 0; i < userRole.getNumberOfElements(); i++) {
-							hm.put(userRoleCont.get(i).getRole(), userRoleCont.get(i).getRole());
+						for (int i = 0; i < authority.getNumberOfElements(); i++) {
+							hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
 						}
 						num = 0;
 
 					} else {
 						for (int i = 0; i < 3; i++) {
-							hm.put(userRoleCont.get(i).getRole(), userRoleCont.get(i).getRole());
+							hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
 						}
 						hm.put(messageSource.getMessage("see.more", null,
 								new Locale(mainUser.getSystemLanguage().toLowerCase())),
@@ -491,21 +491,21 @@ public class BotController {
 										new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						num++;
 					}
-					typeBRecursiveChoices(null, null, messageSource.getMessage("userRole.select", null,
+					typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
-					logger.info("Choose request userRole :" + customerMessage);
+					logger.info("Choose request authority :" + customerMessage);
 
 				} else {
 
-					userRoleCont = userRoleRepository.findAll();
-					n = userRoleCont.size();
+					authorityCont = authorityRepository.findAll();
+					n = authorityCont.size();
 
 					for (int i = 0; i < n; i++) {
-						if (customerMessage.equals(userRoleCont.get(i).getRole().toLowerCase())) {
+						if (customerMessage.equals(authorityCont.get(i).getAuthority().toLowerCase())) {
 							logger.info("authoooooooooooooooooooorityyyyyyyyyy*************"
-									+ userRoleCont.get(i).getRole().toLowerCase());
-							visibility = userRoleCont.get(i).getRanking();
-							roleId = userRoleCont.get(i).getRoleId();
+									+ authorityCont.get(i).getAuthority().toLowerCase());
+							visibility = authorityCont.get(i).getRanking();
+							roleId = authorityCont.get(i).getAuthorityId();
 						}
 					}
 
@@ -528,9 +528,9 @@ public class BotController {
 									+ messageSource.getMessage("detail", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase()))
 									+ detailRequest + "\n"
-									+ messageSource.getMessage("userRole", null,
+									+ messageSource.getMessage("authority", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase()))
-									+ userRoleRepository.findOne(roleId).getRole(),
+									+ authorityRepository.findOne(roleId).getAuthority(),
 							messageSource.getMessage("send", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
 							messageSource.getMessage("send", null,
@@ -809,9 +809,9 @@ public class BotController {
 										+ messageSource.getMessage("detail", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase()))
 										+ r.getDetailRequest() + "\n"
-										+ messageSource.getMessage("userRole", null,
+										+ messageSource.getMessage("authority", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ userRoleRepository.getOne(r.getVisibility()).getRole(),
+										+ authorityRepository.getOne(r.getVisibility()).getAuthority(),
 								messageSource.getMessage("approve", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 								"Approve request " + r.getIdRequest(),

@@ -9,27 +9,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.dao.UserRoleRepository;
-import com.example.entities.UserRole;
+import com.example.dao.AuthorityRepository;
+import com.example.entities.Authority;
 
 @RestController
-public class UserRoleService {
+public class AuthorityService {
 	@Autowired
-	private UserRoleRepository userRoleRepository;
+	private AuthorityRepository authorityRepository;
 
-	@RequestMapping(value = "/UserRole", method = RequestMethod.POST)
-	public UserRole saveUserRole(@RequestBody UserRole a) {
-		return userRoleRepository.save(a);
+	@RequestMapping(value = "/Authority", method = RequestMethod.POST)
+	public Authority saveUserRole(@RequestBody Authority a) {
+		return authorityRepository.save(a);
 	}
 
 	@RequestMapping(value = "/getUserRole", method = RequestMethod.GET)
-	public List<UserRole> listUserRole() {
-		return userRoleRepository.findAll();
+	public List<Authority> listUserRole() {
+		return authorityRepository.findAll();
 	}
 
-	public Page<UserRole> findAllUserRole(@RequestParam(name = "num", defaultValue = "0") int num,
+	public Page<Authority> findAllAuthority(@RequestParam(name = "num", defaultValue = "0") int num,
 			@RequestParam(name = "size", defaultValue = "3") int size) {
-		return userRoleRepository.findAll(new PageRequest(num, size));
+		return authorityRepository.findAll(new PageRequest(num, size));
 	}
 
 }

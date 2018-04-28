@@ -22,7 +22,7 @@ public class LineProgress implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "User_Progress")
 	@JsonIgnoreProperties({ "status", "email", "emailVerified", "password", "createdAt", "lastLogin",
-			"systemLanguage", "initialSetting", "userRole", "lineProgresses", "Requests" })
+			"systemLanguage", "initialSetting", "authority", "lineProgresses", "Requests" })
 	private UserInformation userLine;
 
 	private String statusLine = "Default";
