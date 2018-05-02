@@ -431,7 +431,7 @@ public class TipiSignBotController {
 				lineProgressRepository.save(lineProgress);
 				status = lineProgress.getStatusLine();
 				System.out.println("status*********" + status);
-				logger.info("Request detailed", customerMessage);
+				logger.info("Request detailed***********" + customerMessage);
 
 				authorityCont = authorityRepository.findAll();
 				n = authorityCont.size();
