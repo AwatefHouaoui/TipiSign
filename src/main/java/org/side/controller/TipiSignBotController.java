@@ -872,7 +872,7 @@ public class TipiSignBotController {
 
 							logger.info("approooooooooooooooved");
 
-							String approve = "https://image.ibb.co/ddjAg7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons.jpg";
+							String approve = "https://image.ibb.co/d5Aayn/Webp_net_resizeimage_1.jpg";
 							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(approve,
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
@@ -922,7 +922,7 @@ public class TipiSignBotController {
 
 							logger.info("diiiiiiiiisapproooooooooooooooved");
 
-							String disapprove = "https://image.ibb.co/nMSMM7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons_copie.jpg";
+							String disapprove = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
 							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(disapprove,
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
@@ -1007,11 +1007,11 @@ public class TipiSignBotController {
 						switch (requests.get(i).getRequest().getStatus()) {
 
 						case "approved":
-							imageUrl = "https://image.ibb.co/ddjAg7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons.jpg";
+							imageUrl = "https://image.ibb.co/d5Aayn/Webp_net_resizeimage_1.jpg";
 							break;
 
 						case "disapproved":
-							imageUrl = "https://image.ibb.co/nMSMM7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons_copie.jpg";
+							imageUrl = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
 							break;
 						}
 
@@ -1028,11 +1028,11 @@ public class TipiSignBotController {
 						switch (requests.get(i).getRequest().getStatus()) {
 
 						case "approved":
-							imageUrl = "https://image.ibb.co/ddjAg7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons.jpg";
+							imageUrl = "https://image.ibb.co/d5Aayn/Webp_net_resizeimage_1.jpg";
 							break;
 
 						case "disapproved":
-							imageUrl = "https://image.ibb.co/nMSMM7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons_copie.jpg";
+							imageUrl = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
 							break;
 						}
 
