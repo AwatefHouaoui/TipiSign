@@ -15,17 +15,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.side.dao.AuthorityRepository;
 import org.side.dao.LineProgressRepository;
+import org.side.dao.LogDecisionRepository;
+import org.side.dao.LogRequestRepository;
 import org.side.dao.RequestRepository;
 import org.side.dao.UserInformationRepository;
 import org.side.dao.UserToUserRequestRepository;
 import org.side.entities.Authority;
 import org.side.entities.LineProgress;
+import org.side.entities.LogDecision;
+import org.side.entities.LogRequest;
 import org.side.entities.Request;
 import org.side.entities.UserInformation;
 import org.side.entities.UserToUserRequest;
@@ -72,6 +77,7 @@ import com.linecorp.bot.model.message.template.ConfirmTemplate;
 import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
+
 import lombok.extern.slf4j.Slf4j;
 import retrofit2.Response;
 
@@ -100,6 +106,10 @@ public class TipiSignBotController {
 	MessageSource messageSource;
 	@Autowired
 	UserToUserRequestRepository userToUserRequestRepository;
+	@Autowired
+	LogRequestRepository logRequestRepository;
+	@Autowired
+	LogDecisionRepository logDecisionRepository;
 
 	LineMessagingClient client = LineMessagingClient.builder(TOKEN).build();
 	TextMessage textMessage;
@@ -124,6 +134,8 @@ public class TipiSignBotController {
 	Request request;
 	UserToUserRequest userToUserRequest;
 	LineProgress lineProgress;
+	LogRequest logRequest;
+	LogDecision logDecision;
 	CarouselColumn carouselColumn;
 	List<CarouselColumn> listCarouselColumns;
 	List<UserInformation> users;
@@ -148,7 +160,7 @@ public class TipiSignBotController {
 		String resolvedQuery = result.getString("resolvedQuery");
 		JSONObject metadata = result.getJSONObject("metadata");
 		String intentName = metadata.getString("intentName");
-		//JSONObject parameters = result.getJSONObject("parameters");
+		// JSONObject parameters = result.getJSONObject("parameters");
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
@@ -221,6 +233,12 @@ public class TipiSignBotController {
 
 				List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
 						.getContent();
+				user.forEach(u -> {
+					   if (u.equals(mainUser)) {
+						   user.remove(mainUser);
+					   }
+					});
+				logger.info("liiiiiiiiiiist users**************" + user);
 				int a = user.size();
 
 				if (a == 0) {
@@ -587,6 +605,16 @@ public class TipiSignBotController {
 				userToUserRequest.setUserTo(toUser);
 				userToUserRequestRepository.save(userToUserRequest);
 
+				logRequest = new LogRequest();
+				logRequest.setTitle(titleRequest);
+				logRequest.setDetail(detailRequest);
+				logRequest.setCreatedAt(convertToTimestamp(timestamp));
+				logRequest.setIdRequest(request.getIdRequest());
+				logRequest.setStatusRequest(request.getStatus());
+				logRequest.setFromUser(idUser);
+				logRequest.setToUser(toUser.getIdUser());
+				logRequestRepository.save(logRequest);
+
 				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
@@ -796,6 +824,23 @@ public class TipiSignBotController {
 							r.setStatus("approved");
 							r.setUpdatedAt(convertToTimestamp(timestamp));
 							requestRepository.save(r);
+							
+							logRequest = new LogRequest();
+							logRequest.setTitle(r.getTitleRequest());
+							logRequest.setDetail(r.getDetailRequest());
+							logRequest.setCreatedAt(convertToTimestamp(timestamp));
+							logRequest.setIdRequest(r.getIdRequest());
+							logRequest.setStatusRequest("approved");
+							logRequest.setFromUser(u.getUserFrom().getIdUser());
+							logRequest.setToUser(u.getUserTo().getIdUser());
+							logRequestRepository.save(logRequest);
+							
+							logDecision = new LogDecision();
+							logDecision.setCreatedAt(convertToTimestamp(timestamp));
+							logDecision.setStatus("approved");
+							logDecision.setIdRequest(r.getIdRequest());
+							logDecision.setFromUser(u.getUserFrom().getIdUser());
+							logDecision.setToUser(u.getUserTo().getIdUser());
 
 							logger.info("approooooooooooooooved");
 
@@ -818,6 +863,24 @@ public class TipiSignBotController {
 							r.setStatus("disapproved");
 							r.setUpdatedAt(convertToTimestamp(timestamp));
 							requestRepository.save(r);
+							
+							logRequest = new LogRequest();
+							logRequest.setTitle(r.getTitleRequest());
+							logRequest.setDetail(r.getDetailRequest());
+							logRequest.setCreatedAt(convertToTimestamp(timestamp));
+							logRequest.setIdRequest(r.getIdRequest());
+							logRequest.setStatusRequest("disapproved");
+							logRequest.setFromUser(u.getUserFrom().getIdUser());
+							logRequest.setToUser(u.getUserTo().getIdUser());
+							logRequestRepository.save(logRequest);							
+							
+							logDecision = new LogDecision();
+							logDecision.setCreatedAt(convertToTimestamp(timestamp));
+							logDecision.setStatus("disapproved");
+							logDecision.setIdRequest(r.getIdRequest());
+							logDecision.setFromUser(u.getUserFrom().getIdUser());
+							logDecision.setToUser(u.getUserTo().getIdUser());
+							
 							logger.info("diiiiiiiiisapproooooooooooooooved");
 
 							textMessage = new TextMessage(messageSource.getMessage("disapproved",
