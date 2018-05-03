@@ -32,9 +32,10 @@ public class UserInformationService {
 
 	@RequestMapping(value = "/getUser", method = RequestMethod.GET)
 	public Page<UserInformation> findUserByName(@RequestParam(name = "accountName") String accountName,
+			@RequestParam(name="idUser") String idUser,
 			@RequestParam(name = "numPage", defaultValue = "0") int numPage,
 			@RequestParam(name = "size", defaultValue = "3") int size) {
-		return userInformationRepository.findUserByName("%" + accountName + "%", new PageRequest(numPage, size));
+		return userInformationRepository.findUserByName("%" + accountName + "%", idUser, new PageRequest(numPage, size));
 	}
 
 }

@@ -231,14 +231,8 @@ public class TipiSignBotController {
 
 			case "Default":
 
-				List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
+				List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser, null)
 						.getContent();
-				
-				for (int i =0; i < user.size(); i++) {
-				if (user.get(i).getIdUser()==idUser) {
-					user.remove(mainUser);
-				}
-				}
 				
 				logger.info("liiiiiiiiiiist users**************" + user);
 				int a = user.size();
@@ -292,7 +286,7 @@ public class TipiSignBotController {
 
 					} else {
 
-						userpage = userInformationRepository.findUserByName("%" + customerMessage + "%",
+						userpage = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser,
 								new PageRequest(numPage, 3));
 						t = userpage.getTotalPages();
 						name = customerMessage;
@@ -358,7 +352,7 @@ public class TipiSignBotController {
 
 					if (customerMessage.equals("see more") || customerMessage.equals("もっと見る")) {
 
-						userpage = userInformationRepository.findUserByName("%" + name + "%",
+						userpage = userInformationRepository.findUserByName("%" + name + "%", idUser,
 								new PageRequest(numPage, 3));
 						users = userpage.getContent();
 
@@ -389,7 +383,7 @@ public class TipiSignBotController {
 
 					} else {
 
-						user = userInformationRepository.findUserByName("%" + customerMessage + "%", null).getContent();
+						user = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser, null).getContent();
 						a = user.size();
 
 						for (int i = 0; i < a; i++) {
