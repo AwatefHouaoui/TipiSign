@@ -126,7 +126,7 @@ public class TipiSignBotController {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	String titleRequest, detailRequest, name, status = "null";
+	String titleRequest, detailRequest, name, status = "null", imageUrl;
 	String idUser;
 	long visibility, roleId, number;
 	int n, numPage, num, t;
@@ -287,7 +287,7 @@ public class TipiSignBotController {
 
 					} else {
 
-						numPage=0;
+						numPage = 0;
 						userpage = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser,
 								new PageRequest(numPage, 3));
 						t = userpage.getTotalPages();
@@ -643,7 +643,7 @@ public class TipiSignBotController {
 				logRequest.setToUser(toUser.getIdUser());
 				logRequestRepository.save(logRequest);
 
-				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+				imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
 				hm.put(messageSource.getMessage("approve", null,
@@ -693,7 +693,7 @@ public class TipiSignBotController {
 
 			if (customerMessage.equals("Decision history")) {
 
-				String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+				imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 						+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
 				List<UserToUserRequest> requests = userToUserRequestRepository.findPendingRequestByToUser(idUser);
@@ -984,9 +984,6 @@ public class TipiSignBotController {
 
 		case "decision":
 
-			String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
-					+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
-
 			List<UserToUserRequest> requests = userToUserRequestRepository.findMyRequests(idUser);
 			listCarouselColumns = new ArrayList<>();
 			int a = requests.size();
@@ -1007,14 +1004,37 @@ public class TipiSignBotController {
 				if (a < 10) {
 					for (int i = 0; i < a; i++) {
 
+						switch (requests.get(i).getRequest().getStatus()) {
+
+						case "approved":
+							imageUrl = "https://image.ibb.co/ddjAg7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons.jpg";
+							break;
+
+						case "disapproved":
+							imageUrl = "https://image.ibb.co/nMSMM7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons_copie.jpg";
+							break;
+						}
+
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
 								"Request title: " + requests.get(i).getRequest().getTitleRequest(),
 								"TO: " + requests.get(i).getUserFrom().getAccountName(),
 								Arrays.asList(new PostbackAction("Request " + requests.get(i).getRequest().getStatus(),
 										" "))));
 					}
+
 				} else {
 					for (int i = 0; i < 10; i++) {
+
+						switch (requests.get(i).getRequest().getStatus()) {
+
+						case "approved":
+							imageUrl = "https://image.ibb.co/ddjAg7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons.jpg";
+							break;
+
+						case "disapproved":
+							imageUrl = "https://image.ibb.co/nMSMM7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons_copie.jpg";
+							break;
+						}
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
 								"Request title: " + requests.get(i).getRequest().getTitleRequest(),
