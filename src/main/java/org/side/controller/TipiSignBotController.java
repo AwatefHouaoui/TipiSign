@@ -287,6 +287,7 @@ public class TipiSignBotController {
 
 					} else {
 
+						numPage=0;
 						userpage = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser,
 								new PageRequest(numPage, 3));
 						t = userpage.getTotalPages();
