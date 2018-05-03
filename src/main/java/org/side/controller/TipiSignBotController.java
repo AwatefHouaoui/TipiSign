@@ -414,13 +414,31 @@ public class TipiSignBotController {
 
 							} else {
 
-								textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase())));
-								pushMessage = new PushMessage(idUser, textMessage);
-								try {
-									botApiResponse = client.pushMessage(pushMessage).get();
-								} catch (InterruptedException | ExecutionException e) {
-									e.printStackTrace();
+								n++;
+								System.out.println("status*********" + status);
+								logger.info("receiver has noooooooot been chosen" + customerMessage);
+
+								if (n == 2) {
+									sendAlertViaSlack(idUser, timestamp, "User can't find the receiver ");
+									n = 0;
+									lineProgressRepository.delete(lineProgress);
+									textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())));
+									pushMessage = new PushMessage(idUser, textMessage);
+									try {
+										botApiResponse = client.pushMessage(pushMessage).get();
+									} catch (InterruptedException | ExecutionException e) {
+										e.printStackTrace();
+									}
+								} else {
+									textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())));
+									pushMessage = new PushMessage(idUser, textMessage);
+									try {
+										botApiResponse = client.pushMessage(pushMessage).get();
+									} catch (InterruptedException | ExecutionException e) {
+										e.printStackTrace();
+									}
 								}
 							}
 						}
@@ -903,7 +921,7 @@ public class TipiSignBotController {
 
 							logger.info("diiiiiiiiisapproooooooooooooooved");
 
-							String disapprove = "https://image.ibb.co/cx4t17/depositphotos_1436946_stock_illustration_approved_and_rejected_icons_copie.jpg";
+							String disapprove = "https://image.ibb.co/nMSMM7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons_copie.jpg";
 							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(disapprove,
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
