@@ -137,6 +137,7 @@ public class TipiSignBotController {
 	LogRequest logRequest;
 	LogDecision logDecision;
 	CarouselColumn carouselColumn;
+	CarouselTemplate carouselTemplate;
 	List<CarouselColumn> listCarouselColumns;
 	List<UserInformation> users;
 	Page<Authority> authority;
@@ -231,9 +232,9 @@ public class TipiSignBotController {
 
 			case "Default":
 
-				List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser, null)
-						.getContent();
-				
+				List<UserInformation> user = userInformationRepository
+						.findUserByName("%" + customerMessage + "%", idUser, null).getContent();
+
 				logger.info("liiiiiiiiiiist users**************" + user);
 				int a = user.size();
 
@@ -383,7 +384,8 @@ public class TipiSignBotController {
 
 					} else {
 
-						user = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser, null).getContent();
+						user = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser, null)
+								.getContent();
 						a = user.size();
 
 						for (int i = 0; i < a; i++) {
@@ -409,6 +411,17 @@ public class TipiSignBotController {
 									e.printStackTrace();
 								}
 								logger.info("receiver has been chosen" + customerMessage);
+
+							} else {
+
+								textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
+								pushMessage = new PushMessage(idUser, textMessage);
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
 							}
 						}
 					}
@@ -737,10 +750,10 @@ public class TipiSignBotController {
 					}
 				}
 
-				CarouselTemplate carouselTemplate = new CarouselTemplate(listCarouselColumns);
-				TemplateMessage templateMessage = new TemplateMessage("Carousel", carouselTemplate);
-				PushMessage pushMessage1 = new PushMessage(idUser, templateMessage);
-				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
+				carouselTemplate = new CarouselTemplate(listCarouselColumns);
+				TemplateMessage templateMessage = new TemplateMessage("Decision history", carouselTemplate);
+				pushMessage = new PushMessage(idUser, templateMessage);
+				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 				logger.info("osaka :" + customerMessage);
 
 			} else {
@@ -820,7 +833,7 @@ public class TipiSignBotController {
 							r.setStatus("approved");
 							r.setUpdatedAt(convertToTimestamp(timestamp));
 							requestRepository.save(r);
-							
+
 							logRequest = new LogRequest();
 							logRequest.setTitle(r.getTitleRequest());
 							logRequest.setDetail(r.getDetailRequest());
@@ -830,7 +843,7 @@ public class TipiSignBotController {
 							logRequest.setFromUser(u.getUserFrom().getIdUser());
 							logRequest.setToUser(u.getUserTo().getIdUser());
 							logRequestRepository.save(logRequest);
-							
+
 							logDecision = new LogDecision();
 							logDecision.setCreatedAt(convertToTimestamp(timestamp));
 							logDecision.setStatus("approved");
@@ -840,12 +853,26 @@ public class TipiSignBotController {
 
 							logger.info("approooooooooooooooved");
 
-							textMessage = new TextMessage(messageSource.getMessage("approved",
-									new Object[] { mainUser.getAccountName().toUpperCase() },
-									new Locale(mainUser.getSystemLanguage().toLowerCase())) + "\n \nTitle: "
-									+ r.getTitleRequest().toUpperCase() + "\nDetail: "
-									+ r.getDetailRequest().toUpperCase());
-							pushMessage = new PushMessage(u.getUserFrom().getIdUser(), textMessage);
+							String approve = "https://image.ibb.co/bME7b7/disapproved.jpg";
+							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(approve,
+									messageSource.getMessage("approved",
+											new Object[] { mainUser.getAccountName().toUpperCase() },
+											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
+									messageSource.getMessage("title", null,
+											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
+											+ r.getTitleRequest() + "\n"
+											+ messageSource.getMessage("detail", null,
+													new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
+											+ r.getDetailRequest(),
+									Arrays.asList(new PostbackAction("Request " + r.getStatus(), " ")))));
+
+							TemplateMessage templateMessage = new TemplateMessage("Approved", carouselTemplate);
+							pushMessage = new PushMessage(u.getUserFrom().getIdUser(), templateMessage);
+							LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
+
+							textMessage = new TextMessage(messageSource.getMessage("approve.request", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())));
+							pushMessage = new PushMessage(idUser, textMessage);
 							try {
 								botApiResponse = client.pushMessage(pushMessage).get();
 							} catch (InterruptedException | ExecutionException e) {
@@ -859,7 +886,7 @@ public class TipiSignBotController {
 							r.setStatus("disapproved");
 							r.setUpdatedAt(convertToTimestamp(timestamp));
 							requestRepository.save(r);
-							
+
 							logRequest = new LogRequest();
 							logRequest.setTitle(r.getTitleRequest());
 							logRequest.setDetail(r.getDetailRequest());
@@ -868,23 +895,37 @@ public class TipiSignBotController {
 							logRequest.setStatusRequest("disapproved");
 							logRequest.setFromUser(u.getUserFrom().getIdUser());
 							logRequest.setToUser(u.getUserTo().getIdUser());
-							logRequestRepository.save(logRequest);							
-							
+							logRequestRepository.save(logRequest);
+
 							logDecision = new LogDecision();
 							logDecision.setCreatedAt(convertToTimestamp(timestamp));
 							logDecision.setStatus("disapproved");
 							logDecision.setIdRequest(r.getIdRequest());
 							logDecision.setFromUser(u.getUserFrom().getIdUser());
 							logDecision.setToUser(u.getUserTo().getIdUser());
-							
+
 							logger.info("diiiiiiiiisapproooooooooooooooved");
 
-							textMessage = new TextMessage(messageSource.getMessage("disapproved",
-									new Object[] { mainUser.getAccountName().toUpperCase() },
-									new Locale(mainUser.getSystemLanguage().toLowerCase())) + "\n \nTitle: "
-									+ r.getTitleRequest().toUpperCase() + "\nDetail: "
-									+ r.getDetailRequest().toUpperCase());
-							pushMessage = new PushMessage(u.getUserFrom().getIdUser(), textMessage);
+							String disapprove = "https://image.ibb.co/bME7b7/disapproved.jpg";
+							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(disapprove,
+									messageSource.getMessage(
+											"disapproved", new Object[] { mainUser.getAccountName().toUpperCase() },
+											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
+									messageSource.getMessage("title", null,
+											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
+											+ r.getTitleRequest() + "\n"
+											+ messageSource.getMessage("detail", null,
+													new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
+											+ r.getDetailRequest(),
+									Arrays.asList(new PostbackAction("Request " + r.getStatus(), " ")))));
+
+							TemplateMessage templateMessage1 = new TemplateMessage("Disapproved", carouselTemplate);
+							pushMessage = new PushMessage(u.getUserFrom().getIdUser(), templateMessage1);
+							LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
+
+							textMessage = new TextMessage(messageSource.getMessage("disapprove.request", null,
+									new Locale(mainUser.getSystemLanguage().toLowerCase())));
+							pushMessage = new PushMessage(idUser, textMessage);
 							try {
 								botApiResponse = client.pushMessage(pushMessage).get();
 							} catch (InterruptedException | ExecutionException e) {
@@ -972,7 +1013,7 @@ public class TipiSignBotController {
 			}
 
 			CarouselTemplate carouselTemplate1 = new CarouselTemplate(listCarouselColumns);
-			TemplateMessage templateMessage2 = new TemplateMessage("Carousel", carouselTemplate1);
+			TemplateMessage templateMessage2 = new TemplateMessage("Check decision", carouselTemplate1);
 			PushMessage pushMessage2 = new PushMessage(idUser, templateMessage2);
 			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage2).execute();
 			logger.info("osaka :" + customerMessage);
