@@ -853,14 +853,14 @@ public class TipiSignBotController {
 
 							logger.info("approooooooooooooooved");
 
-							String approve = "https://image.ibb.co/bME7b7/disapproved.jpg";
+							String approve = "https://image.ibb.co/gVLPOn/approved.jpg";
 							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(approve,
-									messageSource.getMessage("approved",
-											new Object[] { mainUser.getAccountName().toUpperCase() },
-											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
 											+ r.getTitleRequest(),
+									messageSource.getMessage("approved",
+											new Object[] { mainUser.getAccountName().toUpperCase() },
+											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
 									Arrays.asList(new PostbackAction("Request " + r.getStatus(), " ")))));
 
 							TemplateMessage templateMessage = new TemplateMessage("Approved", carouselTemplate);
@@ -905,12 +905,12 @@ public class TipiSignBotController {
 
 							String disapprove = "https://image.ibb.co/bME7b7/disapproved.jpg";
 							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(disapprove,
-									messageSource.getMessage("disapproved",
-											new Object[] { mainUser.getAccountName().toUpperCase() },
-											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
 											+ r.getTitleRequest(),
+									messageSource.getMessage("disapproved",
+											new Object[] { mainUser.getAccountName().toUpperCase() },
+											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
 									Arrays.asList(new PostbackAction("Request " + r.getStatus(), " ")))));
 
 							TemplateMessage templateMessage1 = new TemplateMessage("Disapproved", carouselTemplate);
