@@ -860,10 +860,7 @@ public class TipiSignBotController {
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
-											+ r.getTitleRequest() + "\n"
-											+ messageSource.getMessage("detail", null,
-													new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
-											+ r.getDetailRequest(),
+											+ r.getTitleRequest(),
 									Arrays.asList(new PostbackAction("Request " + r.getStatus(), " ")))));
 
 							TemplateMessage templateMessage = new TemplateMessage("Approved", carouselTemplate);
@@ -908,15 +905,12 @@ public class TipiSignBotController {
 
 							String disapprove = "https://image.ibb.co/bME7b7/disapproved.jpg";
 							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(disapprove,
-									messageSource.getMessage(
-											"disapproved", new Object[] { mainUser.getAccountName().toUpperCase() },
+									messageSource.getMessage("disapproved",
+											new Object[] { mainUser.getAccountName().toUpperCase() },
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
-											+ r.getTitleRequest() + "\n"
-											+ messageSource.getMessage("detail", null,
-													new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
-											+ r.getDetailRequest(),
+											+ r.getTitleRequest(),
 									Arrays.asList(new PostbackAction("Request " + r.getStatus(), " ")))));
 
 							TemplateMessage templateMessage1 = new TemplateMessage("Disapproved", carouselTemplate);
