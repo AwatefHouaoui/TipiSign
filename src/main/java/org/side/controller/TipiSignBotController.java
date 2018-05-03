@@ -853,7 +853,7 @@ public class TipiSignBotController {
 
 							logger.info("approooooooooooooooved");
 
-							String approve = "https://image.ibb.co/gVLPOn/approved.jpg";
+							String approve = "https://image.ibb.co/ddjAg7/depositphotos_1436946_stock_illustration_approved_and_rejected_icons.jpg";
 							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(approve,
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
@@ -903,7 +903,7 @@ public class TipiSignBotController {
 
 							logger.info("diiiiiiiiisapproooooooooooooooved");
 
-							String disapprove = "https://image.ibb.co/bME7b7/disapproved.jpg";
+							String disapprove = "https://image.ibb.co/cx4t17/depositphotos_1436946_stock_illustration_approved_and_rejected_icons_copie.jpg";
 							carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(disapprove,
 									messageSource.getMessage("title", null,
 											new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
