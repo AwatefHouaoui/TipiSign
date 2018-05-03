@@ -233,11 +233,13 @@ public class TipiSignBotController {
 
 				List<UserInformation> user = userInformationRepository.findUserByName("%" + customerMessage + "%", null)
 						.getContent();
-				user.forEach(u -> {
-					   if (u.equals(mainUser)) {
-						   user.remove(mainUser);
-					   }
-					});
+				
+				for (int i =0; i < user.size(); i++) {
+				if (user.get(i).getIdUser()==idUser) {
+					user.remove(mainUser);
+				}
+				}
+				
 				logger.info("liiiiiiiiiiist users**************" + user);
 				int a = user.size();
 
