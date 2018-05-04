@@ -1063,6 +1063,11 @@ public class TipiSignBotController {
 						case "disapproved":
 							imageUrl = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
 							break;
+
+						default:
+							imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+									+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
+							break;
 						}
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
