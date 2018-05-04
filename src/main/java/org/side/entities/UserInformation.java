@@ -5,10 +5,13 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,6 +23,8 @@ public class UserInformation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(generator = "uuid")
+	@GenericGenerator(name = "uuid1", strategy = "uuid2")
 	private String idUser;
 	private String accountName;
 	private String status;

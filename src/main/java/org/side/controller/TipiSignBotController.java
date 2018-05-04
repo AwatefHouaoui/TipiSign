@@ -169,36 +169,46 @@ public class TipiSignBotController {
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("JSONObject**************" + jsonResult);
 		logger.info("staaaaatuuuuuuuus**************" + status);
-		
+
 		mainUser = userInformationRepository.findOne(idUser);
 
 		if (mainUser == null) {
 
-			mainUser = userInformationRepository.findUserByAccountName(customerMessage.toLowerCase());
-
-			if (mainUser == null) {
-				textMessage = new TextMessage(
-						"Can you please give me your account name as registred in TipiSign account: ");
-				pushMessage = new PushMessage(idUser, textMessage);
-				try {
-					botApiResponse = client.pushMessage(pushMessage).get();
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-				}
-			} else {
-
-				mainUser.setIdUser(idUser);
-				userInformationRepository.saveAndFlush(mainUser);
-
-				textMessage = new TextMessage("Thank you! we have just added you to the TipiSign Bot.");
-				pushMessage = new PushMessage(idUser, textMessage);
-				try {
-					botApiResponse = client.pushMessage(pushMessage).get();
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-				}
-
+			textMessage = new TextMessage("Your Line ID : " + idUser);
+			pushMessage = new PushMessage(idUser, textMessage);
+			try {
+				botApiResponse = client.pushMessage(pushMessage).get();
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
 			}
+
+			// mainUser =
+			// userInformationRepository.findUserByAccountName(customerMessage.toLowerCase());
+			//
+			// if (mainUser == null) {
+			// textMessage = new TextMessage(
+			// "Can you please give me your account name as registred in TipiSign account:
+			// ");
+			// pushMessage = new PushMessage(idUser, textMessage);
+			// try {
+			// botApiResponse = client.pushMessage(pushMessage).get();
+			// } catch (InterruptedException | ExecutionException e) {
+			// e.printStackTrace();
+			// }
+			// } else {
+			//
+			// mainUser.setIdUser(idUser);
+			// userInformationRepository.saveAndFlush(mainUser);
+			//
+			// textMessage = new TextMessage("Thank you! we have just added you to the
+			// TipiSign Bot.");
+			// pushMessage = new PushMessage(idUser, textMessage);
+			// try {
+			// botApiResponse = client.pushMessage(pushMessage).get();
+			// } catch (InterruptedException | ExecutionException e) {
+			// e.printStackTrace();
+			// }
+			// }
 
 		} else {
 
