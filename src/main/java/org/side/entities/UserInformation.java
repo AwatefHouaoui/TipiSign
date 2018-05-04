@@ -24,7 +24,7 @@ public class UserInformation implements Serializable {
 
 	@Id
 	@GeneratedValue(generator = "uuid")
-	@GenericGenerator(name = "uuid1", strategy = "uuid2")
+	@GenericGenerator(name = "uuid", strategy = "uuid2")
 	private String idUser;
 	private String accountName;
 	private String status;
