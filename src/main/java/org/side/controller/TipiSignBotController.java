@@ -921,7 +921,7 @@ public class TipiSignBotController {
 
 								logger.info("approooooooooooooooved");
 
-								String approve = "https://image.ibb.co/d5Aayn/Webp_net_resizeimage_1.jpg";
+								String approve = "https://image.ibb.co/n4fnDn/Webp_net_resizeimage_4.jpg";
 								carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(approve,
 										messageSource.getMessage("title", null,
 												new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
@@ -971,7 +971,7 @@ public class TipiSignBotController {
 
 								logger.info("diiiiiiiiisapproooooooooooooooved");
 
-								String disapprove = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
+								String disapprove = "https://image.ibb.co/fZrKtn/Webp_net_resizeimage_3.jpg";
 								carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(disapprove,
 										messageSource.getMessage("title", null,
 												new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
@@ -1057,11 +1057,11 @@ public class TipiSignBotController {
 						switch (requests.get(i).getRequest().getStatus()) {
 
 						case "approved":
-							imageUrl = "https://image.ibb.co/d5Aayn/Webp_net_resizeimage_1.jpg";
+							imageUrl = "https://image.ibb.co/n4fnDn/Webp_net_resizeimage_4.jpg";
 							break;
 
 						case "disapproved":
-							imageUrl = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
+							imageUrl = "https://image.ibb.co/fZrKtn/Webp_net_resizeimage_3.jpg";
 							break;
 
 						default:
