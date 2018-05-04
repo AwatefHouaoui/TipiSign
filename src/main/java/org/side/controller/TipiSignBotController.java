@@ -174,7 +174,7 @@ public class TipiSignBotController {
 
 		if (mainUser == null) {
 
-			textMessage = new TextMessage("Your Line ID : " + idUser + "\n Check with administration.");
+			textMessage = new TextMessage("Your Line ID : " + idUser + "\nCheck with administration.");
 			pushMessage = new PushMessage(idUser, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
@@ -1032,9 +1032,11 @@ public class TipiSignBotController {
 
 			case "decision":
 
-				List<UserToUserRequest> requests = userToUserRequestRepository.findMyRequests(idUser);
-				listCarouselColumns = new ArrayList<>();
+				Page<UserToUserRequest> myRequests = userToUserRequestRepository.findMyRequests(idUser,
+						new PageRequest(0, 10));
+				List<UserToUserRequest> requests = myRequests.getContent();
 				int a = requests.size();
+				listCarouselColumns = new ArrayList<>();
 
 				if (a == 0) {
 
@@ -1050,47 +1052,24 @@ public class TipiSignBotController {
 					}
 
 				} else {
-					if (a < 10) {
-						for (int i = 0; i < a; i++) {
+					for (int i = 0; i < a; i++) {
 
-							switch (requests.get(i).getRequest().getStatus()) {
+						switch (requests.get(i).getRequest().getStatus()) {
 
-							case "approved":
-								imageUrl = "https://image.ibb.co/d5Aayn/Webp_net_resizeimage_1.jpg";
-								break;
+						case "approved":
+							imageUrl = "https://image.ibb.co/d5Aayn/Webp_net_resizeimage_1.jpg";
+							break;
 
-							case "disapproved":
-								imageUrl = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
-								break;
-							}
-
-							listCarouselColumns.add(new CarouselColumn(imageUrl,
-									"Request title: " + requests.get(i).getRequest().getTitleRequest(),
-									"TO: " + requests.get(i).getUserFrom().getAccountName(),
-									Arrays.asList(new PostbackAction(
-											"Request " + requests.get(i).getRequest().getStatus(), " "))));
+						case "disapproved":
+							imageUrl = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
+							break;
 						}
 
-					} else {
-						for (int i = 0; i < 10; i++) {
-
-							switch (requests.get(i).getRequest().getStatus()) {
-
-							case "approved":
-								imageUrl = "https://image.ibb.co/d5Aayn/Webp_net_resizeimage_1.jpg";
-								break;
-
-							case "disapproved":
-								imageUrl = "https://image.ibb.co/h3oOjS/Webp_net_resizeimage.jpg";
-								break;
-							}
-
-							listCarouselColumns.add(new CarouselColumn(imageUrl,
-									"Request title: " + requests.get(i).getRequest().getTitleRequest(),
-									"TO: " + requests.get(i).getUserFrom().getAccountName(),
-									Arrays.asList(new PostbackAction(
-											"Request " + requests.get(i).getRequest().getStatus(), " "))));
-						}
+						listCarouselColumns.add(new CarouselColumn(imageUrl,
+								"Request title: " + requests.get(i).getRequest().getTitleRequest(),
+								"TO: " + requests.get(i).getUserFrom().getAccountName(),
+								Arrays.asList(new PostbackAction("Request " + requests.get(i).getRequest().getStatus(),
+										" "))));
 					}
 				}
 
