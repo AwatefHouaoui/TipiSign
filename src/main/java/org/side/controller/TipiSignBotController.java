@@ -174,7 +174,7 @@ public class TipiSignBotController {
 
 		if (mainUser == null) {
 
-			textMessage = new TextMessage("Your Line ID : " + idUser);
+			textMessage = new TextMessage("Your Line ID : " + idUser + "\n Check with administration.");
 			pushMessage = new PushMessage(idUser, textMessage);
 			try {
 				botApiResponse = client.pushMessage(pushMessage).get();
