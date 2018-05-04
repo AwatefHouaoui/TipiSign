@@ -165,6 +165,11 @@ public class TipiSignBotController {
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
+		logger.info("in intente name ****** '{}'" + intentName);
+		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
+		logger.info("JSONObject**************" + jsonResult);
+		logger.info("staaaaatuuuuuuuus**************" + status);
+		
 		mainUser = userInformationRepository.findOne(idUser);
 
 		if (mainUser == null) {
@@ -181,16 +186,21 @@ public class TipiSignBotController {
 					e.printStackTrace();
 				}
 			} else {
+
 				mainUser.setIdUser(idUser);
-				userInformationRepository.save(mainUser);
+				userInformationRepository.saveAndFlush(mainUser);
+
+				textMessage = new TextMessage("Thank you! we have just added you to the TipiSign Bot.");
+				pushMessage = new PushMessage(idUser, textMessage);
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+
 			}
 
 		} else {
-
-			logger.info("in intente name ****** '{}'" + intentName);
-			logger.info("in resolved Query ****** '{}'" + resolvedQuery);
-			logger.info("JSONObject**************" + jsonResult);
-			logger.info("staaaaatuuuuuuuus**************" + status);
 
 			switch (intentName.toLowerCase()) {
 
