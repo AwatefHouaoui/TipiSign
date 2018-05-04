@@ -12,5 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface UserInformationRepository extends JpaRepository<UserInformation, String> {
 	@Query("select c from UserInformation c where c.accountName like :x and c.idUser != :idUser")
 	public Page<UserInformation> findUserByName(@Param("x") String userName, @Param("idUser") String idUser ,Pageable pageable);
+	
+	@Query("select c from UserInformation c where c.accountName like :x")
+    public UserInformation findUserByAccountName(@Param("x") String userName);
 
 }

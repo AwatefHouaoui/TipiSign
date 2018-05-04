@@ -37,5 +37,5 @@ public class UserInformationService {
 			@RequestParam(name = "size", defaultValue = "3") int size) {
 		return userInformationRepository.findUserByName("%" + accountName + "%", idUser, new PageRequest(numPage, size));
 	}
-
+	
 }

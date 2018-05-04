@@ -165,7 +165,27 @@ public class TipiSignBotController {
 
 		LinkedHashMap<String, String> hm = new LinkedHashMap<>();
 
-		mainUser = userInformationRepository.findOne(idUser);
+		try {
+			mainUser = userInformationRepository.findOne(idUser);
+		} catch (IllegalArgumentException ex) {
+
+			try {
+				mainUser = userInformationRepository.findUserByAccountName(customerMessage.toLowerCase());
+				mainUser.setIdUser(idUser);
+				userInformationRepository.save(mainUser);
+			} catch (IllegalArgumentException exc) {
+
+				textMessage = new TextMessage(
+						"Can you please give me your account name as registred in TipiSign account: ");
+				pushMessage = new PushMessage(idUser, textMessage);
+				try {
+					botApiResponse = client.pushMessage(pushMessage).get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("JSONObject**************" + jsonResult);
@@ -977,7 +997,6 @@ public class TipiSignBotController {
 					}
 					logger.info("Decision already taken! The request is ****************" + r.getStatus());
 				}
-
 			}
 
 			break;
@@ -1000,6 +1019,7 @@ public class TipiSignBotController {
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
+
 			} else {
 				if (a < 10) {
 					for (int i = 0; i < a; i++) {
@@ -1045,10 +1065,10 @@ public class TipiSignBotController {
 				}
 			}
 
-			CarouselTemplate carouselTemplate1 = new CarouselTemplate(listCarouselColumns);
-			TemplateMessage templateMessage2 = new TemplateMessage("Check decision", carouselTemplate1);
-			PushMessage pushMessage2 = new PushMessage(idUser, templateMessage2);
-			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage2).execute();
+			CarouselTemplate carouselTemplate = new CarouselTemplate(listCarouselColumns);
+			TemplateMessage templateMessage = new TemplateMessage("Check decision", carouselTemplate);
+			pushMessage = new PushMessage(idUser, templateMessage);
+			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 			logger.info("osaka :" + customerMessage);
 
 			break;
@@ -1056,7 +1076,7 @@ public class TipiSignBotController {
 		case "carousel":
 
 			String imageUrl1 = createUri("/static/buttons/1040.jpg");
-			CarouselTemplate carouselTemplate = new CarouselTemplate(Arrays.asList(
+			CarouselTemplate carouselTemplate1 = new CarouselTemplate(Arrays.asList(
 					new CarouselColumn(imageUrl1, "hoge", "fuga",
 							Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
 									new URIAction("Go to line.me", "https://line.me"),
@@ -1073,8 +1093,8 @@ public class TipiSignBotController {
 											"2100-12-31", "1900-01-01"),
 									new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15", "23:59",
 											"00:00")))));
-			TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
-			PushMessage pushMessage1 = new PushMessage(idUser, templateMessage);
+			TemplateMessage templateMessage1 = new TemplateMessage("Carousel alt text", carouselTemplate1);
+			PushMessage pushMessage1 = new PushMessage(idUser, templateMessage1);
 			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
 			logger.info("osaka :" + customerMessage);
 
