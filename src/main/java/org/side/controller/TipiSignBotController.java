@@ -632,7 +632,10 @@ public class TipiSignBotController {
 
 				default:
 
-					lineProgressRepository.delete(lineProgress);
+					if (lineProgress != null) {
+						lineProgressRepository.delete(lineProgress);
+					}
+					
 					textMessage = new TextMessage(messageSource.getMessage("default", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())));
 					pushMessage = new PushMessage(idUser, textMessage);
@@ -1072,7 +1075,7 @@ public class TipiSignBotController {
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
 								"Request title: " + requests.get(i).getRequest().getTitleRequest(),
-								"TO: " + requests.get(i).getUserFrom().getAccountName(),
+								"TO : " + requests.get(i).getUserFrom().getAccountName(),
 								Arrays.asList(new PostbackAction("Request " + requests.get(i).getRequest().getStatus(),
 										" "))));
 					}
