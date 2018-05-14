@@ -635,7 +635,7 @@ public class TipiSignBotController {
 					if (lineProgress != null) {
 						lineProgressRepository.delete(lineProgress);
 					}
-					
+
 					textMessage = new TextMessage(messageSource.getMessage("default", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())));
 					pushMessage = new PushMessage(idUser, textMessage);
@@ -675,13 +675,14 @@ public class TipiSignBotController {
 					userToUserRequest.setRequest(request);
 					userToUserRequest.setUserFrom(mainUser);
 					userToUserRequest.setUserTo(toUser);
+					userToUserRequest.setOldIdRequest(request.getIdRequest());
 					userToUserRequestRepository.save(userToUserRequest);
 
 					logRequest = new LogRequest();
 					logRequest.setTitle(titleRequest);
 					logRequest.setDetail(detailRequest);
 					logRequest.setCreatedAt(convertToTimestamp(timestamp));
-					logRequest.setIdRequest(request.getIdRequest());
+					logRequest.setOldIdRequest(request.getIdRequest());
 					logRequest.setStatusRequest(request.getStatus());
 					logRequest.setFromUser(idUser);
 					logRequest.setToUser(toUser.getIdUser());
@@ -909,7 +910,7 @@ public class TipiSignBotController {
 								logRequest.setTitle(r.getTitleRequest());
 								logRequest.setDetail(r.getDetailRequest());
 								logRequest.setCreatedAt(convertToTimestamp(timestamp));
-								logRequest.setIdRequest(r.getIdRequest());
+								logRequest.setOldIdRequest(u.getOldIdRequest());
 								logRequest.setStatusRequest("approved");
 								logRequest.setFromUser(u.getUserFrom().getIdUser());
 								logRequest.setToUser(u.getUserTo().getIdUser());
@@ -918,7 +919,7 @@ public class TipiSignBotController {
 								logDecision = new LogDecision();
 								logDecision.setCreatedAt(convertToTimestamp(timestamp));
 								logDecision.setStatus("approved");
-								logDecision.setIdRequest(r.getIdRequest());
+								logDecision.setOldIdRequest(u.getOldIdRequest());
 								logDecision.setFromUser(u.getUserFrom().getIdUser());
 								logDecision.setToUser(u.getUserTo().getIdUser());
 
@@ -959,7 +960,7 @@ public class TipiSignBotController {
 								logRequest.setTitle(r.getTitleRequest());
 								logRequest.setDetail(r.getDetailRequest());
 								logRequest.setCreatedAt(convertToTimestamp(timestamp));
-								logRequest.setIdRequest(r.getIdRequest());
+								logRequest.setOldIdRequest(u.getOldIdRequest());
 								logRequest.setStatusRequest("disapproved");
 								logRequest.setFromUser(u.getUserFrom().getIdUser());
 								logRequest.setToUser(u.getUserTo().getIdUser());
@@ -968,7 +969,7 @@ public class TipiSignBotController {
 								logDecision = new LogDecision();
 								logDecision.setCreatedAt(convertToTimestamp(timestamp));
 								logDecision.setStatus("disapproved");
-								logDecision.setIdRequest(r.getIdRequest());
+								logDecision.setOldIdRequest(u.getOldIdRequest());
 								logDecision.setFromUser(u.getUserFrom().getIdUser());
 								logDecision.setToUser(u.getUserTo().getIdUser());
 
@@ -1116,49 +1117,50 @@ public class TipiSignBotController {
 
 				break;
 
-			case "menu":
+			// case "menu":
+			//
+			// hm.put("Osaka", "osaka");
+			// hm.put("Tokyo", "tokyo");
+			// hm.put("London", "london");
+			// typeBRecursiveChoices(
+			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+			// " boldTitle", " normalTitle", hm, TOKEN, idUser);
+			// logger.info("paris :" + customerMessage);
+			//
+			// break;
 
-				hm.put("Osaka", "osaka");
-				hm.put("Tokyo", "tokyo");
-				hm.put("London", "london");
-				typeBRecursiveChoices(
-						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-						" boldTitle", " normalTitle", hm, TOKEN, idUser);
-				logger.info("paris :" + customerMessage);
+			// case "type b":
+			//
+			// hm.put("Osaka", "osaka");
+			// hm.put("Tokyo", "tokyo");
+			// typeBRecursiveChoices(
+			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+			// " boldTitle", " normalTitle", hm, TOKEN, idUser);
+			// logger.info("see more :", customerMessage);
+			//
+			// break;
 
-				break;
+			// case "b2":
+			//
+			// hm = new LinkedHashMap<>();
+			// hm.put("Osaka", "osaka");
+			// hm.put("Tokyo", "tokyo");
+			// hm.put("London", "london");
+			// typeBChoices(
+			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+			// " boldTitle", " normalTitle", hm, "Next or see more", "Next or see more
+			// answer", TOKEN, idUser);
+			// logger.info("London :", customerMessage);
+			//
+			// break;
 
-			case "type b":
-
-				hm.put("Osaka", "osaka");
-				hm.put("Tokyo", "tokyo");
-				typeBRecursiveChoices(
-						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-						" boldTitle", " normalTitle", hm, TOKEN, idUser);
-				logger.info("see more :", customerMessage);
-
-				break;
-
-			case "b2":
-
-				hm = new LinkedHashMap<>();
-				hm.put("Osaka", "osaka");
-				hm.put("Tokyo", "tokyo");
-				hm.put("London", "london");
-				typeBChoices(
-						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-						" boldTitle", " normalTitle", hm, "Next or see more", "Next or see more answer", TOKEN, idUser);
-				logger.info("London :", customerMessage);
-
-				break;
-
-			case "date":
-
-				typeDQuestion(
-						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-						TOKEN, idUser);
-
-				break;
+			// case "date":
+			//
+			// typeDQuestion(
+			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+			// TOKEN, idUser);
+			//
+			// break;
 
 			default:
 

@@ -19,6 +19,7 @@ public class UserToUserRequest implements Serializable {
 	private Request request;
 	private UserInformation userFrom;
 	private UserInformation userTo;
+	private long oldIdRequest;
 
 	public UserToUserRequest() {
 		super();
@@ -65,4 +66,11 @@ public class UserToUserRequest implements Serializable {
 		this.userTo = userTo;
 	}
 
+	public long getOldIdRequest() {
+		return oldIdRequest;
+	}
+
+	public void setOldIdRequest(long oldIdRequest) {
+		this.oldIdRequest = oldIdRequest;
+	}
 }
