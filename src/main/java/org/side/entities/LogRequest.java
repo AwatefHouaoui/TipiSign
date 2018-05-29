@@ -18,7 +18,7 @@ public class LogRequest implements Serializable{
 	private String title;
 	private String detail;
 	private Timestamp createdAt;
-	private long oldIdRequest;
+	private long idRequest;
 	private String statusRequest;
 	private String fromUser;
 	private String toUser;
@@ -59,12 +59,12 @@ public class LogRequest implements Serializable{
 		this.createdAt = createdAt;
 	}
 
-	public long getOldIdRequest() {
-		return oldIdRequest;
+	public long getIdRequest() {
+		return idRequest;
 	}
 
-	public void setOldIdRequest(long oldIdRequest) {
-		this.oldIdRequest = oldIdRequest;
+	public void setIdRequest(long idRequest) {
+		this.idRequest = idRequest;
 	}
 
 	public String getStatusRequest() {

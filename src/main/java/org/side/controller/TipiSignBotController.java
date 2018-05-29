@@ -696,7 +696,7 @@ public class TipiSignBotController {
 					logRequest.setTitle(titleRequest);
 					logRequest.setDetail(detailRequest);
 					logRequest.setCreatedAt(convertToTimestamp(timestamp));
-					logRequest.setOldIdRequest(request.getIdRequest());
+					logRequest.setIdRequest(request.getIdRequest());
 					logRequest.setStatusRequest(request.getStatus());
 					logRequest.setFromUser(idUser);
 					logRequest.setToUser(toUser.getIdUser());
@@ -924,7 +924,7 @@ public class TipiSignBotController {
 								logRequest.setTitle(r.getTitleRequest());
 								logRequest.setDetail(r.getDetailRequest());
 								logRequest.setCreatedAt(convertToTimestamp(timestamp));
-								logRequest.setOldIdRequest(u.getOldIdRequest());
+								logRequest.setIdRequest(u.getOldIdRequest());
 								logRequest.setStatusRequest("approved");
 								logRequest.setFromUser(u.getUserFrom().getIdUser());
 								logRequest.setToUser(u.getUserTo().getIdUser());
@@ -933,7 +933,7 @@ public class TipiSignBotController {
 								logDecision = new LogDecision();
 								logDecision.setCreatedAt(convertToTimestamp(timestamp));
 								logDecision.setStatus("approved");
-								logDecision.setOldIdRequest(u.getOldIdRequest());
+								logDecision.setIdRequest(u.getOldIdRequest());
 								logDecision.setFromUser(u.getUserFrom().getIdUser());
 								logDecision.setToUser(u.getUserTo().getIdUser());
 
@@ -974,7 +974,7 @@ public class TipiSignBotController {
 								logRequest.setTitle(r.getTitleRequest());
 								logRequest.setDetail(r.getDetailRequest());
 								logRequest.setCreatedAt(convertToTimestamp(timestamp));
-								logRequest.setOldIdRequest(u.getOldIdRequest());
+								logRequest.setIdRequest(u.getOldIdRequest());
 								logRequest.setStatusRequest("disapproved");
 								logRequest.setFromUser(u.getUserFrom().getIdUser());
 								logRequest.setToUser(u.getUserTo().getIdUser());
@@ -983,7 +983,7 @@ public class TipiSignBotController {
 								logDecision = new LogDecision();
 								logDecision.setCreatedAt(convertToTimestamp(timestamp));
 								logDecision.setStatus("disapproved");
-								logDecision.setOldIdRequest(u.getOldIdRequest());
+								logDecision.setIdRequest(u.getOldIdRequest());
 								logDecision.setFromUser(u.getUserFrom().getIdUser());
 								logDecision.setToUser(u.getUserTo().getIdUser());
 
@@ -1104,76 +1104,80 @@ public class TipiSignBotController {
 
 				break;
 
-//			case "carousel":
-//
-//				String imageUrl1 = createUri("/static/buttons/1040.jpg");
-//				CarouselTemplate carouselTemplate1 = new CarouselTemplate(Arrays.asList(
-//						new CarouselColumn(imageUrl1, "hoge", "fuga",
-//								Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
-//										new URIAction("Go to line.me", "https://line.me"),
-//										new PostbackAction("Say hello1", "hello こんにちは"))),
-//						new CarouselColumn(imageUrl1, "hoge", "fuga",
-//								Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
-//										new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
-//										new MessageAction("Say message", "Rice=米"))),
-//						new CarouselColumn(imageUrl1, "Datetime Picker", "Please select a date, time or datetime",
-//								Arrays.asList(
-//										new DatetimePickerAction("Datetime", "action=sel", "datetime",
-//												"2017-06-18T06:15", "2100-12-31T23:59", "1900-01-01T00:00"),
-//										new DatetimePickerAction("Date", "action=sel&only=date", "date", "2017-06-18",
-//												"2100-12-31", "1900-01-01"),
-//										new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15",
-//												"23:59", "00:00")))));
-//				TemplateMessage templateMessage1 = new TemplateMessage("Carousel alt text", carouselTemplate1);
-//				PushMessage pushMessage1 = new PushMessage(idUser, templateMessage1);
-//				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
-//				logger.info("osaka :" + customerMessage);
-//
-//				break;
-//
-//			case "menu":
-//
-//				hm.put("Osaka", "osaka");
-//				hm.put("Tokyo", "tokyo");
-//				hm.put("London", "london");
-//				typeBRecursiveChoices(
-//						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-//						" boldTitle", " normalTitle", hm, "", TOKEN, idUser);
-//				logger.info("paris :" + customerMessage);
-//
-//				break;
-//
-//			case "type b":
-//
-//				hm.put("Osaka", "osaka");
-//				hm.put("Tokyo", "tokyo");
-//				typeBRecursiveChoices(
-//						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-//						" boldTitle", " normalTitle", hm, "", TOKEN, idUser);
-//				logger.info("see more :", customerMessage);
-//
-//				break;
-//
-//			case "b2":
-//
-//				hm = new LinkedHashMap<>();
-//				hm.put("Osaka", "osaka");
-//				hm.put("Tokyo", "tokyo");
-//				hm.put("London", "london");
-//				typeBChoices(
-//						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-//						" boldTitle", " normalTitle", hm, "Next or see more", "Next or see more answer", TOKEN, idUser);
-//				logger.info("London :", customerMessage);
-//
-//				break;
-//
-//			case "date":
-//
-//				typeDQuestion(
-//						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-//						TOKEN, idUser);
-//
-//				break;
+			// case "carousel":
+			//
+			// String imageUrl1 = createUri("/static/buttons/1040.jpg");
+			// CarouselTemplate carouselTemplate1 = new CarouselTemplate(Arrays.asList(
+			// new CarouselColumn(imageUrl1, "hoge", "fuga",
+			// Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
+			// new URIAction("Go to line.me", "https://line.me"),
+			// new PostbackAction("Say hello1", "hello こんにちは"))),
+			// new CarouselColumn(imageUrl1, "hoge", "fuga",
+			// Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
+			// new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
+			// new MessageAction("Say message", "Rice=米"))),
+			// new CarouselColumn(imageUrl1, "Datetime Picker", "Please select a date, time
+			// or datetime",
+			// Arrays.asList(
+			// new DatetimePickerAction("Datetime", "action=sel", "datetime",
+			// "2017-06-18T06:15", "2100-12-31T23:59", "1900-01-01T00:00"),
+			// new DatetimePickerAction("Date", "action=sel&only=date", "date",
+			// "2017-06-18",
+			// "2100-12-31", "1900-01-01"),
+			// new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15",
+			// "23:59", "00:00")))));
+			// TemplateMessage templateMessage1 = new TemplateMessage("Carousel alt text",
+			// carouselTemplate1);
+			// PushMessage pushMessage1 = new PushMessage(idUser, templateMessage1);
+			// LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
+			// logger.info("osaka :" + customerMessage);
+			//
+			// break;
+			//
+			// case "menu":
+			//
+			// hm.put("Osaka", "osaka");
+			// hm.put("Tokyo", "tokyo");
+			// hm.put("London", "london");
+			// typeBRecursiveChoices(
+			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+			// " boldTitle", " normalTitle", hm, "", TOKEN, idUser);
+			// logger.info("paris :" + customerMessage);
+			//
+			// break;
+			//
+			// case "type b":
+			//
+			// hm.put("Osaka", "osaka");
+			// hm.put("Tokyo", "tokyo");
+			// typeBRecursiveChoices(
+			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+			// " boldTitle", " normalTitle", hm, "", TOKEN, idUser);
+			// logger.info("see more :", customerMessage);
+			//
+			// break;
+			//
+			// case "b2":
+			//
+			// hm = new LinkedHashMap<>();
+			// hm.put("Osaka", "osaka");
+			// hm.put("Tokyo", "tokyo");
+			// hm.put("London", "london");
+			// typeBChoices(
+			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+			// " boldTitle", " normalTitle", hm, "Next or see more", "Next or see more
+			// answer", TOKEN, idUser);
+			// logger.info("London :", customerMessage);
+			//
+			// break;
+			//
+			// case "date":
+			//
+			// typeDQuestion(
+			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+			// TOKEN, idUser);
+			//
+			// break;
 
 			default:
 

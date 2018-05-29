@@ -17,7 +17,7 @@ public class LogDecision implements Serializable{
 	private long idDecision;
 	private Timestamp createdAt;
 	private String status;
-	private long oldIdRequest;
+	private long idRequest;
 	private String fromUser;
 	private String toUser;
 	
@@ -49,12 +49,12 @@ public class LogDecision implements Serializable{
 		this.status = status;
 	}
 
-	public long getOldIdRequest() {
-		return oldIdRequest;
+	public long getIdRequest() {
+		return idRequest;
 	}
 
-	public void setOldIdRequest(long oldIdRequest) {
-		this.oldIdRequest = oldIdRequest;
+	public void setIdRequest(long idRequest) {
+		this.idRequest = idRequest;
 	}
 
 	public String getFromUser() {
