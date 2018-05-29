@@ -218,8 +218,10 @@ public class TipiSignBotController {
 
 				hm.put("English", "English");
 				hm.put("日本語", "日本語");
-				typeBRecursiveChoices(null, null, messageSource.getMessage("language.select", null,
-						new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+				typeBRecursiveChoices(null, null,
+						messageSource.getMessage("language.select", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())),
+						hm, "Choose Language", TOKEN, idUser);
 				logger.info("Choose a Language :" + customerMessage);
 
 				break;
@@ -318,8 +320,10 @@ public class TipiSignBotController {
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
 									messageSource.getMessage("receiver.not.available", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase())));
-							typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+							typeBRecursiveChoices(null, null,
+									messageSource.getMessage("receiver.possibility", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									hm, "", TOKEN, idUser);
 
 							lineProgress.setStatusLine("receiverchosen");
 							lineProgressRepository.save(lineProgress);
@@ -344,8 +348,10 @@ public class TipiSignBotController {
 											new Locale(mainUser.getSystemLanguage().toLowerCase())));
 							numPage++;
 
-							typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+							typeBRecursiveChoices(null, null,
+									messageSource.getMessage("receiver.possibility", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									hm, "", TOKEN, idUser);
 
 							lineProgress.setStatusLine("receiverchosen");
 							lineProgressRepository.save(lineProgress);
@@ -421,8 +427,10 @@ public class TipiSignBotController {
 												new Locale(mainUser.getSystemLanguage().toLowerCase())));
 								numPage++;
 							}
-							typeBRecursiveChoices(null, null, messageSource.getMessage("receiver.possibility", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+							typeBRecursiveChoices(null, null,
+									messageSource.getMessage("receiver.possibility", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									hm, "", TOKEN, idUser);
 
 						} else {
 
@@ -529,8 +537,10 @@ public class TipiSignBotController {
 							hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
 						}
 
-						typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
-								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+						typeBRecursiveChoices(null, null,
+								messageSource.getMessage("authority.select", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								hm, "Authority", TOKEN, idUser);
 						logger.info("Choose request authority :" + customerMessage);
 
 					} else {
@@ -547,8 +557,10 @@ public class TipiSignBotController {
 								messageSource.getMessage("see.more", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())));
 						num++;
-						typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
-								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+						typeBRecursiveChoices(null, null,
+								messageSource.getMessage("authority.select", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								hm, "Authority", TOKEN, idUser);
 						logger.info("Choose request authority :" + customerMessage);
 					}
 
@@ -577,8 +589,10 @@ public class TipiSignBotController {
 											new Locale(mainUser.getSystemLanguage().toLowerCase())));
 							num++;
 						}
-						typeBRecursiveChoices(null, null, messageSource.getMessage("authority.select", null,
-								new Locale(mainUser.getSystemLanguage().toLowerCase())), hm, TOKEN, idUser);
+						typeBRecursiveChoices(null, null,
+								messageSource.getMessage("authority.select", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								hm, "Authority", TOKEN, idUser);
 						logger.info("Choose request authority :" + customerMessage);
 
 					} else {
@@ -706,7 +720,7 @@ public class TipiSignBotController {
 									new Locale(mainUser.getSystemLanguage().toLowerCase())) + titleRequest,
 							messageSource.getMessage("sender", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())) + mainUser.getAccountName(),
-							hm, TOKEN, toUser.getIdUser());
+							hm, "New request", TOKEN, toUser.getIdUser());
 					logger.info("request sent to:" + toUser.getAccountName());
 
 					textMessage = new TextMessage(messageSource.getMessage("request.send", null,
@@ -852,7 +866,7 @@ public class TipiSignBotController {
 									"Yes Approve " + r.getIdRequest(),
 									messageSource.getMessage("no.cancel", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									"No Cancel " + r.getIdRequest(), "Confirm", TOKEN, idUser);
+									"No Cancel " + r.getIdRequest(), "Approve", TOKEN, idUser);
 
 							break;
 
@@ -867,7 +881,7 @@ public class TipiSignBotController {
 									"Yes Disapprove " + r.getIdRequest(),
 									messageSource.getMessage("no.cancel", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									"No Cancel " + r.getIdRequest(), "Confirm", TOKEN, idUser);
+									"No Cancel " + r.getIdRequest(), "Disapprove", TOKEN, idUser);
 
 							break;
 
@@ -893,7 +907,7 @@ public class TipiSignBotController {
 									"Approve request " + r.getIdRequest(),
 									messageSource.getMessage("disapprove", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									"Disapprove request " + r.getIdRequest(), "Confirm", TOKEN, idUser);
+									"Disapprove request " + r.getIdRequest(), "Detail", TOKEN, idUser);
 
 							break;
 
@@ -1090,77 +1104,76 @@ public class TipiSignBotController {
 
 				break;
 
-			case "carousel":
-
-				String imageUrl1 = createUri("/static/buttons/1040.jpg");
-				CarouselTemplate carouselTemplate1 = new CarouselTemplate(Arrays.asList(
-						new CarouselColumn(imageUrl1, "hoge", "fuga",
-								Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
-										new URIAction("Go to line.me", "https://line.me"),
-										new PostbackAction("Say hello1", "hello こんにちは"))),
-						new CarouselColumn(imageUrl1, "hoge", "fuga",
-								Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
-										new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
-										new MessageAction("Say message", "Rice=米"))),
-						new CarouselColumn(imageUrl1, "Datetime Picker", "Please select a date, time or datetime",
-								Arrays.asList(
-										new DatetimePickerAction("Datetime", "action=sel", "datetime",
-												"2017-06-18T06:15", "2100-12-31T23:59", "1900-01-01T00:00"),
-										new DatetimePickerAction("Date", "action=sel&only=date", "date", "2017-06-18",
-												"2100-12-31", "1900-01-01"),
-										new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15",
-												"23:59", "00:00")))));
-				TemplateMessage templateMessage1 = new TemplateMessage("Carousel alt text", carouselTemplate1);
-				PushMessage pushMessage1 = new PushMessage(idUser, templateMessage1);
-				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
-				logger.info("osaka :" + customerMessage);
-
-				break;
-
-			// case "menu":
-			//
-			// hm.put("Osaka", "osaka");
-			// hm.put("Tokyo", "tokyo");
-			// hm.put("London", "london");
-			// typeBRecursiveChoices(
-			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-			// " boldTitle", " normalTitle", hm, TOKEN, idUser);
-			// logger.info("paris :" + customerMessage);
-			//
-			// break;
-
-			// case "type b":
-			//
-			// hm.put("Osaka", "osaka");
-			// hm.put("Tokyo", "tokyo");
-			// typeBRecursiveChoices(
-			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-			// " boldTitle", " normalTitle", hm, TOKEN, idUser);
-			// logger.info("see more :", customerMessage);
-			//
-			// break;
-
-			// case "b2":
-			//
-			// hm = new LinkedHashMap<>();
-			// hm.put("Osaka", "osaka");
-			// hm.put("Tokyo", "tokyo");
-			// hm.put("London", "london");
-			// typeBChoices(
-			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-			// " boldTitle", " normalTitle", hm, "Next or see more", "Next or see more
-			// answer", TOKEN, idUser);
-			// logger.info("London :", customerMessage);
-			//
-			// break;
-
-			// case "date":
-			//
-			// typeDQuestion(
-			// "https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
-			// TOKEN, idUser);
-			//
-			// break;
+//			case "carousel":
+//
+//				String imageUrl1 = createUri("/static/buttons/1040.jpg");
+//				CarouselTemplate carouselTemplate1 = new CarouselTemplate(Arrays.asList(
+//						new CarouselColumn(imageUrl1, "hoge", "fuga",
+//								Arrays.asList(new URIAction("Go to line.me", "https://line.me"),
+//										new URIAction("Go to line.me", "https://line.me"),
+//										new PostbackAction("Say hello1", "hello こんにちは"))),
+//						new CarouselColumn(imageUrl1, "hoge", "fuga",
+//								Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
+//										new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"),
+//										new MessageAction("Say message", "Rice=米"))),
+//						new CarouselColumn(imageUrl1, "Datetime Picker", "Please select a date, time or datetime",
+//								Arrays.asList(
+//										new DatetimePickerAction("Datetime", "action=sel", "datetime",
+//												"2017-06-18T06:15", "2100-12-31T23:59", "1900-01-01T00:00"),
+//										new DatetimePickerAction("Date", "action=sel&only=date", "date", "2017-06-18",
+//												"2100-12-31", "1900-01-01"),
+//										new DatetimePickerAction("Time", "action=sel&only=time", "time", "06:15",
+//												"23:59", "00:00")))));
+//				TemplateMessage templateMessage1 = new TemplateMessage("Carousel alt text", carouselTemplate1);
+//				PushMessage pushMessage1 = new PushMessage(idUser, templateMessage1);
+//				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage1).execute();
+//				logger.info("osaka :" + customerMessage);
+//
+//				break;
+//
+//			case "menu":
+//
+//				hm.put("Osaka", "osaka");
+//				hm.put("Tokyo", "tokyo");
+//				hm.put("London", "london");
+//				typeBRecursiveChoices(
+//						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+//						" boldTitle", " normalTitle", hm, "", TOKEN, idUser);
+//				logger.info("paris :" + customerMessage);
+//
+//				break;
+//
+//			case "type b":
+//
+//				hm.put("Osaka", "osaka");
+//				hm.put("Tokyo", "tokyo");
+//				typeBRecursiveChoices(
+//						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+//						" boldTitle", " normalTitle", hm, "", TOKEN, idUser);
+//				logger.info("see more :", customerMessage);
+//
+//				break;
+//
+//			case "b2":
+//
+//				hm = new LinkedHashMap<>();
+//				hm.put("Osaka", "osaka");
+//				hm.put("Tokyo", "tokyo");
+//				hm.put("London", "london");
+//				typeBChoices(
+//						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+//						" boldTitle", " normalTitle", hm, "Next or see more", "Next or see more answer", TOKEN, idUser);
+//				logger.info("London :", customerMessage);
+//
+//				break;
+//
+//			case "date":
+//
+//				typeDQuestion(
+//						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170",
+//						TOKEN, idUser);
+//
+//				break;
 
 			default:
 
@@ -1362,7 +1375,7 @@ public class TipiSignBotController {
 	}
 
 	public void typeBRecursiveChoices(String imageURL, String boldTitle, String normalTitle, Map<String, String> hm,
-			String TOKEN, String idUser) throws IOException {
+			String title, String TOKEN, String idUser) throws IOException {
 		List<Action> messageActions = new ArrayList<>();
 		hm.size();
 		if (hm.size() <= 4) {
@@ -1373,7 +1386,7 @@ public class TipiSignBotController {
 			// messageActions.add(new MessageAction("N/A", "not available"));
 			ButtonsTemplate buttonsTemplate = new ButtonsTemplate(imageURL, boldTitle, normalTitle, messageActions);
 
-			TemplateMessage templateMessage = new TemplateMessage("New Request", buttonsTemplate);
+			TemplateMessage templateMessage = new TemplateMessage(title, buttonsTemplate);
 			PushMessage pushMessage = new PushMessage(idUser, templateMessage);
 			LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
 
