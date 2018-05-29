@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -54,7 +53,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.bot.model.PushMessage;
@@ -77,7 +75,6 @@ import com.linecorp.bot.model.message.template.ConfirmTemplate;
 import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
-
 import lombok.extern.slf4j.Slf4j;
 import retrofit2.Response;
 
@@ -1072,21 +1069,21 @@ public class TipiSignBotController {
 				} else {
 					for (int i = 0; i < a; i++) {
 
-						switch (requests.get(i).getRequest().getStatus()) {
+						// switch (requests.get(i).getRequest().getStatus()) {
 
-						case "approved":
-							imageUrl = "https://image.ibb.co/n4fnDn/Webp_net_resizeimage_4.jpg";
-							break;
-
-						case "disapproved":
-							imageUrl = "https://image.ibb.co/fZrKtn/Webp_net_resizeimage_3.jpg";
-							break;
-
-						default:
-							imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
-									+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
-							break;
-						}
+						// case "approved":
+						// imageUrl = "https://image.ibb.co/n4fnDn/Webp_net_resizeimage_4.jpg";
+						// break;
+						//
+						// case "disapproved":
+						// imageUrl = "https://image.ibb.co/fZrKtn/Webp_net_resizeimage_3.jpg";
+						// break;
+						//
+						// default:
+						imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+								+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
+						// break;
+						// }
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
 								"Request title: " + requests.get(i).getRequest().getTitleRequest(),
