@@ -1144,6 +1144,19 @@ public class TipiSignBotController {
 
 				break;
 
+			case "test":
+
+				String imageUrl2 = createUri(
+						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170");
+				CarouselTemplate carouselTemplate2 = new CarouselTemplate(
+						Arrays.asList(new CarouselColumn(imageUrl2, "test", "teeeeeest", Arrays.asList(
+								new URIAction("Go to the link", "https://mt.hrdatabank.com/guestApply/MTIyNjc=")))));
+				TemplateMessage templateMessage2 = new TemplateMessage("Carousel alt text", carouselTemplate2);
+				PushMessage pushMessage2 = new PushMessage(idUser, templateMessage2);
+				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage2).execute();
+
+				break;
+
 			case "type b":
 
 				hm.put("Osaka", "osaka");
