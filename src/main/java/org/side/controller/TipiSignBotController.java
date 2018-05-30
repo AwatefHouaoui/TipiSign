@@ -268,7 +268,7 @@ public class TipiSignBotController {
 				customerMessage = customerMessage.toLowerCase();
 				logger.info("customer Message in lower case : " + customerMessage);
 
-				switch (status) {
+				switch (lineProgress.getStatusLine()) {
 
 				case "Default":
 
@@ -699,8 +699,8 @@ public class TipiSignBotController {
 					logRequest.setCreatedAt(convertToTimestamp(timestamp));
 					logRequest.setIdRequest(request.getIdRequest());
 					logRequest.setStatusRequest(request.getStatus());
-					logRequest.setFromUser(idUser);
-					logRequest.setToUser(toUser.getIdUser());
+					logRequest.setFromUser(mainUser.getAccountName());
+					logRequest.setToUser(toUser.getAccountName());
 					logRequestRepository.save(logRequest);
 
 					imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
@@ -927,16 +927,16 @@ public class TipiSignBotController {
 								logRequest.setCreatedAt(convertToTimestamp(timestamp));
 								logRequest.setIdRequest(u.getOldIdRequest());
 								logRequest.setStatusRequest("approved");
-								logRequest.setFromUser(u.getUserFrom().getIdUser());
-								logRequest.setToUser(u.getUserTo().getIdUser());
+								logRequest.setFromUser(u.getUserFrom().getAccountName());
+								logRequest.setToUser(u.getUserTo().getAccountName());
 								logRequestRepository.save(logRequest);
 
 								logDecision = new LogDecision();
 								logDecision.setCreatedAt(convertToTimestamp(timestamp));
 								logDecision.setStatus("approved");
 								logDecision.setIdRequest(u.getOldIdRequest());
-								logDecision.setFromUser(u.getUserFrom().getIdUser());
-								logDecision.setToUser(u.getUserTo().getIdUser());
+								logDecision.setFromUser(u.getUserFrom().getAccountName());
+								logDecision.setToUser(u.getUserTo().getAccountName());
 
 								logger.info("approooooooooooooooved");
 
@@ -977,16 +977,16 @@ public class TipiSignBotController {
 								logRequest.setCreatedAt(convertToTimestamp(timestamp));
 								logRequest.setIdRequest(u.getOldIdRequest());
 								logRequest.setStatusRequest("disapproved");
-								logRequest.setFromUser(u.getUserFrom().getIdUser());
-								logRequest.setToUser(u.getUserTo().getIdUser());
+								logRequest.setFromUser(u.getUserFrom().getAccountName());
+								logRequest.setToUser(u.getUserTo().getAccountName());
 								logRequestRepository.save(logRequest);
 
 								logDecision = new LogDecision();
 								logDecision.setCreatedAt(convertToTimestamp(timestamp));
 								logDecision.setStatus("disapproved");
 								logDecision.setIdRequest(u.getOldIdRequest());
-								logDecision.setFromUser(u.getUserFrom().getIdUser());
-								logDecision.setToUser(u.getUserTo().getIdUser());
+								logDecision.setFromUser(u.getUserFrom().getAccountName());
+								logDecision.setToUser(u.getUserTo().getAccountName());
 
 								logger.info("diiiiiiiiisapproooooooooooooooved");
 
@@ -1148,9 +1148,9 @@ public class TipiSignBotController {
 
 				String imageUrl2 = createUri(
 						"https://lh3.googleusercontent.com/oKsgcsHtHu_nIkpNd-mNCAyzUD8xo68laRPOfvFuO0hqv6nDXVNNjEMmoiv9tIDgTj8=w170");
-				CarouselTemplate carouselTemplate2 = new CarouselTemplate(
-						Arrays.asList(new CarouselColumn(imageUrl2, "test", "teeeeeest", Arrays.asList(
-								new URIAction("Go to the link", "https://mt.hrdatabank.com/guestApply/MTIyNjc=")))));
+				CarouselTemplate carouselTemplate2 = new CarouselTemplate(Arrays.asList(
+						new CarouselColumn(imageUrl2, "test", "teeeeeest", Arrays.asList(new URIAction("Go to the link",
+								"line://msg/text/?このアルバイト%C2%A0おうぼ%C2%A0してみない？%0D%0A%0D%0Ahttps://mt.hrdatabank.com/guestApply/MTIyNjc=")))));
 				TemplateMessage templateMessage2 = new TemplateMessage("Carousel alt text", carouselTemplate2);
 				PushMessage pushMessage2 = new PushMessage(idUser, templateMessage2);
 				LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage2).execute();
