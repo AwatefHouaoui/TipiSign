@@ -606,7 +606,10 @@ public class TipiSignBotController {
 								logger.info("authoooooooooooooooooooorityyyyyyyyyy*************"
 										+ authorityCont.get(i).getAuthority().toLowerCase());
 								visibility = authorityCont.get(i).getRanking();
+								logger.info("visiibilityyyyyyyyyyyy*********************" + visibility);
 								roleId = authorityCont.get(i).getAuthorityId();
+								logger.info("id*******************************"+ roleId);
+								
 							}
 						}
 
