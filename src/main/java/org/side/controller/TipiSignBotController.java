@@ -320,7 +320,7 @@ public class TipiSignBotController {
 							typeBRecursiveChoices(null, null,
 									messageSource.getMessage("receiver.possibility", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									hm, "", TOKEN, idUser);
+									hm, "receiver", TOKEN, idUser);
 
 							lineProgress.setStatusLine("receiverchosen");
 							lineProgressRepository.save(lineProgress);
