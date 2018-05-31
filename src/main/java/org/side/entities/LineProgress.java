@@ -24,8 +24,13 @@ public class LineProgress implements Serializable {
 	@JsonIgnoreProperties({ "status", "email", "emailVerified", "password", "createdAt", "lastLogin",
 			"systemLanguage", "initialSetting", "authority", "lineProgresses", "Requests" })
 	private UserInformation userLine;
-
 	private String statusLine = "Default";
+	private String tiltleRequest;
+	private String detailRequest;
+	private Authority authority;
+	private UserInformation userTo;
+	private String name;
+	private int nbr = 0;
 
 	public LineProgress() {
 		super();
@@ -61,4 +66,53 @@ public class LineProgress implements Serializable {
 		this.idProgress = idProgress;
 	}
 
+	public String getTiltleRequest() {
+		return tiltleRequest;
+	}
+
+	public void setTiltleRequest(String tiltleRequest) {
+		this.tiltleRequest = tiltleRequest;
+	}
+
+	public String getDetailRequest() {
+		return detailRequest;
+	}
+
+	public void setDetailRequest(String detailRequest) {
+		this.detailRequest = detailRequest;
+	}
+	
+	public Authority getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(Authority authority) {
+		this.authority = authority;
+	}
+
+	public UserInformation getUserTo() {
+		return userTo;
+	}
+
+	public void setUserTo(UserInformation userTo) {
+		this.userTo = userTo;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getNbr() {
+		return nbr;
+	}
+
+	public void setNbr(int nbr) {
+		this.nbr = nbr;
+	}
+	
+		
 }

@@ -123,23 +123,7 @@ public class TipiSignBotController {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).build().toUriString();
 	}
 
-	String titleRequest, detailRequest, name, status = "null", imageUrl;
-	String idUser;
-	long visibility, roleId, number;
-	int n, numPage, num, t;
-	UserInformation toUser, mainUser;
-	Request request;
-	UserToUserRequest userToUserRequest;
-	LineProgress lineProgress;
-	LogRequest logRequest;
-	LogDecision logDecision;
-	CarouselColumn carouselColumn;
-	CarouselTemplate carouselTemplate;
-	List<CarouselColumn> listCarouselColumns;
-	List<UserInformation> users;
-	Page<Authority> authority;
-	List<Authority> authorityCont;
-	Page<UserInformation> userpage;
+	int numPage, num;
 
 	@ResponseBody
 	@RequestMapping(value = "/webhook", method = RequestMethod.POST)
@@ -151,7 +135,7 @@ public class TipiSignBotController {
 		JSONObject data = rsl.getJSONObject("data");
 		JSONObject source = data.getJSONObject("source");
 		JSONObject message = data.getJSONObject("message");
-		idUser = source.getString("userId");
+		String idUser = source.getString("userId");
 		String customerMessage = message.getString("text");
 		String timestamp = jsonResult.getString("timestamp");
 		JSONObject result = jsonResult.getJSONObject("result");
@@ -165,9 +149,8 @@ public class TipiSignBotController {
 		logger.info("in intente name ****** '{}'" + intentName);
 		logger.info("in resolved Query ****** '{}'" + resolvedQuery);
 		logger.info("JSONObject**************" + jsonResult);
-		logger.info("staaaaatuuuuuuuus**************" + status);
 
-		mainUser = userInformationRepository.findOne(idUser);
+		UserInformation mainUser = userInformationRepository.findOne(idUser);
 
 		if (mainUser == null) {
 
@@ -246,10 +229,9 @@ public class TipiSignBotController {
 
 			case "request":
 
-				lineProgress = new LineProgress();
-				n = 0;
+				LineProgress lineProgress = new LineProgress();
 				lineProgress.setUserLine(mainUser);
-				status = lineProgress.getStatusLine();
+				lineProgressRepository.save(lineProgress);
 
 				textMessage = new TextMessage(messageSource.getMessage("receiver", null,
 						new Locale(mainUser.getSystemLanguage().toLowerCase())));
@@ -268,221 +250,197 @@ public class TipiSignBotController {
 				customerMessage = customerMessage.toLowerCase();
 				logger.info("customer Message in lower case : " + customerMessage);
 
-				switch (lineProgress.getStatusLine()) {
+				lineProgress = lineProgressRepository.findLineProgressByUser(idUser);
 
-				case "Default":
+				if (lineProgress != null) {
+					logger.info("LineProgress not nuuuuuuuuuuuuuuuuuuull ********************");
 
-					List<UserInformation> user = userInformationRepository
-							.findUserByName("%" + customerMessage + "%", idUser, null).getContent();
+					switch (lineProgress.getStatusLine()) {
 
-					logger.info("liiiiiiiiiiist users**************" + user);
-					int a = user.size();
+					case "Default":
 
-					if (a == 0) {
+						List<UserInformation> user = userInformationRepository
+								.findUserByName("%" + customerMessage + "%", idUser, null).getContent();
 
-						n++;
-						System.out.println("status*********" + status);
-						logger.info("receiver has noooooooot been chosen" + customerMessage);
-						if (n == 2) {
-							sendAlertViaSlack(idUser, timestamp, "User can't find the receiver ");
-							n = 0;
-							lineProgressRepository.delete(lineProgress);
-							textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())));
-							pushMessage = new PushMessage(idUser, textMessage);
-							try {
-								botApiResponse = client.pushMessage(pushMessage).get();
-							} catch (InterruptedException | ExecutionException e) {
-								e.printStackTrace();
+						int a = user.size();
+
+						if (a == 0) {
+
+							lineProgress.setNbr(lineProgress.getNbr() + 1);
+							lineProgressRepository.saveAndFlush(lineProgress);
+							System.out.println("status*********" + lineProgress.getStatusLine());
+							logger.info("receiver has noooooooot been chosen" + customerMessage);
+
+							if (lineProgress.getNbr() == 2) {
+								sendAlertViaSlack(idUser, timestamp, "User can't find the receiver ");
+								lineProgressRepository.delete(lineProgress);
+								textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
+								pushMessage = new PushMessage(idUser, textMessage);
+
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
+
+							} else {
+
+								textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
+								pushMessage = new PushMessage(idUser, textMessage);
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
 							}
-						} else {
-							textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())));
-							pushMessage = new PushMessage(idUser, textMessage);
-							try {
-								botApiResponse = client.pushMessage(pushMessage).get();
-							} catch (InterruptedException | ExecutionException e) {
-								e.printStackTrace();
-							}
-						}
-
-					} else {
-
-						if (a < 4) {
-
-							for (int i = 0; i < a; i++) {
-								hm.put(user.get(i).getAccountName(), user.get(i).getAccountName());
-							}
-							hm.put(messageSource.getMessage("receiver.not.available", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									messageSource.getMessage("receiver.not.available", null,
-											new Locale(mainUser.getSystemLanguage().toLowerCase())));
-							typeBRecursiveChoices(null, null,
-									messageSource.getMessage("receiver.possibility", null,
-											new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									hm, "receiver", TOKEN, idUser);
-
-							lineProgress.setStatusLine("receiverchosen");
-							lineProgressRepository.save(lineProgress);
-							status = lineProgress.getStatusLine();
-							System.out.println("status*********" + status);
 
 						} else {
 
-							numPage = 0;
-							userpage = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser,
-									new PageRequest(numPage, 3));
-							t = userpage.getTotalPages();
-							name = customerMessage;
-							users = userpage.getContent();
+							if (a < 4) {
 
-							for (int i = 0; i < 3; i++) {
-								hm.put(users.get(i).getAccountName(), users.get(i).getAccountName());
-							}
-							hm.put(messageSource.getMessage("see.more", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									messageSource.getMessage("see.more", null,
-											new Locale(mainUser.getSystemLanguage().toLowerCase())));
-							numPage++;
-
-							typeBRecursiveChoices(null, null,
-									messageSource.getMessage("receiver.possibility", null,
-											new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									hm, "receiver", TOKEN, idUser);
-
-							lineProgress.setStatusLine("receiverchosen");
-							lineProgressRepository.save(lineProgress);
-							status = lineProgress.getStatusLine();
-							System.out.println("status*********" + status);
-						}
-					}
-
-					break;
-
-				case "receiverchosen":
-
-					if (customerMessage.equals("not available") || customerMessage.equals("該当なし")) {
-
-						n++;
-						lineProgress.setStatusLine("Default");
-						lineProgressRepository.save(lineProgress);
-						status = lineProgress.getStatusLine();
-						System.out.println("status*********" + status);
-
-						if (n == 2) {
-
-							sendAlertViaSlack(idUser, timestamp, "User can't find the receiver " + customerMessage);
-							n = 0;
-							lineProgressRepository.delete(lineProgress);
-							textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())));
-							pushMessage = new PushMessage(idUser, textMessage);
-							try {
-								botApiResponse = client.pushMessage(pushMessage).get();
-							} catch (InterruptedException | ExecutionException e) {
-								e.printStackTrace();
-							}
-						} else {
-
-							textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())));
-							pushMessage = new PushMessage(idUser, textMessage);
-							try {
-								botApiResponse = client.pushMessage(pushMessage).get();
-							} catch (InterruptedException | ExecutionException e) {
-								e.printStackTrace();
-							}
-						}
-
-					} else {
-
-						if (customerMessage.equals("see more") || customerMessage.equals("もっと見る")) {
-
-							userpage = userInformationRepository.findUserByName("%" + name + "%", idUser,
-									new PageRequest(numPage, 3));
-							users = userpage.getContent();
-
-							if (numPage == (t - 1)) {
-
-								for (int i = 0; i < userpage.getNumberOfElements(); i++) {
-									hm.put(users.get(i).getAccountName(), users.get(i).getAccountName());
+								for (int i = 0; i < a; i++) {
+									hm.put(user.get(i).getAccountName(), user.get(i).getAccountName());
 								}
 
 								hm.put(messageSource.getMessage("receiver.not.available", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 										messageSource.getMessage("receiver.not.available", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase())));
-								numPage = 0;
+								typeBRecursiveChoices(null, null,
+										messageSource.getMessage("receiver.possibility", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase())),
+										hm, "receiver", TOKEN, idUser);
+
+								lineProgress.setStatusLine("receiverchosen");
+								lineProgressRepository.save(lineProgress);
+								System.out.println("status************************" + lineProgress.getStatusLine());
+
 							} else {
 
-								for (int i = 0; i < userpage.getNumberOfElements(); i++) {
+								numPage = 0;
+								Page<UserInformation> userpage = userInformationRepository.findUserByName(
+										"%" + customerMessage + "%", idUser, new PageRequest(numPage, 3));
+
+								List<UserInformation> users = userpage.getContent();
+
+								for (int i = 0; i < 3; i++) {
 									hm.put(users.get(i).getAccountName(), users.get(i).getAccountName());
 								}
+
 								hm.put(messageSource.getMessage("see.more", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
 										messageSource.getMessage("see.more", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase())));
 								numPage++;
+
+								typeBRecursiveChoices(null, null,
+										messageSource.getMessage("receiver.possibility", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase())),
+										hm, "receiver", TOKEN, idUser);
+
+								lineProgress.setStatusLine("receiverchosen");
+								lineProgress.setName(customerMessage);
+								lineProgressRepository.save(lineProgress);
+								System.out.println("status*********" + lineProgress.getStatusLine());
 							}
-							typeBRecursiveChoices(null, null,
-									messageSource.getMessage("receiver.possibility", null,
-											new Locale(mainUser.getSystemLanguage().toLowerCase())),
-									hm, "receiver", TOKEN, idUser);
+						}
+
+						break;
+
+					case "receiverchosen":
+
+						if (customerMessage.equals("not available") || customerMessage.equals("該当なし")) {
+
+							lineProgress.setNbr(lineProgress.getNbr() + 1);
+							lineProgress.setStatusLine("Default");
+							lineProgressRepository.saveAndFlush(lineProgress);
+							System.out.println("status*********" + lineProgress.getStatusLine());
+
+							if (lineProgress.getNbr() == 2) {
+
+								sendAlertViaSlack(idUser, timestamp, "User can't find the receiver " + customerMessage);
+								lineProgressRepository.delete(lineProgress);
+								textMessage = new TextMessage(messageSource.getMessage("receiver.not.found", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
+								pushMessage = new PushMessage(idUser, textMessage);
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
+
+							} else {
+
+								textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())));
+								pushMessage = new PushMessage(idUser, textMessage);
+								try {
+									botApiResponse = client.pushMessage(pushMessage).get();
+								} catch (InterruptedException | ExecutionException e) {
+									e.printStackTrace();
+								}
+							}
 
 						} else {
 
-							user = userInformationRepository.findUserByName("%" + customerMessage + "%", idUser, null)
-									.getContent();
-							a = user.size();
+							if (customerMessage.equals("see more") || customerMessage.equals("もっと見る")) {
 
-							for (int i = 0; i < a; i++) {
+								Page<UserInformation> userpage = userInformationRepository.findUserByName(
+										"%" + lineProgress.getName() + "%", idUser, new PageRequest(numPage, 3));
+								List<UserInformation> users = userpage.getContent();
 
-								String x = user.get(i).getAccountName();
-								logger.info("who is the receiver ****************" + x);
+								if (numPage == (userpage.getTotalPages() - 1)) {
 
-								if (customerMessage.equals(x)) {
-									String receiverId = user.get(i).getIdUser();
-									toUser = userInformationRepository.findOne(receiverId);
-									logger.info("the receiver is ++++++++++++ ****************" + toUser);
-
-									lineProgress.setStatusLine("Requesttitled");
-									lineProgressRepository.save(lineProgress);
-									status = lineProgress.getStatusLine();
-
-									textMessage = new TextMessage(messageSource.getMessage("title", null,
-											new Locale(mainUser.getSystemLanguage().toLowerCase())));
-									pushMessage = new PushMessage(idUser, textMessage);
-									try {
-										botApiResponse = client.pushMessage(pushMessage).get();
-									} catch (InterruptedException | ExecutionException e) {
-										e.printStackTrace();
+									for (int i = 0; i < userpage.getNumberOfElements(); i++) {
+										hm.put(users.get(i).getAccountName(), users.get(i).getAccountName());
 									}
-									logger.info("receiver has been chosen" + customerMessage);
+
+									hm.put(messageSource.getMessage("receiver.not.available", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+											messageSource.getMessage("receiver.not.available", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase())));
+									numPage = 0;
 
 								} else {
 
-									n++;
-									lineProgress.setStatusLine("Default");
-									lineProgressRepository.save(lineProgress);
-									status = lineProgress.getStatusLine();
-									System.out.println("status*********" + status);
-									logger.info("receiver has noooooooot been chosen" + customerMessage);
+									for (int i = 0; i < userpage.getNumberOfElements(); i++) {
+										hm.put(users.get(i).getAccountName(), users.get(i).getAccountName());
+									}
 
-									if (n == 2) {
-										sendAlertViaSlack(idUser, timestamp, "User can't find the receiver ");
-										n = 0;
-										lineProgressRepository.delete(lineProgress);
-										textMessage = new TextMessage(messageSource.getMessage("receiver.not.found",
-												null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
-										pushMessage = new PushMessage(idUser, textMessage);
-										try {
-											botApiResponse = client.pushMessage(pushMessage).get();
-										} catch (InterruptedException | ExecutionException e) {
-											e.printStackTrace();
-										}
-									} else {
+									hm.put(messageSource.getMessage("see.more", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+											messageSource.getMessage("see.more", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase())));
+									numPage++;
+								}
+								typeBRecursiveChoices(null, null,
+										messageSource.getMessage("receiver.possibility", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase())),
+										hm, "receiver", TOKEN, idUser);
 
-										textMessage = new TextMessage(messageSource.getMessage("receiver.again", null,
+							} else {
+
+								user = userInformationRepository
+										.findUserByName("%" + customerMessage + "%", idUser, null).getContent();
+								a = user.size();
+
+								for (int i = 0; i < a; i++) {
+
+									String x = user.get(i).getAccountName();
+									logger.info("who is the receiver ****************" + x);
+
+									if (customerMessage.equals(x)) {
+										String receiverId = user.get(i).getIdUser();
+										UserInformation toUser = userInformationRepository.findOne(receiverId);
+										logger.info("the receiver is ++++++++++++ ****************" + toUser);
+
+										lineProgress.setStatusLine("Requesttitled");
+										lineProgress.setUserTo(toUser);
+										lineProgressRepository.save(lineProgress);
+
+										textMessage = new TextMessage(messageSource.getMessage("title", null,
 												new Locale(mainUser.getSystemLanguage().toLowerCase())));
 										pushMessage = new PushMessage(idUser, textMessage);
 										try {
@@ -490,194 +448,227 @@ public class TipiSignBotController {
 										} catch (InterruptedException | ExecutionException e) {
 											e.printStackTrace();
 										}
+										logger.info("receiver has been chosen" + customerMessage);
+
+									} else {
+
+										lineProgress.setNbr(lineProgress.getNbr() + 1);
+										lineProgress.setStatusLine("Default");
+										lineProgressRepository.saveAndFlush(lineProgress);
+
+										System.out.println("status*****************" + lineProgress.getStatusLine());
+										logger.info("receiver has noooooooot been chosen" + customerMessage);
+
+										if (lineProgress.getNbr() == 2) {
+
+											sendAlertViaSlack(idUser, timestamp, "User can't find the receiver ");
+											lineProgressRepository.delete(lineProgress);
+											textMessage = new TextMessage(messageSource.getMessage("receiver.not.found",
+													null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
+											pushMessage = new PushMessage(idUser, textMessage);
+											try {
+												botApiResponse = client.pushMessage(pushMessage).get();
+											} catch (InterruptedException | ExecutionException e) {
+												e.printStackTrace();
+											}
+
+										} else {
+
+											textMessage = new TextMessage(messageSource.getMessage("receiver.again",
+													null, new Locale(mainUser.getSystemLanguage().toLowerCase())));
+											pushMessage = new PushMessage(idUser, textMessage);
+											try {
+												botApiResponse = client.pushMessage(pushMessage).get();
+											} catch (InterruptedException | ExecutionException e) {
+												e.printStackTrace();
+											}
+										}
 									}
 								}
 							}
 						}
-					}
 
-					break;
+						break;
 
-				case "Requesttitled":
+					case "Requesttitled":
 
-					titleRequest = resolvedQuery;
+						lineProgress.setStatusLine("RequestDetailed");
+						lineProgress.setTiltleRequest(resolvedQuery);
+						lineProgressRepository.save(lineProgress);
+						System.out.println("status*********" + lineProgress.getStatusLine());
+						logger.info("Request Titled ***************************" + customerMessage);
 
-					lineProgress.setStatusLine("RequestDetailed");
-					lineProgressRepository.save(lineProgress);
-					status = lineProgress.getStatusLine();
-					System.out.println("status*********" + status);
-					logger.info("Request Titled " + customerMessage);
-
-					textMessage = new TextMessage(messageSource.getMessage("detail", null,
-							new Locale(mainUser.getSystemLanguage().toLowerCase())));
-					pushMessage = new PushMessage(idUser, textMessage);
-					try {
-						botApiResponse = client.pushMessage(pushMessage).get();
-					} catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
-					}
-
-					break;
-
-				case "RequestDetailed":
-
-					detailRequest = resolvedQuery;
-
-					lineProgress.setStatusLine("RequestAuthorited");
-					lineProgressRepository.save(lineProgress);
-					status = lineProgress.getStatusLine();
-					System.out.println("status*********" + status);
-					logger.info("Request detailed***********" + customerMessage);
-
-					authorityCont = authorityRepository.findAll();
-					n = authorityCont.size();
-
-					if (n < 5) {
-
-						for (int i = 0; i < 4; i++) {
-							hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
+						textMessage = new TextMessage(messageSource.getMessage("detail", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())));
+						pushMessage = new PushMessage(idUser, textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
 						}
 
-						typeBRecursiveChoices(null, null,
-								messageSource.getMessage("authority.select", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								hm, "Authority", TOKEN, idUser);
-						logger.info("Choose request authority :" + customerMessage);
+						break;
 
-					} else {
+					case "RequestDetailed":
 
-						authority = authorityService.findAllAuthority(num, 3);
-						n = authority.getTotalPages();
-						authorityCont = authority.getContent();
+						lineProgress.setStatusLine("RequestAuthorited");
+						lineProgress.setDetailRequest(resolvedQuery);
+						lineProgressRepository.save(lineProgress);
+						System.out.println("status*********" + lineProgress.getStatusLine());
+						logger.info("Request detailed**********************" + customerMessage);
 
-						for (int i = 0; i < 3; i++) {
-							hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
-						}
-						hm.put(messageSource.getMessage("see.more", null,
-								new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								messageSource.getMessage("see.more", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase())));
-						num++;
-						typeBRecursiveChoices(null, null,
-								messageSource.getMessage("authority.select", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								hm, "Authority", TOKEN, idUser);
-						logger.info("Choose request authority :" + customerMessage);
-					}
+						List<Authority> authorityCont = authorityRepository.findAll();
+						int size = authorityCont.size();
 
-					break;
+						if (size < 5) {
 
-				case "RequestAuthorited":
-
-					if (customerMessage.equals("see more") || customerMessage.equals("もっと見る")) {
-
-						authority = authorityService.findAllAuthority(num, 3);
-						authorityCont = authority.getContent();
-
-						if (num == (n - 1)) {
-							for (int i = 0; i < authority.getNumberOfElements(); i++) {
+							for (int i = 0; i < 4; i++) {
 								hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
 							}
-							num = 0;
+
+							typeBRecursiveChoices(null, null,
+									messageSource.getMessage("authority.select", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									hm, "Authority", TOKEN, idUser);
+							logger.info("Choose request authority :" + customerMessage);
 
 						} else {
+
+							Page<Authority> authority = authorityService.findAllAuthority(num, 3);
+							authorityCont = authority.getContent();
+
 							for (int i = 0; i < 3; i++) {
 								hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
 							}
+
 							hm.put(messageSource.getMessage("see.more", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())),
 									messageSource.getMessage("see.more", null,
 											new Locale(mainUser.getSystemLanguage().toLowerCase())));
 							num++;
+
+							typeBRecursiveChoices(null, null,
+									messageSource.getMessage("authority.select", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									hm, "Authority", TOKEN, idUser);
+							logger.info("Choose request authority :" + customerMessage);
 						}
-						typeBRecursiveChoices(null, null,
-								messageSource.getMessage("authority.select", null,
+
+						break;
+
+					case "RequestAuthorited":
+
+						if (customerMessage.equals("see more") || customerMessage.equals("もっと見る")) {
+
+							Page<Authority> authority = authorityService.findAllAuthority(num, 3);
+							authorityCont = authority.getContent();
+
+							if (num == (authority.getTotalPages() - 1)) {
+								for (int i = 0; i < authority.getNumberOfElements(); i++) {
+									hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
+								}
+								num = 0;
+
+							} else {
+
+								for (int i = 0; i < 3; i++) {
+									hm.put(authorityCont.get(i).getAuthority(), authorityCont.get(i).getAuthority());
+								}
+								hm.put(messageSource.getMessage("see.more", null,
 										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								hm, "Authority", TOKEN, idUser);
-						logger.info("Choose request authority :" + customerMessage);
-
-					} else {
-
-						authorityCont = authorityRepository.findAll();
-						n = authorityCont.size();
-
-						for (int i = 0; i < n; i++) {
-							if (customerMessage.equals(authorityCont.get(i).getAuthority().toLowerCase())) {
-								logger.info("authoooooooooooooooooooorityyyyyyyyyy*************"
-										+ authorityCont.get(i).getAuthority().toLowerCase());
-								visibility = authorityCont.get(i).getRanking();
-								logger.info("visiibilityyyyyyyyyyyy*********************" + visibility);
-								roleId = authorityCont.get(i).getAuthorityId();
-								logger.info("id*******************************"+ roleId);
-								
+										messageSource.getMessage("see.more", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase())));
+								num++;
 							}
+
+							typeBRecursiveChoices(null, null,
+									messageSource.getMessage("authority.select", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									hm, "Authority", TOKEN, idUser);
+							logger.info("Choose request authority :**********************" + customerMessage);
+
+						} else {
+
+							authorityCont = authorityRepository.findAll();
+							size = authorityCont.size();
+
+							for (int i = 0; i < size; i++) {
+
+								if (customerMessage.equals(authorityCont.get(i).getAuthority().toLowerCase())) {
+									logger.info("authoooooooooooooooooooorityyyyyyyyyy*************"
+											+ authorityCont.get(i).getAuthority().toLowerCase());
+
+									lineProgress.setStatusLine("Finished");
+									lineProgress.setAuthority(authorityCont.get(i));
+									lineProgressRepository.save(lineProgress);
+
+									System.out.println("status*********" + lineProgress.getStatusLine());
+									logger.info("Request Authoriteeeeeeed*****************");
+
+								}
+							}
+
+							typeCQuestion(
+									messageSource.getMessage("confirm", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase()))
+											+ "\n \n"
+											+ messageSource.getMessage("receiver", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase()))
+											+ lineProgress.getUserTo().getAccountName() + "\n"
+											+ messageSource.getMessage("title", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase()))
+											+ lineProgress.getTiltleRequest() + "\n"
+											+ messageSource.getMessage("detail", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase()))
+											+ lineProgress.getDetailRequest() + "\n"
+											+ messageSource.getMessage("authority", null,
+													new Locale(mainUser.getSystemLanguage().toLowerCase()))
+											+ lineProgress.getAuthority().getAuthority(),
+									messageSource.getMessage("send", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									messageSource.getMessage("send", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									messageSource.getMessage("delete", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									messageSource.getMessage("delete", null,
+											new Locale(mainUser.getSystemLanguage().toLowerCase())),
+									"Confirm", TOKEN, idUser);
 						}
 
-						lineProgress.setStatusLine("Finished");
-						lineProgressRepository.save(lineProgress);
-						status = lineProgress.getStatusLine();
-						System.out.println("status*********" + status);
-						logger.info("Request detailed", customerMessage);
+						break;
 
-						typeCQuestion(
-								messageSource.getMessage("confirm", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ "\n \n"
-										+ messageSource.getMessage("receiver", null,
-												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ toUser.getAccountName() + "\n"
-										+ messageSource.getMessage("title", null,
-												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ titleRequest + "\n"
-										+ messageSource.getMessage("detail", null,
-												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ detailRequest + "\n"
-										+ messageSource.getMessage("authority", null,
-												new Locale(mainUser.getSystemLanguage().toLowerCase()))
-										+ authorityRepository.findOne(roleId).getAuthority(),
-								messageSource.getMessage("send", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								messageSource.getMessage("send", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								messageSource.getMessage("delete", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								messageSource.getMessage("delete", null,
-										new Locale(mainUser.getSystemLanguage().toLowerCase())),
-								"Confirm", TOKEN, idUser);
-					}
+					default:
 
-					break;
+						if (lineProgress != null) {
+							lineProgressRepository.delete(lineProgress);
+						}
 
-				default:
+						textMessage = new TextMessage(messageSource.getMessage("default", null,
+								new Locale(mainUser.getSystemLanguage().toLowerCase())));
+						pushMessage = new PushMessage(idUser, textMessage);
+						try {
+							botApiResponse = client.pushMessage(pushMessage).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
 
-					if (lineProgress != null) {
-						lineProgressRepository.delete(lineProgress);
-					}
-
-					textMessage = new TextMessage(messageSource.getMessage("default", null,
-							new Locale(mainUser.getSystemLanguage().toLowerCase())));
-					pushMessage = new PushMessage(idUser, textMessage);
-					try {
-						botApiResponse = client.pushMessage(pushMessage).get();
-					} catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
+						break;
 					}
 
 					break;
 				}
 
-				break;
-
 			case "confirm":
 
 				logger.info("request decesion**************************" + customerMessage);
+				lineProgress = lineProgressRepository.findLineProgressByUser(idUser);
 
 				if (customerMessage.equals("Send") || customerMessage.equals("送信")) {
 
-					request = new Request();
-					request.setTitleRequest(titleRequest);
-					request.setDetailRequest(detailRequest);
-					request.setVisibility(visibility);
+					Request request = new Request();
+					request.setTitleRequest(lineProgress.getTiltleRequest());
+					request.setDetailRequest(lineProgress.getDetailRequest());
+					request.setVisibility(lineProgress.getAuthority().getRanking());
 					request.setCreatedAt(convertToTimestamp(timestamp));
 					request.setUpdatedAt(convertToTimestamp(timestamp));
 					requestRepository.saveAndFlush(request);
@@ -686,27 +677,27 @@ public class TipiSignBotController {
 
 					lineProgressRepository.delete(lineProgress);
 
-					UserToUserRequestPK userPk = new UserToUserRequestPK(idUser, toUser.getIdUser(),
+					UserToUserRequestPK userPk = new UserToUserRequestPK(idUser, lineProgress.getUserTo().getIdUser(),
 							request.getIdRequest());
-					userToUserRequest = new UserToUserRequest();
+					UserToUserRequest userToUserRequest = new UserToUserRequest();
 					userToUserRequest.setUserToUserRequestPK(userPk);
 					userToUserRequest.setRequest(request);
 					userToUserRequest.setUserFrom(mainUser);
-					userToUserRequest.setUserTo(toUser);
+					userToUserRequest.setUserTo(lineProgress.getUserTo());
 					userToUserRequest.setOldIdRequest(request.getIdRequest());
 					userToUserRequestRepository.save(userToUserRequest);
 
-					logRequest = new LogRequest();
-					logRequest.setTitle(titleRequest);
-					logRequest.setDetail(detailRequest);
+					LogRequest logRequest = new LogRequest();
+					logRequest.setTitle(lineProgress.getTiltleRequest());
+					logRequest.setDetail(lineProgress.getDetailRequest());
 					logRequest.setCreatedAt(convertToTimestamp(timestamp));
 					logRequest.setIdRequest(request.getIdRequest());
 					logRequest.setStatusRequest(request.getStatus());
 					logRequest.setFromUser(mainUser.getAccountName());
-					logRequest.setToUser(toUser.getAccountName());
+					logRequest.setToUser(lineProgress.getUserTo().getAccountName());
 					logRequestRepository.save(logRequest);
 
-					imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+					String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 							+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
 					hm.put(messageSource.getMessage("approve", null,
@@ -721,11 +712,12 @@ public class TipiSignBotController {
 
 					typeBRecursiveChoices(imageUrl,
 							messageSource.getMessage("title", null,
-									new Locale(mainUser.getSystemLanguage().toLowerCase())) + titleRequest,
+									new Locale(mainUser.getSystemLanguage().toLowerCase()))
+									+ lineProgress.getTiltleRequest(),
 							messageSource.getMessage("sender", null,
 									new Locale(mainUser.getSystemLanguage().toLowerCase())) + mainUser.getAccountName(),
-							hm, "New request", TOKEN, toUser.getIdUser());
-					logger.info("request sent to:" + toUser.getAccountName());
+							hm, "New request", TOKEN, lineProgress.getUserTo().getIdUser());
+					logger.info("request sent to:" + lineProgress.getUserTo().getAccountName());
 
 					textMessage = new TextMessage(messageSource.getMessage("request.send", null,
 							new Locale(mainUser.getSystemLanguage().toLowerCase())));
@@ -756,12 +748,12 @@ public class TipiSignBotController {
 
 				if (customerMessage.equals("Decision history")) {
 
-					imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+					String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 							+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 
 					List<UserToUserRequest> requests = userToUserRequestRepository.findPendingRequestByToUser(idUser);
 					int a = requests.size();
-					listCarouselColumns = new ArrayList<>();
+					List<CarouselColumn> listCarouselColumns = new ArrayList<>();
 					logger.info("size of requests is =" + requests.size());
 
 					if (a == 0) {
@@ -840,7 +832,7 @@ public class TipiSignBotController {
 						}
 					}
 
-					carouselTemplate = new CarouselTemplate(listCarouselColumns);
+					CarouselTemplate carouselTemplate = new CarouselTemplate(listCarouselColumns);
 					TemplateMessage templateMessage = new TemplateMessage("Decision history", carouselTemplate);
 					pushMessage = new PushMessage(idUser, templateMessage);
 					LineMessagingServiceBuilder.create(TOKEN).build().pushMessage(pushMessage).execute();
@@ -852,7 +844,7 @@ public class TipiSignBotController {
 					String part1 = table[0];
 					String part2 = table[1];
 					String part3 = table[2];
-					number = Long.parseLong(part3);
+					long number = Long.parseLong(part3);
 					Request r = requestRepository.findOne(number);
 					UserToUserRequest u = userToUserRequestRepository.findRequest(number);
 
@@ -924,7 +916,7 @@ public class TipiSignBotController {
 								r.setUpdatedAt(convertToTimestamp(timestamp));
 								requestRepository.save(r);
 
-								logRequest = new LogRequest();
+								LogRequest logRequest = new LogRequest();
 								logRequest.setTitle(r.getTitleRequest());
 								logRequest.setDetail(r.getDetailRequest());
 								logRequest.setCreatedAt(convertToTimestamp(timestamp));
@@ -934,7 +926,7 @@ public class TipiSignBotController {
 								logRequest.setToUser(u.getUserTo().getAccountName());
 								logRequestRepository.save(logRequest);
 
-								logDecision = new LogDecision();
+								LogDecision logDecision = new LogDecision();
 								logDecision.setCreatedAt(convertToTimestamp(timestamp));
 								logDecision.setStatus("approved");
 								logDecision.setIdRequest(u.getOldIdRequest());
@@ -944,14 +936,15 @@ public class TipiSignBotController {
 								logger.info("approooooooooooooooved");
 
 								String approve = "https://image.ibb.co/n4fnDn/Webp_net_resizeimage_4.jpg";
-								carouselTemplate = new CarouselTemplate(Arrays.asList(new CarouselColumn(approve,
-										messageSource.getMessage("title", null,
-												new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
-												+ r.getTitleRequest(),
-										messageSource.getMessage("approved",
-												new Object[] { mainUser.getAccountName().toUpperCase() },
-												new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
-										Arrays.asList(new PostbackAction("Request " + r.getStatus(), " ")))));
+								CarouselTemplate carouselTemplate = new CarouselTemplate(
+										Arrays.asList(new CarouselColumn(approve,
+												messageSource.getMessage("title", null,
+														new Locale(u.getUserFrom().getSystemLanguage().toLowerCase()))
+														+ r.getTitleRequest(),
+												messageSource.getMessage("approved",
+														new Object[] { mainUser.getAccountName().toUpperCase() },
+														new Locale(u.getUserFrom().getSystemLanguage().toLowerCase())),
+												Arrays.asList(new PostbackAction("Request " + r.getStatus(), " ")))));
 
 								TemplateMessage templateMessage = new TemplateMessage("Approved", carouselTemplate);
 								pushMessage = new PushMessage(u.getUserFrom().getIdUser(), templateMessage);
@@ -1058,7 +1051,7 @@ public class TipiSignBotController {
 						new PageRequest(0, 10));
 				List<UserToUserRequest> requests = myRequests.getContent();
 				int a = requests.size();
-				listCarouselColumns = new ArrayList<>();
+				List<CarouselColumn> listCarouselColumns = new ArrayList<>();
 
 				if (a == 0) {
 
@@ -1087,14 +1080,14 @@ public class TipiSignBotController {
 						// break;
 						//
 						// default:
-						imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
+						String imageUrl = "https://image.shutterstock.com/z/stock-vector-linear-check-mar"
 								+ "k-icon-like-tick-and-cross-concept-of-approve-or-disapprove-round-button-and-659922649.jpg";
 						// break;
 						// }
 
 						listCarouselColumns.add(new CarouselColumn(imageUrl,
 								"Request title: " + requests.get(i).getRequest().getTitleRequest(),
-								"TO : " + requests.get(i).getUserFrom().getAccountName(),
+								"TO : " + requests.get(i).getUserTo().getAccountName(),
 								Arrays.asList(new PostbackAction("Request " + requests.get(i).getRequest().getStatus(),
 										" "))));
 					}
