@@ -640,23 +640,48 @@ public class TipiSignBotController {
 
 					default:
 
-						if (lineProgress != null) {
-							lineProgressRepository.delete(lineProgress);
-						}
-
-						textMessage = new TextMessage(messageSource.getMessage("default", null,
-								new Locale(mainUser.getSystemLanguage().toLowerCase())));
-						pushMessage = new PushMessage(idUser, textMessage);
-						try {
-							botApiResponse = client.pushMessage(pushMessage).get();
-						} catch (InterruptedException | ExecutionException e) {
-							e.printStackTrace();
-						}
-
+						typeCQuestion(
+								messageSource.getMessage("confirm", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase()))
+										+ "\n \n"
+										+ messageSource.getMessage("receiver", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase()))
+										+ lineProgress.getUserTo().getAccountName() + "\n"
+										+ messageSource.getMessage("title", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase()))
+										+ lineProgress.getTiltleRequest() + "\n"
+										+ messageSource.getMessage("detail", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase()))
+										+ lineProgress.getDetailRequest() + "\n"
+										+ messageSource.getMessage("authority", null,
+												new Locale(mainUser.getSystemLanguage().toLowerCase()))
+										+ lineProgress.getAuthority().getAuthority(),
+								messageSource.getMessage("send", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								messageSource.getMessage("send", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								messageSource.getMessage("delete", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								messageSource.getMessage("delete", null,
+										new Locale(mainUser.getSystemLanguage().toLowerCase())),
+								"Confirm", TOKEN, idUser);
+						
 						break;
 					}
 
 					break;
+					
+				} else {
+					
+					textMessage = new TextMessage(messageSource.getMessage("default", null,
+							new Locale(mainUser.getSystemLanguage().toLowerCase())));
+					pushMessage = new PushMessage(idUser, textMessage);
+					try {
+						botApiResponse = client.pushMessage(pushMessage).get();
+					} catch (InterruptedException | ExecutionException e) {
+						e.printStackTrace();
+					}
+
 				}
 
 			case "confirm":
