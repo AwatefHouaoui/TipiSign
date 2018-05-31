@@ -231,6 +231,7 @@ public class TipiSignBotController {
 
 				LineProgress lineProgress = new LineProgress();
 				lineProgress.setUserLine(mainUser);
+				logger.info("uuuuuuuuuuuuuuuuuuuuuuuuuuserliiiiiiiiiiiiiiiiiine*************");
 				lineProgressRepository.save(lineProgress);
 
 				textMessage = new TextMessage(messageSource.getMessage("receiver", null,
